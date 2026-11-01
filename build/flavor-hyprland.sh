@@ -17,7 +17,7 @@ log "hyprland: Hyprland ${hypr_ver}"
 retry dnf5 copr enable -y nett00n/hyprland || die "could not enable the nett00n/hyprland COPR"
 
 apply_system_files hyprland
-chmod 0755 /usr/bin/event-horizon-session /usr/bin/EventHorizon
+chmod 0755 /usr/bin/event-horizon-session
 
 bash "${PERIHELION_SRC}/build/event-horizon.sh"
 
