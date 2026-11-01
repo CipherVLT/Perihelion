@@ -63,5 +63,13 @@ Downloaded at install time, not redistributed in this repository:
   Strata (https://github.com/lgse/strata), MIT
   Satty (https://github.com/gabm/Satty), MPL-2.0
 
-Wallpapers in branding/wallpapers: source and license still to be recorded
-here before the repository or any ISO is published.
+Wallpapers (not in this repository)
+  scripts/fetch-wallpapers.sh downloads, for local builds only:
+    Black Hole 1, Black Hole 2 and Black Hole 3. Based on artwork by
+    Kurzgesagt - In a Nutshell (https://kurzgesagt.org/), color-shifted to
+    Catppuccin Mocha. Source: teowelton/Wallpapers
+    (https://github.com/teowelton/Wallpapers), its README and
+    wallpaper_metadata.yaml.
+  This artwork carries no open license; it is free for private, personal
+  use. It is never committed here, and ISOs built with it must not be
+  published without permission from Kurzgesagt.

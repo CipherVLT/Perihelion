@@ -24,7 +24,7 @@ on real hardware yet. Mango is the first flavor to test.
 
 ## What every flavor includes
 
-- **Login:** SDDM on a Wayland greeter, Pixie theme, Perihelion wallpaper
+- **Login:** SDDM on a Wayland greeter, Pixie theme
 - **Terminal:** kitty. **Browser:** Firefox. **Launcher:** fuzzel
 - **Files:** [Strata](https://github.com/lgse/strata), wired in as the file manager everywhere:
   folders opened from any app, "Show in folder" / "Open containing folder" in Firefox and
@@ -62,7 +62,11 @@ sudo dnf install xorriso rsync isomd5sum pykickstart
 podman run --rm -v "$PWD":/src:Z -w /src registry.fedoraproject.org/fedora:45 \
     scripts/check-packages.sh all
 
-# 2. Build: downloads the pinned Fedora 45 Everything netinstall ISO,
+# 2. Optional, personal builds only: the Kurzgesagt black-hole wallpapers
+#    (free for personal use, so never committed; see NOTICE)
+scripts/fetch-wallpapers.sh
+
+# 3. Build: downloads the pinned Fedora 45 Everything netinstall ISO,
 #    checks its SHA256, then builds
 scripts/build-iso.sh --flavor mango --download --output out/perihelion-mango.iso
 ```

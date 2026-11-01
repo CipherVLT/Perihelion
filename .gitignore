@@ -2,3 +2,7 @@ out/
 *.iso
 .env
 .env.*
+
+# Wallpapers are fetched locally (scripts/fetch-wallpapers.sh), never committed
+branding/wallpapers/*
+!branding/wallpapers/README.md

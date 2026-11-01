@@ -78,6 +78,13 @@ work_dir="$(mktemp -d)"
 tmp_output=
 trap 'rm -rf "${work_dir}"; [[ -z ${tmp_output} ]] || rm -f "${tmp_output}"' EXIT
 
+if compgen -G "${repo_dir}/branding/wallpapers/*.png" >/dev/null; then
+    printf 'Including the wallpapers in branding/wallpapers (personal-use artwork:\n'
+    printf 'this ISO is for your own machines; do not publish it).\n'
+else
+    printf 'No wallpapers in branding/wallpapers (scripts/fetch-wallpapers.sh adds them); plain backgrounds.\n'
+fi
+
 ks_file="${work_dir}/perihelion.ks"
 "${repo_dir}/scripts/render-ks.sh" "${flavor}" "${ks_file}" >/dev/null
 

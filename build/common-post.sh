@@ -23,15 +23,33 @@ apply_system_files common
 chmod 0755 /usr/bin/strata /usr/libexec/perihelion-trash /usr/libexec/perihelion-strata-theme
 
 # --- Wallpapers -----------------------------------------------------------------
-install -d /usr/share/backgrounds/perihelion /usr/share/perihelion
-install -m644 "${PERIHELION_SRC}/branding/wallpapers/perihelion-horizon.png" \
-    /usr/share/backgrounds/perihelion/default.png
-install -m644 "${PERIHELION_SRC}/branding/wallpapers/perihelion-galaxies.png" \
-    /usr/share/backgrounds/perihelion/galaxies.png
+# Present only if scripts/fetch-wallpapers.sh ran before the ISO was built
+# (they are personal-use artwork and never committed). Without them the login
+# screen keeps the theme's background color and desktops start plain.
+walls="${PERIHELION_SRC}/branding/wallpapers"
+wall_default=
+shopt -s nullglob
+wall_files=("${walls}"/*.png "${walls}"/*.jpg)
+shopt -u nullglob
+if (( ${#wall_files[@]} )); then
+    install -m644 "${wall_files[@]}" /usr/share/backgrounds/perihelion/
+    name=$(cat "${walls}/DEFAULT" 2>/dev/null || basename "${wall_files[0]}")
+    [[ -f "/usr/share/backgrounds/perihelion/${name}" ]] || die "DEFAULT wallpaper ${name} not found"
+    ln -sfn "${name}" /usr/share/backgrounds/perihelion/default.png
+    wall_default=/usr/share/backgrounds/perihelion/default.png
+    log "common: wallpapers installed, default ${name}"
+else
+    log "common: no wallpapers in branding/wallpapers; plain backgrounds"
+fi
 
 # --- Login screen: SDDM + Pixie -----------------------------------------------------
 theme=/usr/share/sddm/themes/pixie
-install -m644 /usr/share/backgrounds/perihelion/default.png "${theme}/assets/background.png"
+if [[ -n "${wall_default}" ]]; then
+    install -m644 "$(readlink -f "${wall_default}")" "${theme}/assets/background.png"
+else
+    # Pixie draws its backgroundColor when the image is missing.
+    sed -i 's/^background=.*/background=/' "${theme}/theme.conf"
+fi
 chmod -R u=rwX,go=rX "${theme}"
 install -d /etc/sddm.conf.d
 cat > /etc/sddm.conf.d/10-perihelion.conf <<'EOF'
