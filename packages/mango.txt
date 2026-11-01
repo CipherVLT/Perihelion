@@ -1,6 +1,23 @@
-# Mango flavor: the compositor and what its default binds need, nothing more.
-# mangowm comes from Terra.
+# Mango flavor: the compositor plus exactly what Perihelion's Mango config
+# uses (system_files/mango/usr/share/perihelion/mango/config.conf).
+# perihelion-doctor checks that every program the config launches exists.
+
+# Compositor (Terra) and its screen-sharing/screenshot portal
 mangowm
 xdg-desktop-portal-wlr
-# Password prompts (Steam, pkexec); started from Mango's config
+# Top bar, wallpaper, lock screen
+waybar
+swaybg
+swaylock
+# Password prompts (Steam, pkexec); started from the Mango config
 mate-polkit
+# Screenshots: slurp picks a region, grim captures, wl-copy copies
+grim
+slurp
+wl-clipboard
+# Media keys
+playerctl
+# Makes the session visible to portals (dbus-update-activation-environment)
+dbus-tools
+# Shows the name of any key you press (for writing your own binds)
+wev

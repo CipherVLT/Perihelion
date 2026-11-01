@@ -90,6 +90,17 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Check every listed package exists
         run: scripts/check-packages.sh "${{ matrix.flavor }}"
+      - name: Check the Mango config against Terra's Mango
+        if: matrix.flavor == 'mango'
+        run: |
+          set -euo pipefail
+          dnf5 install -y --setopt=install_weak_deps=False \
+            --repofrompath "terra,https://repos.fyralabs.com/terra$(rpm -E %fedora)" \
+            --setopt=terra.gpgcheck=0 mangowm
+          rpm -q mangowm
+          cfg=system_files/mango/usr/share/perihelion/mango/config.conf
+          mango -p -c "${cfg}"
+          echo "Mango config OK"
 
   release:
     name: Prepare "testing" release

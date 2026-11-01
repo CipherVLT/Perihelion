@@ -34,6 +34,17 @@ for flavor in "${flavors[@]}"; do
             fi
         done < <(sed -e 's/[[:space:]]*#.*$//' -e '/^[[:space:]]*$/d' "${repo_dir}/packages/${list}.txt")
     done
+    # Versions of the packages that matter most, for the build log.
+    key_pkgs=(mangowm hyprland niri waybar swaybg fuzzel kitty firefox steam gamescope)
+    for list in ${lists}; do
+        while read -r pkg; do
+            for key in "${key_pkgs[@]}"; do
+                [[ "${pkg}" == "${key}" ]] || continue
+                printf '  %s\n' "$(dnf5 repoquery -q "${repos[@]}" --latest-limit=1 --arch=x86_64,noarch \
+                    --qf '%{name}-%{version}-%{release} (%{repoid})' "${pkg}" 2>/dev/null | head -n1)"
+            done
+        done < <(sed -e 's/[[:space:]]*#.*$//' -e '/^[[:space:]]*$/d' "${repo_dir}/packages/${list}.txt")
+    done
     if (( ${#missing[@]} )); then
         printf '%s: MISSING %s\n' "${flavor}" "${missing[*]}"
         status=1

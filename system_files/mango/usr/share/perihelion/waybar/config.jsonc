@@ -1,0 +1,59 @@
+// Perihelion top bar for Mango (Waybar). Your copy: ~/.config/waybar/config.jsonc
+// Restart the bar after editing: Super+Shift+D
+// Reference: https://github.com/Alexays/Waybar/wiki
+{
+    "layer": "top",
+    "position": "top",
+    "height": 30,
+    "margin-top": 4,
+    "margin-left": 4,
+    "margin-right": 4,
+    "spacing": 4,
+
+    "modules-left": ["ext/workspaces"],
+    "modules-center": ["clock"],
+    "modules-right": ["tray", "network", "wireplumber", "battery"],
+
+    // Mango's workspaces (tags) through the standard ext-workspace protocol
+    "ext/workspaces": {
+        "format": "{name}",
+        "on-click": "activate",
+        "sort-by-id": true
+    },
+
+    "clock": {
+        "format": "{:%a %b %d  %I:%M %p}",
+        "tooltip-format": "<tt>{calendar}</tt>"
+    },
+
+    "tray": {
+        "icon-size": 16,
+        "spacing": 8
+    },
+
+    // Click: Wi-Fi / network settings in a terminal (nmtui)
+    "network": {
+        "format-wifi": "  {essid}",
+        "format-ethernet": "󰈀  wired",
+        "format-disconnected": "󰖪  offline",
+        "tooltip-format": "{ifname}  {ipaddr}",
+        "on-click": "kitty -e nmtui"
+    },
+
+    // Scroll: volume. Click: mute.
+    "wireplumber": {
+        "format": "{icon}  {volume}%",
+        "format-muted": "󰝟  muted",
+        "format-icons": ["󰕿", "󰖀", "󰕾"],
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "scroll-step": 5
+    },
+
+    // Shown only on machines with a battery
+    "battery": {
+        "format": "{icon}  {capacity}%",
+        "format-charging": "󰂄  {capacity}%",
+        "format-icons": ["󰁺", "󰁼", "󰁾", "󰂀", "󰁹"],
+        "states": { "warning": 25, "critical": 10 }
+    }
+}

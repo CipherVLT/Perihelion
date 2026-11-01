@@ -6,7 +6,7 @@ A minimal Fedora for gamers and creators, in three tiling flavors:
 |---|---|---|---|
 | **Hyprland** | Hyprland 0.56+ (COPR `nett00n/hyprland`) | Event Horizon | Lua config from horizon-forge / Veyl OS |
 | **Niri** | niri (Fedora) | Event Horizon | niri's default config, Perihelion apps swapped in |
-| **Mango** | mangowm (Terra) | none | Upstream config; only the terminal and launcher binds changed |
+| **Mango** | mangowm (Terra) | Waybar + swaybg | Veyl OS keybinds, gaps and look translated to Mango |
 
 Every flavor starts from Fedora's `@core` and adds only what a desktop needs
 to work: network, Bluetooth, firewall, PipeWire audio, Mesa/Vulkan, a login
@@ -35,6 +35,33 @@ on real hardware yet. Mango is the first flavor to test.
 - Fedora's defaults kept: SELinux enforcing, firewalld on
 
 NVIDIA ISOs are planned for later and are not built yet.
+
+## Mango: first login
+
+Pick **Mango** on the login screen. Super is the Windows key.
+
+| Keys | Does |
+|---|---|
+| Super+Return | Terminal (kitty) |
+| Super+D | App launcher (fuzzel) |
+| Super+E / Super+B / Super+S | Files (Strata) / Firefox / Steam |
+| Super+Q | Close window |
+| Super+arrows | Move focus |
+| Super+Shift+arrows | Resize (or drag the gap between windows, no key held) |
+| Super+Shift+Ctrl+arrows | Swap windows |
+| Super+1-9 / Super+Shift+1-9 | Go to / move window to workspace |
+| Super+W / Super+F | Floating / fullscreen |
+| Super+H | **Every keybind, searchable** |
+| Super+Shift+E | Log out |
+
+- Gaps 2 px inside / 4 px outside, 2 px Catppuccin Macchiato blue (`0x8aadf4ff`)
+  border on the focused window, see-through blurred kitty.
+- Your config: `~/.config/mango/config.conf` (Super+Shift+R reloads it).
+  Bar: `~/.config/waybar/`. Launcher: `~/.config/fuzzel/fuzzel.ini`.
+- Wallpaper: `perihelion-wallpaper ~/Pictures/some-image.png` (remembered).
+- Something wrong? Run `perihelion-doctor` in a terminal: it checks the
+  config, lists missing programs and shows this boot's errors.
+  `perihelion-doctor --save` writes it to `~/perihelion-doctor.txt` to share.
 
 ## Layout
 

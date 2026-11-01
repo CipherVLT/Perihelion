@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# Perihelion health check. Run it in a terminal when something is wrong and
+# share the output (or the file it saves) when asking for help.
+#
+#   perihelion-doctor            print the report
+#   perihelion-doctor --save     also save it to ~/perihelion-doctor.txt
+set -uo pipefail
+
+report() {
+    section() { printf '\n=== %s ===\n' "$1"; }
+    ok() { printf '  ok    %s\n' "$1"; }
+    bad() { printf '  FAIL  %s\n' "$1"; }
+
+    section "System"
+    cat /usr/share/perihelion/release 2>/dev/null || bad "/usr/share/perihelion/release missing (not a Perihelion install?)"
+    printf 'kernel %s\n' "$(uname -r)"
+    printf 'session %s (%s)\n' "${XDG_CURRENT_DESKTOP:-none}" "${XDG_SESSION_TYPE:-none}"
+
+    section "Key packages"
+    rpm -q mangowm hyprland niri waybar swaybg fuzzel kitty firefox steam gamescope \
+        sddm pipewire wireplumber 2>/dev/null | grep -v 'is not installed'
+    command -v strata >/dev/null && ok "strata $(strata --version 2>/dev/null | head -n1)"
+
+    if command -v mango >/dev/null; then
+        section "Mango config"
+        cfg="${XDG_CONFIG_HOME:-${HOME}/.config}/mango/config.conf"
+        if [[ -f "${cfg}" ]]; then
+            if out=$(mango -p -c "${cfg}" 2>&1); then
+                ok "${cfg} parses"
+            else
+                bad "${cfg} has errors:"
+                printf '%s\n' "${out}" | sed 's/\x1b\[[0-9;]*m//g; s/^/        /'
+            fi
+            # Every program a bind or autostart line launches must exist.
+            while read -r prog; do
+                [[ -n "${prog}" ]] || continue
+                if command -v "${prog}" >/dev/null 2>&1 || [[ -x "${prog}" ]]; then
+                    ok "found ${prog}"
+                else
+                    bad "missing ${prog} (used in ${cfg})"
+                fi
+            done < <(sed -n -E 's/^(bind[a-z]*|mousebind|axisbind|gesturebind)=[^,]*,[^,]*,spawn,([^ ,]+).*/\2/p; s/^exec_once=([^ ]+).*/\1/p' "${cfg}" | sort -u)
+        else
+            bad "no ${cfg} (Mango uses its built-in defaults)"
+        fi
+    fi
+
+    section "Running"
+    for proc in mango Hyprland niri waybar swaybg pipewire wireplumber xdg-desktop-portal; do
+        if pgrep -x "${proc}" >/dev/null; then ok "${proc}"; fi
+    done
+
+    section "Network"
+    nmcli -t -f STATE,CONNECTIVITY general 2>/dev/null || bad "nmcli failed"
+
+    section "Errors this boot (system)"
+    journalctl -b -p err --no-pager -q 2>/dev/null | tail -n 25 || true
+
+    section "Warnings this boot (your session)"
+    journalctl --user -b -p warning --no-pager -q 2>/dev/null | tail -n 25 || true
+
+    section "Installer log"
+    echo "If the install itself failed or something was never set up, the full log is"
+    echo "/root/perihelion-post.log   (view with: sudo less /root/perihelion-post.log)"
+}
+
+if [[ "${1:-}" == --save ]]; then
+    report | tee "${HOME}/perihelion-doctor.txt"
+    printf '\nSaved to %s\n' "${HOME}/perihelion-doctor.txt"
+else
+    report
+fi
