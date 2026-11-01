@@ -51,9 +51,20 @@ scripts/                   render-ks.sh, build-iso.sh, check-packages.sh (run on
 
 To add or remove a package, edit the list in `packages/` and rebuild.
 
-## Build an ISO
+## Download a test ISO
 
-On Fedora:
+GitHub builds all three ISOs automatically on every push to `main` that
+changes the recipe (and on demand: **Actions → Build ISOs → Run workflow**).
+They are attached to the **testing** pre-release under **Releases**, each with
+a `.sha256` file. Download one, boot it in a VM, install.
+
+These builds have no wallpapers (plain login background). Pull requests run
+the same checks and build, but publish nothing.
+
+## Build an ISO yourself
+
+Building is quick (it repacks Fedora's ISO; no compiling), and works on any
+Linux with the tools below, or inside a `fedora:45` container. On Fedora:
 
 ```sh
 sudo dnf install xorriso rsync isomd5sum pykickstart

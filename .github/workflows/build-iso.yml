@@ -1,0 +1,184 @@
+---
+# Build the Perihelion installer ISOs on GitHub's servers.
+#
+# 1. check:   every package each flavor lists exists (Fedora, Terra, COPR)
+# 2. release: on main, recreate the rolling "testing" pre-release
+# 3. build:   per flavor, download + SHA256-check the pinned Fedora 45
+#             Everything netinstall ISO, build perihelion-<flavor>.iso,
+#             verify it, and attach it (plus its .sha256) to "testing"
+#
+# ISOs go to a GitHub Release, not to workflow artifacts: release files
+# don't count against the Actions storage quota (500 MB on a free private
+# repo, and each ISO is ~1.2 GiB). Releases of a private repo are private.
+#
+# Pull requests run check + build to prove the change works, without
+# publishing anything. Personal-use wallpapers are never fetched here.
+name: Build ISOs
+
+on:
+  workflow_dispatch:
+    inputs:
+      flavor:
+        description: "Which flavor to build"
+        required: true
+        default: all
+        type: choice
+        options: [all, mango, hyprland, niri]
+  push:
+    branches: [main]
+    paths:
+      - 'kickstart/**'
+      - 'packages/**'
+      - 'build/**'
+      - 'system_files/**'
+      - 'scripts/**'
+      - '.github/workflows/build-iso.yml'
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  RELEASE_TAG: testing
+
+jobs:
+  plan:
+    name: Pick flavors
+    runs-on: ubuntu-24.04
+    outputs:
+      flavors: ${{ steps.pick.outputs.flavors }}
+      publish: ${{ steps.pick.outputs.publish }}
+    steps:
+      - id: pick
+        env:
+          INPUT_FLAVOR: ${{ inputs.flavor }}
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          case "${INPUT_FLAVOR:-all}" in
+            all) flavors='["mango","hyprland","niri"]' ;;
+            *)   flavors="[\"${INPUT_FLAVOR}\"]" ;;
+          esac
+          publish=false
+          if [[ "${EVENT}" != pull_request && "${REF}" == refs/heads/main ]]; then
+            publish=true
+          fi
+          echo "flavors=${flavors}" >> "$GITHUB_OUTPUT"
+          echo "publish=${publish}" >> "$GITHUB_OUTPUT"
+          echo "Flavors: ${flavors}  Publish: ${publish}"
+
+  check:
+    name: Check packages (${{ matrix.flavor }})
+    needs: plan
+    runs-on: ubuntu-24.04
+    container:
+      image: registry.fedoraproject.org/fedora:45
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: ${{ fromJSON(needs.plan.outputs.flavors) }}
+    steps:
+      - name: Tools
+        run: dnf5 install -y --setopt=install_weak_deps=False git-core
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Check every listed package exists
+        run: scripts/check-packages.sh "${{ matrix.flavor }}"
+
+  release:
+    name: Prepare "testing" release
+    needs: [plan, check]
+    if: needs.plan.outputs.publish == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Recreate the rolling pre-release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          # Replace the previous build entirely, so the release only ever
+          # holds ISOs from one commit.
+          gh release delete "${RELEASE_TAG}" --cleanup-tag --yes 2>/dev/null || true
+          notes=$(cat <<EOF
+          Automatic test build of commit ${SHA:0:7}. Not a stable release.
+
+          Each ISO is Fedora's Everything netinstall installer with the Perihelion
+          kickstart. Boot it, pick a disk and create your user; packages download
+          during installation, so the machine needs internet.
+
+          Verify a download with: \`sha256sum -c perihelion-<flavor>-*.iso.sha256\`
+
+          Built without wallpapers (the login screen uses a plain background).
+          EOF
+          )
+          gh release create "${RELEASE_TAG}" --prerelease --target "${SHA}" \
+            --title "Perihelion testing build (${SHA:0:7})" --notes "${notes}"
+
+  build:
+    name: Build ISO (${{ matrix.flavor }})
+    needs: [plan, check, release]
+    # Run when "release" succeeded or was skipped (pull requests), not when it failed.
+    if: ${{ !cancelled() && needs.check.result == 'success' && needs.release.result != 'failure' }}
+    runs-on: ubuntu-24.04
+    container:
+      image: registry.fedoraproject.org/fedora:45
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: ${{ fromJSON(needs.plan.outputs.flavors) }}
+    steps:
+      - name: Tools
+        run: |
+          dnf5 install -y --setopt=install_weak_deps=False \
+            git-core xorriso rsync isomd5sum pykickstart curl gh
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Build
+        id: build
+        run: |
+          set -euo pipefail
+          stamp=$(date -u +%Y%m%d)
+          name="perihelion-${{ matrix.flavor }}-${stamp}-${GITHUB_SHA:0:7}.iso"
+          scripts/build-iso.sh --flavor "${{ matrix.flavor }}" --download --output "out/${name}"
+          (cd out && sha256sum "${name}" > "${name}.sha256")
+          ls -lh out/
+          echo "iso=out/${name}" >> "$GITHUB_OUTPUT"
+      - name: Verify the ISO
+        env:
+          ISO: ${{ steps.build.outputs.iso }}
+        run: |
+          set -euo pipefail
+          checkisomd5 "${ISO}"
+          # The kickstart and the repository payload are on the image, and
+          # both boot menus point the installer at the kickstart.
+          for path in /perihelion.ks /perihelion/build/common-post.sh /perihelion/packages/base.txt; do
+            rm -f /tmp/check
+            xorriso -osirrox on -indev "${ISO}" -extract "${path}" /tmp/check >/dev/null 2>&1
+            test -s /tmp/check || { echo "missing on the ISO: ${path}" >&2; exit 1; }
+          done
+          for cfg in /EFI/BOOT/grub.cfg /boot/grub2/grub.cfg; do
+            xorriso -osirrox on -indev "${ISO}" -extract "${cfg}" /tmp/grub.cfg >/dev/null 2>&1
+            grep -q 'inst.ks=.*:/perihelion.ks' /tmp/grub.cfg
+          done
+          size=$(stat -c %s "${ISO}")
+          (( size < 2147483648 )) || { echo "ISO is over GitHub's 2 GiB release file limit" >&2; exit 1; }
+          echo "ISO OK: $(basename "${ISO}"), $((size / 1048576)) MiB"
+      - name: Attach to the "testing" release
+        if: needs.plan.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          ISO: ${{ steps.build.outputs.iso }}
+        run: gh release upload "${RELEASE_TAG}" "${ISO}" "${ISO}.sha256" --clobber
