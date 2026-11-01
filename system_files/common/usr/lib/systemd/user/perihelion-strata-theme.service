@@ -1,0 +1,6 @@
+[Unit]
+Description=Match Strata's colors to the GTK theme
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/perihelion-strata-theme

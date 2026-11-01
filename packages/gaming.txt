@@ -1,0 +1,14 @@
+# Gaming head start, in every flavor.
+# Steam, gamescope and ProtonPlus come from Terra; the rest from Fedora.
+# Wine is Kron4ek's build (build/install-wine.sh), not a package.
+steam
+gamescope
+mangohud
+mangohud.i686
+gamemode
+gamemode.i686
+protonplus
+winetricks
+vulkan-loader.i686
+mesa-dri-drivers.i686
+mesa-vulkan-drivers.i686

@@ -1,0 +1,198 @@
+#!/usr/bin/python3 -I
+"""Give Strata the colors of the desktop's GTK theme.
+
+Strata ignores GTK themes by design and draws its own palette (Tokyo Night by
+default). This reads the GTK theme Event Horizon applied (gsettings, then
+~/.config/gtk-*/settings.ini), takes its @define-color values the way Event
+Horizon does, and writes them as a Strata theme file that replaces the
+default "tokyo-night" entry. Strata watches its themes folder, so open
+windows recolor on their own. A theme picked in Strata's settings is left
+alone, and nothing is written when the GTK theme defines no usable colors.
+
+Runs at login (event-horizon-session) and when GTK settings change
+(perihelion-strata-theme.path).
+"""
+
+import os
+import re
+import subprocess
+import sys
+import tempfile
+
+HOME = os.path.expanduser("~")
+CONFIG = os.environ.get("XDG_CONFIG_HOME") or os.path.join(HOME, ".config")
+DATA = os.environ.get("XDG_DATA_HOME") or os.path.join(HOME, ".local", "share")
+OUT_DIR = os.path.join(CONFIG, "strata", "themes")
+# Strata's default theme ID. A custom file with this name replaces the
+# bundled entry, so the default follows the desktop without editing settings.
+OUT = os.path.join(OUT_DIR, "tokyo-night.toml")
+MARKER = "# perihelion: generated from the GTK theme"
+
+DEFINE = re.compile(r"^\s*@define-color\s+([A-Za-z0-9_-]+)\s+(#[0-9A-Fa-f]{3,8})\s*;")
+
+
+def gsetting(key):
+    try:
+        out = subprocess.run(
+            ["gsettings", "get", "org.gnome.desktop.interface", key],
+            capture_output=True, text=True, timeout=5, check=False,
+        ).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    return out.strip("'") if out.startswith("'") else ""
+
+
+def ini_value(path, key):
+    try:
+        with open(path, encoding="utf-8", errors="replace") as f:
+            for line in f:
+                k, sep, v = line.partition("=")
+                if sep and k.strip() == key:
+                    return v.strip()
+    except OSError:
+        pass
+    return ""
+
+
+def theme_name():
+    name = gsetting("gtk-theme")
+    if name:
+        return name
+    for ver in ("gtk-4.0", "gtk-3.0"):
+        name = ini_value(os.path.join(CONFIG, ver, "settings.ini"), "gtk-theme-name")
+        if name:
+            return name
+    return ""
+
+
+def prefers_dark():
+    if gsetting("color-scheme") == "prefer-dark":
+        return True
+    for ver in ("gtk-4.0", "gtk-3.0"):
+        v = ini_value(os.path.join(CONFIG, ver, "settings.ini"),
+                      "gtk-application-prefer-dark-theme")
+        if v.lower() in ("1", "true"):
+            return True
+    return False
+
+
+def theme_dir(name):
+    for base in (os.path.join(HOME, ".themes"), os.path.join(DATA, "themes"),
+                 "/usr/local/share/themes", "/usr/share/themes"):
+        d = os.path.join(base, name)
+        if any(os.path.isfile(os.path.join(d, v, "gtk.css")) for v in ("gtk-3.0", "gtk-4.0")):
+            return d
+    return ""
+
+
+def hex_rgb(value):
+    h = value[1:]
+    if len(h) in (3, 4):
+        h = "".join(c * 2 for c in h[:3])
+    elif len(h) in (6, 8):
+        h = h[:6]
+    else:
+        return None
+    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def read_colors(paths):
+    colors = {}
+    for path in paths:
+        try:
+            with open(path, encoding="utf-8", errors="replace") as f:
+                for line in f:
+                    m = DEFINE.match(line)
+                    if m:
+                        rgb = hex_rgb(m.group(2))
+                        if rgb:
+                            colors[m.group(1).lower()] = rgb
+        except OSError:
+            continue
+    return colors
+
+
+def pick(colors, *names):
+    for n in names:
+        if n in colors:
+            return colors[n]
+    return None
+
+
+def mix(a, b, t):
+    return tuple(round(x + (y - x) * t) for x, y in zip(a, b))
+
+
+def css(rgb):
+    return "#{:02x}{:02x}{:02x}".format(*rgb)
+
+
+def main():
+    if os.path.isfile(OUT):
+        with open(OUT, encoding="utf-8", errors="replace") as f:
+            if MARKER not in f.read():
+                return 0  # the user's own tokyo-night.toml: leave it
+
+    name = theme_name()
+    tdir = theme_dir(name) if name else ""
+    paths = []
+    if tdir:
+        for ver in ("gtk-3.0", "gtk-4.0"):
+            paths.append(os.path.join(tdir, ver, "gtk.css"))
+        if prefers_dark():
+            for ver in ("gtk-3.0", "gtk-4.0"):
+                paths.append(os.path.join(tdir, ver, "gtk-dark.css"))
+    for ver in ("gtk-3.0", "gtk-4.0"):
+        paths.append(os.path.join(CONFIG, ver, "gtk.css"))
+    c = read_colors(paths)
+
+    bg = pick(c, "window_bg_color", "theme_bg_color", "bg_color")
+    fg = pick(c, "window_fg_color", "theme_fg_color", "fg_color")
+    accent = pick(c, "accent_bg_color", "accent_color", "theme_selected_bg_color",
+                  "selected_bg_color")
+    if not (bg and fg and accent):
+        # Not enough to build a palette; keep Strata's own (and drop a stale one).
+        if os.path.isfile(OUT):
+            os.remove(OUT)
+        return 0
+
+    surface = pick(c, "view_bg_color", "theme_base_color", "base_color",
+                   "card_bg_color") or mix(bg, fg, 0.05)
+    if surface == bg:
+        surface = mix(bg, fg, 0.05)
+    danger = pick(c, "destructive_bg_color", "error_bg_color", "error_color") or (224, 27, 36)
+    border = pick(c, "borders", "unfocused_borders") or mix(bg, fg, 0.2)
+    dim = pick(c, "insensitive_fg_color", "unfocused_fg_color") or mix(fg, bg, 0.4)
+
+    label = re.sub(r'["\\\x00-\x1f]', "", name)
+    body = "\n".join([
+        MARKER,
+        "# Follows the GTK theme. Pick another theme in Strata's settings to stop.",
+        f'name = "Desktop ({label})"',
+        f'background = "{css(bg)}"',
+        f'surface = "{css(surface)}"',
+        f'text = "{css(fg)}"',
+        f'accent = "{css(accent)}"',
+        f'danger = "{css(danger)}"',
+        f'muted = "{css(mix(bg, fg, 0.12))}"',
+        f'highlight = "{css(mix(bg, accent, 0.3))}"',
+        f'border = "{css(border)}"',
+        f'dim_text = "{css(dim)}"',
+        "",
+    ])
+    try:
+        with open(OUT, encoding="utf-8") as f:
+            if f.read() == body:
+                return 0
+    except OSError:
+        pass
+    os.makedirs(OUT_DIR, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=OUT_DIR, prefix=".tokyo-night.", suffix=".tmp")
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        f.write(body)
+    os.replace(tmp, OUT)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

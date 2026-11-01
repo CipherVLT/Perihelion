@@ -1,0 +1,33 @@
+#!/usr/bin/bash
+# Run Strata from ~/.local/bin so its built-in updater can replace it.
+#
+# The image's copy (/usr/libexec/strata/strata) is read-only, like all of
+# /usr. On first run it's copied to ~/.local/bin/strata, which Strata's
+# "Update" button can then update in place. A newer copy shipped by an image
+# update replaces an older one in your home; a newer one Strata installed
+# itself is kept.
+set -u
+system=/usr/libexec/strata/strata
+user="${HOME:-}/.local/bin/strata"
+
+version_of() {
+    "$1" --version 2>/dev/null | awk 'NR==1 {print $2}'
+}
+
+if [[ -n "${HOME:-}" && -w "${HOME}" ]]; then
+    if [[ ! -x "${user}" ]]; then
+        install -Dm755 "${system}" "${user}" 2>/dev/null || true
+    else
+        have=$(version_of "${user}")
+        ship=$(version_of "${system}")
+        if [[ -n "${ship}" && "${have}" != "${ship}" ]] \
+            && [[ -z "${have}" || "$(printf '%s\n%s\n' "${have}" "${ship}" | sort -V | tail -n1)" == "${ship}" ]]; then
+            tmp="${user}.new.$$"
+            install -m755 "${system}" "${tmp}" 2>/dev/null && mv -f "${tmp}" "${user}"
+        fi
+    fi
+    if [[ -x "${user}" ]]; then
+        exec "${user}" "$@"
+    fi
+fi
+exec "${system}" "$@"

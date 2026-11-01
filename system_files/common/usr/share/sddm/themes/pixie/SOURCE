@@ -1,0 +1,9 @@
+Pixie SDDM by xCaptaiN09, MIT License (see LICENSE).
+https://github.com/xCaptaiN09/pixie-sddm
+Vendored from commit 1e1a863761f742e8d509d569382b17c112e29fdc.
+
+Changes for Perihelion (via horizon-forge):
+- theme.conf: Perihelion wallpaper as the background, 12-hour clock.
+- assets/avatar.jpg (the author's picture) and assets/background.jpg are not
+  included. Users without ~/.face.icon get the first letter of their name.
+- Not included: install.sh, flake.*, screenshots.

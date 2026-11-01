@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Compatibility name. Event Horizon's Zig rewrite is started as `horizon`;
+# home folders set up before the switch still have `exec-once = EventHorizon`
+# (and the screenshot key binding) in ~/.config/hypr/hyprland.conf.
+exec /usr/bin/horizon "$@"

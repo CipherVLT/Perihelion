@@ -1,0 +1,5 @@
+# Hyprland flavor. Hyprland comes from the nett00n/hyprland COPR (0.56+,
+# needed for the Lua config); Fedora's own build may lag behind.
+hyprland
+hyprland-guiutils
+xdg-desktop-portal-hyprland

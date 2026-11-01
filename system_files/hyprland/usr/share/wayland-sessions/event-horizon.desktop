@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Event Horizon
+Comment=Hyprland session with the Event Horizon shell
+Exec=/usr/bin/event-horizon-session
+TryExec=/usr/bin/horizon
+Type=Application
+DesktopNames=Hyprland

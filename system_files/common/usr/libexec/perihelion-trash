@@ -1,0 +1,22 @@
+#!/usr/bin/bash
+# The Event Horizon dock's Trash button (patched in build-event-horizon.sh).
+#   open   left click: show the Trash in Strata
+#   empty  right click: ask, then empty the Trash
+case "${1:-open}" in
+    open)
+        if command -v strata >/dev/null; then
+            exec strata trash:///
+        fi
+        exec xdg-open trash:///
+        ;;
+    empty)
+        if [[ -z "$(ls -A "${XDG_DATA_HOME:-${HOME}/.local/share}/Trash/files" 2>/dev/null)" ]]; then
+            zenity --info --title="Trash" --text="The Trash is already empty." --timeout=3
+            exit 0
+        fi
+        zenity --question --title="Empty Trash" --icon=user-trash-full \
+            --text="Permanently delete everything in the Trash?" \
+            --ok-label="Empty Trash" --cancel-label="Cancel" || exit 0
+        gio trash --empty
+        ;;
+esac

@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Take a screenshot and open it in Satty to annotate, copy or save.
+#   horizon-screenshot          drag a box (Super+Shift+S, Super+Print)
+#   horizon-screenshot screen   the screen under the pointer (Print)
+#   horizon-screenshot full     every screen (Alt+Print)
+# Save writes ~/Pictures/Screenshots/Screenshot_<date>_<time>.png;
+# Save as asks where. Copy puts it on the clipboard. Esc cancels.
+set -euo pipefail
+
+# One editor at a time: Hyprland and Event Horizon can both react to the same
+# key, and a second press while picking should not stack another capture.
+exec 9>"${XDG_RUNTIME_DIR:-/tmp}/horizon-screenshot.lock"
+flock -n 9 || exit 0
+
+pictures=$(xdg-user-dir PICTURES 2>/dev/null || true)
+[[ -n "${pictures}" && "${pictures}" != "${HOME}" ]] || pictures="${HOME}/Pictures"
+dir="${pictures}/Screenshots"
+mkdir -p "${dir}"
+
+case "${1:-region}" in
+    full)
+        shot() { grim -t ppm -; }
+        ;;
+    screen)
+        # The monitor Hyprland has focused (where the pointer is).
+        out=$(hyprctl monitors -j 2>/dev/null | python3 -c 'import json,sys; print(next((m["name"] for m in json.load(sys.stdin) if m.get("focused")), ""))' 2>/dev/null || true)
+        if [[ -n "${out}" ]]; then
+            shot() { grim -o "${out}" -t ppm -; }
+        else
+            shot() { grim -t ppm -; }
+        fi
+        ;;
+    *)
+        # Dim the screen, white selection box. Esc or right-click cancels.
+        geom=$(slurp -d -b '#00000088' -c '#ffffffff' -s '#00000000' -w 2) || exit 0
+        shot() { grim -g "${geom}" -t ppm -; }
+        ;;
+esac
+
+shot | satty \
+    --filename - \
+    --fullscreen \
+    --initial-tool pointer \
+    --copy-command wl-copy \
+    --early-exit all \
+    --output-filename "${dir}/Screenshot_%Y-%m-%d_%H-%M-%S.png"

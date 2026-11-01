@@ -1,0 +1,5 @@
+# sha256 of every earlier default hyprland.lua this image has shipped.
+# A home folder whose hyprland.lua still matches one of these was never
+# edited, so event-horizon-session swaps in the current default at login.
+# When changing skel/hypr/hyprland.lua, add the old file's sha256 here.
+70c7d11ff2bdebd1c90b670a015ae9823e989638ef2645e1ef0baee59b36ce32

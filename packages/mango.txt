@@ -1,0 +1,6 @@
+# Mango flavor: the compositor and what its default binds need, nothing more.
+# mangowm comes from Terra.
+mangowm
+xdg-desktop-portal-wlr
+# Password prompts (Steam, pkexec); started from Mango's config
+mate-polkit

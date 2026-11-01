@@ -1,0 +1,22 @@
+# Event Horizon runtime (Hyprland and Niri flavors). From Event Horizon's
+# Fedora notes and horizon-forge's tested list. Build-only packages are added
+# and removed again by build/event-horizon.sh.
+cairo
+pango
+freetype
+fontconfig
+libxkbcommon
+librsvg2
+libwebp
+libpng
+libjpeg-turbo
+glib2
+sdbus-cpp
+pam
+openssl
+lz4
+libdrm
+jemalloc
+lcms2
+libarchive
+python3

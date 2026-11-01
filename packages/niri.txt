@@ -1,0 +1,6 @@
+# Niri flavor. niri is in Fedora's own repositories.
+niri
+# X11 apps (Steam, most games) under niri
+xwayland-satellite
+# Screen sharing / screencasting portal niri uses
+xdg-desktop-portal-gnome
