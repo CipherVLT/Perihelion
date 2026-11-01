@@ -1,45 +1,39 @@
-# Perihelion base: every flavor gets these. One package or @group per line.
-# Anything missing fails the install, so a typo is caught on the first build.
+# Perihelion base: every flavor gets these, and nothing else is added
+# behind your back: %packages runs with --exclude-weakdeps, so packages
+# Fedora only "recommends" are not installed. If something seems missing
+# after an install, it was probably a weak dependency: add it here.
+#
+# One package or @group per line. Anything missing fails the install.
 # Run scripts/check-packages.sh on a Fedora machine to check a list early.
 
 # --- System ------------------------------------------------------------------
+# Fedora's smallest bootable system: kernel, systemd, dnf, sudo, basic tools
 @core
 # CPU microcode and firmware for Wi-Fi, Bluetooth and GPUs (laptops need it)
 @hardware-support
+# `dnf copr` (the Hyprland flavor keeps its COPR enabled with it)
 dnf5-plugins
-sudo
-curl
-git
-tar
-unzip
-bash-completion
-fastfetch
-btop
 
 # --- Network, Bluetooth, firewall --------------------------------------------
 NetworkManager
 NetworkManager-wifi
 NetworkManager-bluetooth
+# Wi-Fi from a terminal (nmtui); Event Horizon's network card opens it too
 NetworkManager-tui
 firewalld
 bluez
-bluez-tools
 
 # --- Audio -------------------------------------------------------------------
 pipewire
 pipewire-alsa
 pipewire-pulseaudio
-pipewire-jack-audio-connection-kit
-pipewire-utils
 wireplumber
-pulseaudio-utils
-pavucontrol
 
 # --- Graphics ----------------------------------------------------------------
 mesa-dri-drivers
 mesa-vulkan-drivers
 vulkan-loader
-vulkan-tools
+# X11 apps (Steam, most games)
 xorg-x11-server-Xwayland
 
 # --- Login screen: SDDM on a Wayland greeter + Pixie theme ---------------------
@@ -56,46 +50,34 @@ xdg-utils
 polkit
 gnome-keyring
 gnome-keyring-pam
+# Battery and power profiles (laptops)
 power-profiles-daemon
 upower
+# Laptop screen brightness keys
 brightnessctl
-playerctl
-wl-clipboard
-grim
-slurp
-fuzzel
-zenity
-libnotify
 desktop-file-utils
-flatpak
 
 # --- Apps ----------------------------------------------------------------------
 kitty
-kitty-shell-integration
 firefox
-# Strata (the file manager) is installed from its release by
-# build/install-strata.sh; these are what it links against and previews with.
+fuzzel
+# Strata (the file manager) comes from its release via build/install-strata.sh;
+# these are the libraries it links against. gvfs provides the Trash (trash:///).
 gtk4
 gtksourceview5
 poppler-glib
 graphene
 gstreamer1
 gstreamer1-plugins-base
-gstreamer1-plugins-good
 gvfs
-gvfs-mtp
-gvfs-smb
 bubblewrap
-ffmpegthumbnailer
 
-# --- Themes and fonts ------------------------------------------------------------
+# --- Fonts -----------------------------------------------------------------------
 adwaita-icon-theme
 hicolor-icon-theme
-adw-gtk3-theme
-adwaita-sans-fonts
 google-noto-sans-fonts
 google-noto-sans-mono-fonts
 google-noto-color-emoji-fonts
-# Terra
+# Terra: repo file + signing keys for the installed system, and icon glyphs
 terra-release
 nerdfontssymbolsonly-nerd-fonts

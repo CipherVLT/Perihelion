@@ -29,7 +29,9 @@ mkdir -p "$(dirname "${output}")"
     echo
     cat "${flavor_ks}"
     echo
-    echo "%packages"
+    # --exclude-weakdeps: install only what the lists name and what those
+    # packages strictly require, never Fedora's "recommended" extras.
+    echo "%packages --exclude-weakdeps"
     for list in ${lists}; do
         file="${repo_dir}/packages/${list}.txt"
         [[ -f "${file}" ]] || { echo "missing package list: ${file}" >&2; exit 1; }
@@ -44,7 +46,7 @@ mkdir -p "$(dirname "${output}")"
 
 # The same package may be listed twice across lists; that is harmless for
 # Anaconda but usually a mistake, so say so.
-dupes=$(sed -n '/^%packages$/,/^%end$/p' "${output}" | grep -v -e '^%' -e '^#' | sort | uniq -d)
+dupes=$(sed -n '/^%packages/,/^%end$/p' "${output}" | grep -v -e '^%' -e '^#' | sort | uniq -d)
 [[ -z "${dupes}" ]] || echo "note: listed more than once: ${dupes//$'\n'/ }" >&2
 
 if command -v ksvalidator >/dev/null 2>&1; then

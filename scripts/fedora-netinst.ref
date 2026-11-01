@@ -1,0 +1,14 @@
+# Fedora Everything netinstall ISOs scripts/build-iso.sh accepts as input.
+# The input ISO's SHA256 must match a line here, or the build stops, so every
+# Perihelion ISO is built from a known, unmodified Fedora installer.
+#
+# Format: <name> <sha256> <url>
+# The last line is the default for --download.
+#
+# To add a release: download it from fedoraproject.org, check it against
+# Fedora's GPG-signed CHECKSUM file (https://fedoraproject.org/security),
+# then add a line. Replace the Beta line once Fedora 45 is final.
+#
+# 45-beta-1.3: SHA256 as published on https://fedoraproject.org/misc/beta/
+# (2026-11-01). Not yet cross-checked against the signed CHECKSUM file.
+45-beta-1.3 5d5a7592e6759c37367ac3ef93212307f484c6ca8f5fb6a4c368efa59ecdaf00 https://download.fedoraproject.org/pub/fedora/linux/releases/test/45_Beta/Everything/x86_64/iso/Fedora-Everything-netinst-x86_64-45_Beta-1.3.iso

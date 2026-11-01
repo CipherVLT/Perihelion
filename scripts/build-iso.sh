@@ -9,23 +9,30 @@
 # Adapted from dwm-titus scripts/build-dwm-fedora-installer-iso.sh
 # (Chris Titus Tech, MIT).
 #
+# The input must be a Fedora Everything netinstall ISO whose SHA256 is
+# listed in scripts/fedora-netinst.ref; anything else is refused.
+#
 # Usage:
-#   scripts/build-iso.sh --flavor mango \
-#       --input Fedora-Everything-netinst-x86_64-45.iso \
+#   scripts/build-iso.sh --flavor mango --download --output out/perihelion-mango.iso
+#   scripts/build-iso.sh --flavor mango --input Fedora-Everything-netinst-x86_64-45.iso \
 #       --output out/perihelion-mango.iso
 #
-# Needs (Fedora): xorriso rsync isomd5sum  (pykickstart for ksvalidator)
+#   --download   fetch the pinned ISO (last line of fedora-netinst.ref) into
+#                out/ if it isn't there yet, verify it, and use it as input
+#
+# Needs (Fedora): xorriso rsync isomd5sum curl  (pykickstart for ksvalidator)
 set -euo pipefail
 
 err() { printf 'build-iso: %s\n' "$*" >&2; }
-usage() { sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; }
+usage() { sed -n '2,23p' "$0" | sed 's/^# \{0,1\}//'; }
 
-flavor='' input_iso='' output_iso=''
+flavor='' input_iso='' output_iso='' download=0
 while (($# > 0)); do
     case "$1" in
         --flavor) flavor=${2:-}; shift 2 ;;
         --input) input_iso=${2:-}; shift 2 ;;
         --output) output_iso=${2:-}; shift 2 ;;
+        --download) download=1; shift ;;
         -h | --help) usage; exit 0 ;;
         *) err "unknown argument: $1"; usage >&2; exit 1 ;;
     esac
@@ -34,13 +41,39 @@ case "${flavor}" in
     hyprland | niri | mango) ;;
     *) err "--flavor must be hyprland, niri or mango"; exit 1 ;;
 esac
-[[ -n "${input_iso}" && -n "${output_iso}" ]] || { usage >&2; exit 1; }
-[[ -f "${input_iso}" ]] || { err "input ISO not found: ${input_iso}"; exit 1; }
-for command in xorriso rsync implantisomd5 checkisomd5; do
+[[ -n "${output_iso}" ]] || { usage >&2; exit 1; }
+(( download )) || [[ -n "${input_iso}" ]] || { err "give --input ISO or --download"; exit 1; }
+for command in xorriso rsync implantisomd5 checkisomd5 sha256sum; do
     command -v "${command}" >/dev/null 2>&1 || { err "missing required command: ${command}"; exit 1; }
 done
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+pins="${repo_dir}/scripts/fedora-netinst.ref"
+pin_lines=$(grep -v -e '^#' -e '^[[:space:]]*$' "${pins}")
+[[ -n "${pin_lines}" ]] || { err "no ISOs pinned in ${pins}"; exit 1; }
+
+if (( download )); then
+    read -r pin_name _ pin_url <<<"$(tail -n 1 <<<"${pin_lines}")"
+    input_iso="${repo_dir}/out/$(basename "${pin_url}")"
+    if [[ ! -f "${input_iso}" ]]; then
+        command -v curl >/dev/null || { err "missing required command: curl"; exit 1; }
+        mkdir -p "${repo_dir}/out"
+        printf 'Downloading Fedora %s netinstall...\n' "${pin_name}"
+        curl --fail --location --retry 3 -C - -o "${input_iso}.part" "${pin_url}"
+        mv -f "${input_iso}.part" "${input_iso}"
+    fi
+fi
+[[ -f "${input_iso}" ]] || { err "input ISO not found: ${input_iso}"; exit 1; }
+
+# Only a pinned, unmodified Fedora installer is accepted.
+printf 'Checking %s...\n' "$(basename "${input_iso}")"
+input_sha=$(sha256sum "${input_iso}" | cut -d' ' -f1)
+fedora_release=$(awk -v sha="${input_sha}" '$2 == sha { print $1; exit }' <<<"${pin_lines}")
+if [[ -z "${fedora_release}" ]]; then
+    err "${input_iso} (sha256 ${input_sha}) is not a pinned Fedora netinstall ISO; see ${pins}"
+    exit 1
+fi
+printf 'Input is Fedora Everything netinstall %s\n' "${fedora_release}"
 work_dir="$(mktemp -d)"
 tmp_output=
 trap 'rm -rf "${work_dir}"; [[ -z ${tmp_output} ]] || rm -f "${tmp_output}"' EXIT
@@ -96,4 +129,4 @@ checkisomd5 "${tmp_output}"
 
 mv -f "${tmp_output}" "${output_iso}"
 tmp_output=
-printf 'Created %s (%s)\n' "${output_iso}" "${flavor}"
+printf 'Created %s (%s, from Fedora %s)\n' "${output_iso}" "${flavor}" "${fedora_release}"

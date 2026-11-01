@@ -20,3 +20,11 @@ jemalloc
 lcms2
 libarchive
 python3
+# Event Horizon's audio center reads devices through pactl
+pulseaudio-utils
+# Dialogs (Trash "empty", wallpaper "Open Picker...")
+zenity
+# Screenshots (horizon-screenshot: slurp picks, grim captures, Satty edits)
+grim
+slurp
+wl-clipboard

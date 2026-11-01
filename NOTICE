@@ -5,7 +5,7 @@ This project includes or adapts work from the following projects.
 
 horizon-forge (https://github.com/CipherVLT/horizon-forge), Apache-2.0
   build/build-event-horizon.sh, build/install-strata.sh, build/install-satty.sh,
-  build/install-wine.sh, build/refs/*, system_files/common/usr/bin/strata,
+  build/refs/*, system_files/common/usr/bin/strata,
   system_files/common/usr/libexec/perihelion-*, system_files/hyprland/*,
   system_files/event-horizon/*: ported and renamed from horizon-forge.
 
@@ -62,7 +62,6 @@ Downloaded at install time, not redistributed in this repository:
   Event Horizon (https://github.com/Event-Horizon-desktop-environment/Event-Horizon), MIT
   Strata (https://github.com/lgse/strata), MIT
   Satty (https://github.com/gabm/Satty), MPL-2.0
-  Wine builds by Kron4ek (https://github.com/Kron4ek/Wine-Builds), LGPL-2.1+
 
 Wallpapers in branding/wallpapers: source and license still to be recorded
 here before the repository or any ISO is published.

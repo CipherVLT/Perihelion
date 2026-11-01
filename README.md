@@ -10,8 +10,14 @@ A minimal Fedora for gamers and creators, in three tiling flavors:
 
 Every flavor starts from Fedora's `@core` and adds only what a desktop needs
 to work: network, Bluetooth, firewall, PipeWire audio, Mesa/Vulkan, a login
-screen, and a short list of apps. No office suite, no GNOME or KDE app
-collection.
+screen, kitty, Firefox, Strata, Steam and gamescope. No office suite, no
+GNOME or KDE app collection.
+
+**Only listed packages.** The kickstart installs with `--exclude-weakdeps`,
+so nothing Fedora merely "recommends" comes along, and the installed system
+keeps `install_weak_deps=False` in `/etc/dnf/dnf.conf` so later installs stay
+lean too. If something seems missing, it was a weak dependency: add it to a
+list in `packages/` (or flip that dnf setting).
 
 **Status: pre-alpha, targeting Fedora 45.** Nothing here has been installed
 on real hardware yet. Mango is the first flavor to test.
@@ -24,8 +30,8 @@ on real hardware yet. Mango is the first flavor to test.
   folders opened from any app, "Show in folder" / "Open containing folder" in Firefox and
   Steam (`org.freedesktop.FileManager1`), Open/Save dialogs (the XDG FileChooser portal),
   and the Trash (`trash:///`, via gvfs)
-- **Gaming:** Steam, gamescope, MangoHud, GameMode, ProtonPlus, Wine (Kron4ek, NTSync), winetricks
-- **Repos:** Fedora, Terra, Flathub. No RPM Fusion
+- **Gaming:** Steam and gamescope (plus the 32-bit Mesa/Vulkan drivers Steam needs)
+- **Repos:** Fedora and Terra. No RPM Fusion, no Flathub (add it yourself if you want Flatpaks)
 - Fedora's defaults kept: SELinux enforcing, firewalld on
 
 NVIDIA ISOs are planned for later and are not built yet.
@@ -56,11 +62,15 @@ sudo dnf install xorriso rsync isomd5sum pykickstart
 podman run --rm -v "$PWD":/src:Z -w /src registry.fedoraproject.org/fedora:45 \
     scripts/check-packages.sh all
 
-# 2. Build from the Fedora 45 Everything netinstall ISO
-scripts/build-iso.sh --flavor mango \
-    --input ~/Downloads/Fedora-Everything-netinst-x86_64-45.iso \
-    --output out/perihelion-mango.iso
+# 2. Build: downloads the pinned Fedora 45 Everything netinstall ISO,
+#    checks its SHA256, then builds
+scripts/build-iso.sh --flavor mango --download --output out/perihelion-mango.iso
 ```
+
+Like dwm-titus, the build only accepts a Fedora ISO whose SHA256 is pinned in
+`scripts/fedora-netinst.ref` (currently Fedora 45 Beta 1.3; swap in the final
+release's line when it ships). `--input FILE` uses an ISO you already have,
+as long as it matches a pinned hash.
 
 Boot the ISO, pick a disk and create your user in the installer, then
 install. Packages download during installation, so the machine needs a

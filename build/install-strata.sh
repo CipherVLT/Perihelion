@@ -28,7 +28,8 @@ package="strata-${version}-x86_64-unknown-linux-gnu"
 url="https://github.com/lgse/strata/releases/download/v${version}/${package}.tar.gz"
 
 # Runtime libraries the binary links against (gtk4, gtksourceview5,
-# poppler-glib, gstreamer) and what its previews use.
+# poppler-glib, gstreamer). Already in packages/base.txt; listed again so
+# this script also works on its own. Thumbnailers are left out on purpose.
 dnf5 install -y \
     gtk4 \
     gtksourceview5 \
@@ -36,10 +37,8 @@ dnf5 install -y \
     graphene \
     gstreamer1 \
     gstreamer1-plugins-base \
-    gstreamer1-plugins-good \
     gvfs \
     bubblewrap \
-    ffmpegthumbnailer \
     xdg-utils \
     desktop-file-utils
 

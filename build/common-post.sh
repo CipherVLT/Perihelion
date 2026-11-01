@@ -5,12 +5,25 @@ set -euo pipefail
 # shellcheck source=build/lib.sh
 source "${PERIHELION_SRC}/build/lib.sh"
 
+# Keep the system as lean after install as the ISO made it: dnf (here in
+# %post and later for the user) does not pull in "recommended" packages.
+# Change install_weak_deps to True in /etc/dnf/dnf.conf to undo.
+install -d /etc/dnf
+if grep -q '^install_weak_deps=' /etc/dnf/dnf.conf 2>/dev/null; then
+    sed -i 's/^install_weak_deps=.*/install_weak_deps=False/' /etc/dnf/dnf.conf
+elif grep -q '^\[main\]' /etc/dnf/dnf.conf 2>/dev/null; then
+    sed -i '/^\[main\]/a install_weak_deps=False' /etc/dnf/dnf.conf
+else
+    printf '[main]\ninstall_weak_deps=False\n' >> /etc/dnf/dnf.conf
+fi
+grep -qx 'install_weak_deps=False' /etc/dnf/dnf.conf
+
 log "common: system files"
 apply_system_files common
 chmod 0755 /usr/bin/strata /usr/libexec/perihelion-trash /usr/libexec/perihelion-strata-theme
 
 # --- Wallpapers -----------------------------------------------------------------
-install -d /usr/share/backgrounds/perihelion
+install -d /usr/share/backgrounds/perihelion /usr/share/perihelion
 install -m644 "${PERIHELION_SRC}/branding/wallpapers/perihelion-horizon.png" \
     /usr/share/backgrounds/perihelion/default.png
 install -m644 "${PERIHELION_SRC}/branding/wallpapers/perihelion-galaxies.png" \
@@ -86,20 +99,10 @@ EOF
 mapfile -t fm1 < <(grep -l -x 'Name=org.freedesktop.FileManager1' /usr/share/dbus-1/services/*.service)
 (( ${#fm1[@]} == 1 )) || die "FileManager1 is provided by: ${fm1[*]}"
 
-# --- Gaming head start ------------------------------------------------------------
-log "common: gaming"
-# Wine 11+ uses NTSync automatically when /dev/ntsync exists.
-echo ntsync > /etc/modules-load.d/ntsync.conf
-install -d /usr/share/perihelion
-bash "${PERIHELION_SRC}/build/install-wine.sh"
-for tool in steam gamescope mangohud gamemoderun wine winetricks; do
+# --- Gaming ------------------------------------------------------------------------
+for tool in steam gamescope; do
     command -v "${tool}" >/dev/null || die "missing ${tool}"
 done
-
-# --- Flathub ------------------------------------------------------------------------
-# System-wide remote so users can add apps without hunting for the URL.
-retry flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo \
-    || log "WARNING: could not add Flathub (no network?); run the same command later"
 
 # --- Identity -------------------------------------------------------------------------
 cat > /usr/share/perihelion/release <<EOF
