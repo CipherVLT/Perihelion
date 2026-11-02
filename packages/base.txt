@@ -86,6 +86,10 @@ upower
 brightnessctl
 desktop-file-utils
 
+# Flatpak, with the Flathub remote added for you (build/common-post.sh and
+# perihelion-flathub.service), so `flatpak install flathub <app>` just works
+flatpak
+
 # --- Apps ----------------------------------------------------------------------
 kitty
 firefox

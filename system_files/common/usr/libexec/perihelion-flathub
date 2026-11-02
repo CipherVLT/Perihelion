@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Make sure the system-wide Flathub remote exists, so `flatpak install
+# flathub <app>` and app stores work out of the box. Runs during installation
+# and again at boot (perihelion-flathub.service) until it has succeeded once.
+set -euo pipefail
+marker=/var/lib/perihelion/flathub-added
+url=https://dl.flathub.org/repo/flathub.flatpakrepo
+
+if flatpak remotes --system --columns=name 2>/dev/null | grep -qx flathub; then
+    install -d /var/lib/perihelion && touch "${marker}"
+    echo "Flathub is already set up"
+    exit 0
+fi
+for try in 1 2 3; do
+    if flatpak remote-add --system --if-not-exists flathub "${url}"; then
+        install -d /var/lib/perihelion && touch "${marker}"
+        echo "Flathub added"
+        exit 0
+    fi
+    sleep $((try * 10))
+done
+echo "Could not reach Flathub; will try again at next boot" >&2
+exit 1

@@ -118,6 +118,12 @@ EOF
 mapfile -t fm1 < <(grep -l -x 'Name=org.freedesktop.FileManager1' /usr/share/dbus-1/services/*.service)
 (( ${#fm1[@]} == 1 )) || die "FileManager1 is provided by: ${fm1[*]}"
 
+# --- Flatpak + Flathub ---------------------------------------------------------------
+chmod 0755 /usr/libexec/perihelion-flathub
+# Add it now; if the installer has no network, the service adds it at boot.
+/usr/libexec/perihelion-flathub || log "WARNING: Flathub not reachable now; perihelion-flathub.service adds it at first boot"
+systemctl enable perihelion-flathub.service
+
 # --- fastfetch (Veyl OS layout) --------------------------------------------------
 chmod 0644 /etc/profile.d/perihelion-fastfetch.sh
 seed_user_file /usr/share/perihelion/fastfetch/config.jsonc .config/fastfetch/config.jsonc

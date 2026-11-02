@@ -105,6 +105,11 @@ check rpm -q mesa-dri-drivers.x86_64 mesa-vulkan-drivers.x86_64 vulkan-loader.x8
 check rpm -q mesa-dri-drivers.i686 mesa-vulkan-drivers.i686 vulkan-loader.i686
 check rpm -q dconf cracklib-dicts nano
 check rpm -q fastfetch lm_sensors nethogs
+check rpm -q flatpak
+flathub_configured() { flatpak remotes --system --columns=name | grep -qx flathub; }
+check flathub_configured
+check test -f /var/lib/perihelion/flathub-added
+check test -L /etc/systemd/system/multi-user.target.wants/perihelion-flathub.service
 check test -f /home/tester/.config/fastfetch/config.jsonc
 fastfetch_config_ok() { fastfetch --config /home/tester/.config/fastfetch/config.jsonc --pipe >/dev/null 2>/tmp/ff.err && ! grep -qi error /tmp/ff.err; }
 check fastfetch_config_ok

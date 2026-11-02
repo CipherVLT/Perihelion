@@ -1,0 +1,14 @@
+[Unit]
+Description=Add the Flathub Flatpak remote (Perihelion)
+Documentation=https://flathub.org/setup
+# Only until it has worked once (also when the installer already added it).
+ConditionPathExists=!/var/lib/perihelion/flathub-added
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/perihelion-flathub
+
+[Install]
+WantedBy=multi-user.target
