@@ -35,7 +35,8 @@ done < <(sed -n -E 's/^(bind[a-z]*|mousebind|axisbind|gesturebind)=[^,]*,[^,]*,s
 seed_user_file "${cfg}" .config/mango/config.conf
 # simpbar draws text with one TTF file; point it at the installed
 # JetBrainsMono Nerd Font (simpbar's own default is Arch's path).
-font=$(fc-list --format '%{file}\n' 'JetBrainsMono Nerd Font:style=Regular' | grep -E '\.(ttf|otf)$' | sort | head -n1)
+# Regular weight by file name (fontconfig style matching picked ExtraBold).
+font=$(fc-list --format '%{file}\n' | grep -m1 '/JetBrainsMonoNerdFont-Regular\.ttf$' || true)
 [[ -n "${font}" && -f "${font}" ]] || die "JetBrainsMono Nerd Font not found (needed by simpbar)"
 log "mango: simpbar font ${font}"
 bar_cfg=$(mktemp)

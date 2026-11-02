@@ -85,6 +85,7 @@ case "${flavor}" in
         check test -x /usr/bin/simpbar
         check test -f /home/tester/.config/simpbar/config.json
         check test -f "$(sed -n 's/.*"font_path": "\([^"]*\)".*/\1/p' /home/tester/.config/simpbar/config.json)"
+        check grep -q '/JetBrainsMonoNerdFont-Regular.ttf"' /home/tester/.config/simpbar/config.json
         check ldd /usr/bin/simpbar
         check test -f /home/tester/.config/fuzzel/fuzzel.ini
         check mango -p -c /home/tester/.config/mango/config.conf
