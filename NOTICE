@@ -60,6 +60,10 @@ niri (https://github.com/YaLTeR/niri), GPL-3.0-or-later
   system_files/niri/usr/share/perihelion/niri/default-config.kdl is niri 26.04's
   resources/default-config.kdl, unmodified (edited at install time).
 
+Catppuccin (https://catppuccin.com), MIT
+  The Macchiato palette used throughout; the kitty colors in
+  system_files/common/etc/xdg/kitty/kitty.conf follow github.com/catppuccin/kitty.
+
 Pixie SDDM theme by xCaptaiN09 (https://github.com/xCaptaiN09/pixie-sddm), MIT
   system_files/common/usr/share/sddm/themes/pixie (see LICENSE and SOURCE there).
 

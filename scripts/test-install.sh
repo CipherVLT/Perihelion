@@ -105,6 +105,9 @@ check rpm -q mesa-dri-drivers.x86_64 mesa-vulkan-drivers.x86_64 vulkan-loader.x8
 check rpm -q mesa-dri-drivers.i686 mesa-vulkan-drivers.i686 vulkan-loader.i686
 check rpm -q dconf cracklib-dicts nano
 check rpm -q fastfetch lm_sensors nethogs
+# kitty: Catppuccin Macchiato in every flavor
+check grep -qx 'background              #24273A' /etc/xdg/kitty/kitty.conf
+check grep -qx 'color4  #8AADF4' /etc/xdg/kitty/kitty.conf
 check rpm -q flatpak
 flathub_configured() { flatpak remotes --system --columns=name | grep -qx flathub; }
 check flathub_configured
