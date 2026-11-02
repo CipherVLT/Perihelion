@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Mango flavor: Veyl OS keybinds, gaps and look translated to Mango, with
-# Waybar, swaybg and fuzzel. No Event Horizon.
+# simpbar, swaybg and fuzzel. No Event Horizon.
 set -euo pipefail
 # shellcheck source=build/lib.sh
 source "${PERIHELION_SRC}/build/lib.sh"
@@ -11,6 +11,9 @@ command -v mango >/dev/null || die "mango binary missing"
 apply_system_files mango
 rm -f /.gitkeep
 chmod 0755 /usr/bin/perihelion-wallpaper /usr/bin/perihelion-screenshot /usr/bin/perihelion-keys
+
+# Top bar: simpbar, built from source.
+bash "${PERIHELION_SRC}/build/install-simpbar.sh"
 
 share=/usr/share/perihelion
 cfg="${share}/mango/config.conf"
@@ -30,8 +33,18 @@ done < <(sed -n -E 's/^(bind[a-z]*|mousebind|axisbind|gesturebind)=[^,]*,[^,]*,s
 
 # Each user gets their own editable copies (existing files are kept).
 seed_user_file "${cfg}" .config/mango/config.conf
-seed_user_file "${share}/waybar/config.jsonc" .config/waybar/config.jsonc
-seed_user_file "${share}/waybar/style.css" .config/waybar/style.css
+# simpbar draws text with one TTF file; point it at the installed
+# JetBrainsMono Nerd Font (simpbar's own default is Arch's path).
+font=$(fc-list --format '%{file}\n' 'JetBrainsMono Nerd Font:style=Regular' | grep -E '\.(ttf|otf)$' | sort | head -n1)
+[[ -n "${font}" && -f "${font}" ]] || die "JetBrainsMono Nerd Font not found (needed by simpbar)"
+log "mango: simpbar font ${font}"
+bar_cfg=$(mktemp)
+chmod 644 "${bar_cfg}"
+sed "s|@FONT_PATH@|${font}|" "${share}/simpbar/config.json" > "${bar_cfg}"
+grep -q "\"font_path\": \"${font}\"" "${bar_cfg}" || die "could not set simpbar's font_path"
+install -m644 "${bar_cfg}" "${share}/simpbar/config.json"
+rm -f "${bar_cfg}"
+seed_user_file "${share}/simpbar/config.json" .config/simpbar/config.json
 seed_user_file "${share}/fuzzel/fuzzel.ini" .config/fuzzel/fuzzel.ini
 
 test -f /usr/share/wayland-sessions/mango.desktop

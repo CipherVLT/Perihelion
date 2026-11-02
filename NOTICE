@@ -63,6 +63,9 @@ Pixie SDDM theme by xCaptaiN09 (https://github.com/xCaptaiN09/pixie-sddm), MIT
   system_files/common/usr/share/sddm/themes/pixie (see LICENSE and SOURCE there).
 
 Downloaded at install time, not redistributed in this repository:
+  simpbar by jaytheoutpatient (https://github.com/jaytheoutpatient/simpbar)
+    The Mango flavor's top bar, built from the commit in build/refs/simpbar.ref.
+    The repository has no license file yet (see README).
   Event Horizon (https://github.com/Event-Horizon-desktop-environment/Event-Horizon), MIT
   Strata (https://github.com/lgse/strata), MIT
   Satty (https://github.com/gabm/Satty), MPL-2.0

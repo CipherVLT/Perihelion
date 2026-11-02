@@ -6,7 +6,7 @@ A minimal Fedora for gamers and creators, in three tiling flavors:
 |---|---|---|---|
 | **Hyprland** | Hyprland 0.56+ (COPR `nett00n/hyprland`) | Event Horizon | Lua config from horizon-forge / Veyl OS |
 | **Niri** | niri (Fedora) | Event Horizon | niri's default config, Perihelion apps swapped in |
-| **Mango** | mangowm (Terra) | Waybar + swaybg | Veyl OS keybinds, gaps and look translated to Mango |
+| **Mango** | mangowm (Terra) | simpbar + swaybg | Veyl OS keybinds, gaps and look translated to Mango |
 
 Every flavor starts from Fedora's `@core` and adds only what a desktop needs
 to work: network, Bluetooth, firewall, PipeWire audio, Mesa/Vulkan, a login
@@ -57,7 +57,9 @@ Pick **Mango** on the login screen. Super is the Windows key.
 - Gaps 2 px inside / 4 px outside, 2 px Catppuccin Macchiato blue (`0x8aadf4ff`)
   border on the focused window, see-through blurred kitty.
 - Your config: `~/.config/mango/config.conf` (Super+Shift+R reloads it).
-  Bar: `~/.config/waybar/`. Launcher: `~/.config/fuzzel/fuzzel.ini`.
+  Bar: [simpbar](https://github.com/jaytheoutpatient/simpbar) by jaytheoutpatient,
+  `~/.config/simpbar/config.json` (Super+Shift+D restarts it).
+  Launcher: `~/.config/fuzzel/fuzzel.ini`.
 - Wallpaper: `perihelion-wallpaper ~/Pictures/some-image.png` (remembered).
 - Something wrong? Run `perihelion-doctor` in a terminal: it checks the
   config, lists missing programs and shows this boot's errors.
@@ -133,6 +135,9 @@ network connection. The install log ends up in `/root/perihelion-post.log`.
 To read the final kickstart without building: `scripts/render-ks.sh mango`.
 
 ## Credits
+
+The Mango flavor's top bar is [simpbar](https://github.com/jaytheoutpatient/simpbar)
+by **jaytheoutpatient**, a native Zig/Wayland bar for Hyprland and MangoWM.
 
 Built from pieces of [horizon-forge](https://github.com/CipherVLT/horizon-forge)
 and [Veyl OS](https://github.com/CipherVLT/veyl-os). The ISO build approach

@@ -17,9 +17,10 @@ report() {
     printf 'session %s (%s)\n' "${XDG_CURRENT_DESKTOP:-none}" "${XDG_SESSION_TYPE:-none}"
 
     section "Key packages"
-    rpm -q mangowm hyprland niri waybar swaybg fuzzel kitty firefox steam gamescope \
+    rpm -q mangowm hyprland niri swaybg fuzzel kitty firefox steam gamescope \
         sddm pipewire wireplumber 2>/dev/null | grep -v 'is not installed'
     command -v strata >/dev/null && ok "strata $(strata --version 2>/dev/null | head -n1)"
+    [[ -f /usr/share/perihelion/simpbar.ref ]] && ok "simpbar $(cut -c1-7 /usr/share/perihelion/simpbar.ref) (built from source)"
 
     if command -v mango >/dev/null; then
         section "Mango config"
@@ -46,7 +47,7 @@ report() {
     fi
 
     section "Running"
-    for proc in mango Hyprland niri waybar swaybg pipewire wireplumber xdg-desktop-portal; do
+    for proc in mango Hyprland niri simpbar swaybg pipewire wireplumber xdg-desktop-portal; do
         if pgrep -x "${proc}" >/dev/null; then ok "${proc}"; fi
     done
 

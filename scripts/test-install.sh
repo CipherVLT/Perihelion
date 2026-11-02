@@ -82,7 +82,10 @@ fi
 case "${flavor}" in
     mango)
         check test -f /home/tester/.config/mango/config.conf
-        check test -f /home/tester/.config/waybar/config.jsonc
+        check test -x /usr/bin/simpbar
+        check test -f /home/tester/.config/simpbar/config.json
+        check test -f "$(sed -n 's/.*"font_path": "\([^"]*\)".*/\1/p' /home/tester/.config/simpbar/config.json)"
+        check ldd /usr/bin/simpbar
         check test -f /home/tester/.config/fuzzel/fuzzel.ini
         check mango -p -c /home/tester/.config/mango/config.conf
         check test "$(stat -c %U /home/tester/.config/mango/config.conf)" = tester
