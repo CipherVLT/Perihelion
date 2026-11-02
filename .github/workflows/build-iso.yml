@@ -2,6 +2,8 @@
 # Build the Perihelion installer ISOs on GitHub's servers.
 #
 # 1. check:   every package each flavor lists exists (Fedora, Terra, COPR)
+#    rehearse: install each flavor's packages in a Fedora container and run
+#             the real %post scripts (scripts/test-install.sh)
 # 2. release: on main, prepare the rolling "testing" pre-release (a full
 #             build replaces it; a one-flavor run replaces only that flavor)
 # 3. build:   per flavor, download + SHA256-check the pinned Fedora 45
@@ -91,21 +93,30 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Check every listed package exists
         run: scripts/check-packages.sh "${{ matrix.flavor }}"
-      - name: Check the Mango config against Terra's Mango
-        if: matrix.flavor == 'mango'
-        run: |
-          set -euo pipefail
-          dnf5 install -y --setopt=install_weak_deps=False \
-            --repofrompath "terra,https://repos.fyralabs.com/terra$(rpm -E %fedora)" \
-            --setopt=terra.gpgcheck=0 mangowm
-          rpm -q mangowm
-          cfg=system_files/mango/usr/share/perihelion/mango/config.conf
-          mango -p -c "${cfg}"
-          echo "Mango config OK"
+
+  rehearse:
+    name: Rehearse install (${{ matrix.flavor }})
+    needs: [plan, check]
+    runs-on: ubuntu-24.04
+    container:
+      image: registry.fedoraproject.org/fedora:45
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: ${{ fromJSON(needs.plan.outputs.flavors) }}
+    steps:
+      - name: Tools
+        run: dnf5 install -y --setopt=install_weak_deps=False git-core
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Install the packages and run the %post scripts
+        env:
+          PERIHELION_COMMIT: ${{ github.sha }}
+        run: scripts/test-install.sh "${{ matrix.flavor }}"
 
   release:
     name: Prepare "testing" release
-    needs: [plan, check]
+    needs: [plan, check, rehearse]
     if: needs.plan.outputs.publish == 'true'
     runs-on: ubuntu-24.04
     permissions:
@@ -153,9 +164,9 @@ jobs:
 
   build:
     name: Build ISO (${{ matrix.flavor }})
-    needs: [plan, check, release]
+    needs: [plan, check, rehearse, release]
     # Run when "release" succeeded or was skipped (pull requests), not when it failed.
-    if: ${{ !cancelled() && needs.check.result == 'success' && needs.release.result != 'failure' }}
+    if: ${{ !cancelled() && needs.check.result == 'success' && needs.rehearse.result == 'success' && needs.release.result != 'failure' }}
     runs-on: ubuntu-24.04
     container:
       image: registry.fedoraproject.org/fedora:45

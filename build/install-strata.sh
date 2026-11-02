@@ -82,16 +82,19 @@ grep -qx 'Exec=/usr/bin/strata --portal' \
 # choices. /etc/xdg overrides the copy in /usr/share; a user's own
 # ~/.config/xdg-desktop-portal file still wins.
 install -d /etc/xdg/xdg-desktop-portal
-shopt -s nullglob
+written=0
 for portals in /usr/share/xdg-desktop-portal/{hyprland,niri,mango}-portals.conf; do
+    # Only the compositor this flavor installed has its file.
+    [[ -f "${portals}" ]] || continue
     out="/etc/xdg/xdg-desktop-portal/$(basename "${portals}")"
     {
         grep -v '^org\.freedesktop\.impl\.portal\.FileChooser=' "${portals}"
         echo "org.freedesktop.impl.portal.FileChooser=strata;gtk"
     } > "${out}"
     echo "--- ${out}"; cat "${out}"
+    written=$((written + 1))
 done
-shopt -u nullglob
+(( written )) || { echo "no compositor portals.conf found; Strata is not the Open/Save dialog" >&2; exit 1; }
 
 desktop-file-validate /usr/share/applications/io.github.lgse.Strata.desktop
 if ldd /usr/libexec/strata/strata | grep -F 'not found'; then

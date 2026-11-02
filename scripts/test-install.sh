@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+# Rehearse a flavor's installation inside a Fedora container, so mistakes in
+# the %post scripts fail here instead of in the installer.
+#
+# Installs the flavor's %packages exactly as the kickstart lists them (no
+# weak dependencies, same repositories), creates a regular user the way
+# Anaconda does, then runs build/common-post.sh and build/flavor-<f>.sh.
+# What a container can't do (boot, start the desktop) is not covered.
+#
+# Run as root in a throwaway fedora:45 container, never on a real system:
+#   podman run --rm -v "$PWD":/src:Z -w /src registry.fedoraproject.org/fedora:45 \
+#       scripts/test-install.sh mango
+set -euo pipefail
+
+repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+flavor=${1:-}
+case "${flavor}" in
+    hyprland | niri | mango) ;;
+    *) echo "usage: $0 <hyprland|niri|mango>" >&2; exit 1 ;;
+esac
+[[ -f /run/.containerenv || -f /.dockerenv || "${PERIHELION_TEST_ANYWAY:-}" == 1 ]] || {
+    echo "refusing to run outside a container: this installs packages and changes system files" >&2
+    exit 1
+}
+
+releasever=$(rpm -E %fedora)
+ks=$(mktemp)
+"${repo_dir}/scripts/render-ks.sh" "${flavor}" "${ks}" >/dev/null
+mapfile -t packages < <(sed -n '/^%packages/,/^%end$/p' "${ks}" | grep -v -e '^%' -e '^#' -e '^$')
+
+repos=(
+    --repofrompath "terra-install,https://repos.fyralabs.com/terra${releasever}"
+    --setopt=terra-install.gpgcheck=0
+)
+if grep -q 'copr-nett00n-hyprland-install' "${ks}"; then
+    repos+=(
+        --repofrompath "copr-hyprland-install,https://download.copr.fedorainfracloud.org/results/nett00n/hyprland/fedora-${releasever}-x86_64/"
+        --setopt=copr-hyprland-install.gpgcheck=0
+    )
+fi
+
+echo "::group::Install ${#packages[@]} packages (no weak dependencies)"
+dnf5 install -y --setopt=install_weak_deps=False "${repos[@]}" "${packages[@]}"
+echo "::endgroup::"
+
+# Anaconda creates the user before %post runs; do the same.
+useradd -m -u 1000 -G wheel tester
+
+echo "::group::%post: common + ${flavor}"
+rm -rf /var/tmp/perihelion
+cp -a "${repo_dir}" /var/tmp/perihelion
+rm -rf /var/tmp/perihelion/.git /var/tmp/perihelion/out
+printf 'PERIHELION_COMMIT=%s\n' "${PERIHELION_COMMIT:-test}" > /var/tmp/perihelion/BUILD
+export PERIHELION_SRC=/var/tmp/perihelion PERIHELION_FLAVOR="${flavor}"
+bash "${PERIHELION_SRC}/build/common-post.sh"
+bash "${PERIHELION_SRC}/build/flavor-${flavor}.sh"
+echo "::endgroup::"
+
+echo "::group::Checks"
+fail=0
+check() { if "$@"; then echo "  ok    $*"; else echo "  FAIL  $*"; fail=1; fi; }
+check test -x /usr/libexec/strata/strata
+check grep -q 'inode/directory=io.github.lgse.Strata.desktop' /etc/xdg/mimeapps.list
+check grep -qx 'install_weak_deps=False' /etc/dnf/dnf.conf
+check grep -q "PERIHELION_FLAVOR=${flavor}" /usr/share/perihelion/release
+check test -L /etc/systemd/system/display-manager.service
+check test -x /usr/bin/perihelion-doctor
+case "${flavor}" in
+    mango)
+        check test -f /home/tester/.config/mango/config.conf
+        check test -f /home/tester/.config/waybar/config.jsonc
+        check test -f /home/tester/.config/fuzzel/fuzzel.ini
+        check mango -p -c /home/tester/.config/mango/config.conf
+        check test "$(stat -c %U /home/tester/.config/mango/config.conf)" = tester
+        check test -f /etc/xdg/xdg-desktop-portal/mango-portals.conf
+        ;;
+    hyprland)
+        check test -x /usr/bin/horizon
+        check test -f /usr/share/wayland-sessions/event-horizon.desktop
+        check test -f /etc/xdg/xdg-desktop-portal/hyprland-portals.conf
+        ;;
+    niri)
+        check test -x /usr/bin/horizon
+        check test -f /home/tester/.config/niri/config.kdl
+        check niri validate -c /home/tester/.config/niri/config.kdl
+        check test -f /etc/xdg/xdg-desktop-portal/niri-portals.conf
+        ;;
+esac
+echo "::endgroup::"
+(( fail == 0 )) || { echo "install rehearsal for ${flavor}: checks failed" >&2; exit 1; }
+echo "install rehearsal for ${flavor}: OK"
