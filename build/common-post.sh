@@ -123,10 +123,12 @@ for tool in steam gamescope; do
 done
 
 # --- Identity -------------------------------------------------------------------------
-cat > /usr/share/perihelion/release <<EOF
-PERIHELION_FLAVOR=${PERIHELION_FLAVOR:?}
-PERIHELION_FEDORA=$(rpm -E %fedora)
-PERIHELION_BUILT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-EOF
+{
+    echo "PERIHELION_FLAVOR=${PERIHELION_FLAVOR:?}"
+    echo "PERIHELION_FEDORA=$(rpm -E %fedora)"
+    echo "PERIHELION_INSTALLED=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    # Commit, ISO build time and Fedora ISO, written by scripts/build-iso.sh
+    cat "${PERIHELION_SRC}/BUILD" 2>/dev/null || echo "PERIHELION_COMMIT=unknown"
+} > /usr/share/perihelion/release
 
 log "common: done"

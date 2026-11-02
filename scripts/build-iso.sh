@@ -96,6 +96,22 @@ rsync -a --delete \
     --exclude='.env' --exclude='.env.*' \
     "${repo_dir}/" "${payload_dir}/"
 
+# Record exactly which Perihelion commit this ISO was built from; the
+# installed system keeps it in /usr/share/perihelion/release.
+commit=${PERIHELION_COMMIT:-}
+if [[ -z "${commit}" ]]; then
+    commit=$(git -C "${repo_dir}" rev-parse --short HEAD 2>/dev/null || echo unknown)
+    if [[ "${commit}" != unknown && -n "$(git -C "${repo_dir}" status --porcelain 2>/dev/null)" ]]; then
+        commit="${commit}-modified"
+    fi
+fi
+cat > "${payload_dir}/BUILD" <<EOF
+PERIHELION_COMMIT=${commit}
+PERIHELION_ISO_BUILT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+PERIHELION_FEDORA_ISO=${fedora_release}
+EOF
+printf 'Perihelion commit %s\n' "${commit}"
+
 # Fedora x86_64 has separate UEFI and BIOS menus. Add inst.ks to every
 # installer entry in both, pointing at the same media stage2 already uses,
 # so this works whatever the ISO's volume label is.

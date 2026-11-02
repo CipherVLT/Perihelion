@@ -158,10 +158,13 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Build
         id: build
+        env:
+          PERIHELION_COMMIT: ${{ github.sha }}
         run: |
           set -euo pipefail
           stamp=$(date -u +%Y%m%d)
           name="perihelion-${{ matrix.flavor }}-${stamp}-${GITHUB_SHA:0:7}.iso"
+          export PERIHELION_COMMIT="${PERIHELION_COMMIT:0:7}"
           scripts/build-iso.sh --flavor "${{ matrix.flavor }}" --download --output "out/${name}"
           (cd out && sha256sum "${name}" > "${name}.sha256")
           ls -lh out/
@@ -174,7 +177,7 @@ jobs:
           checkisomd5 "${ISO}"
           # The kickstart and the repository payload are on the image, and
           # both boot menus point the installer at the kickstart.
-          for path in /perihelion.ks /perihelion/build/common-post.sh /perihelion/packages/base.txt; do
+          for path in /perihelion.ks /perihelion/BUILD /perihelion/build/common-post.sh /perihelion/packages/base.txt; do
             rm -f /tmp/check
             xorriso -osirrox on -indev "${ISO}" -extract "${path}" /tmp/check >/dev/null 2>&1
             test -s /tmp/check || { echo "missing on the ISO: ${path}" >&2; exit 1; }
@@ -183,6 +186,9 @@ jobs:
             xorriso -osirrox on -indev "${ISO}" -extract "${cfg}" /tmp/grub.cfg >/dev/null 2>&1
             grep -q 'inst.ks=.*:/perihelion.ks' /tmp/grub.cfg
           done
+          xorriso -osirrox on -indev "${ISO}" -extract /perihelion/BUILD /tmp/BUILD >/dev/null 2>&1
+          grep -qx "PERIHELION_COMMIT=${GITHUB_SHA:0:7}" /tmp/BUILD || { echo "ISO is not stamped with this commit" >&2; cat /tmp/BUILD; exit 1; }
+          cat /tmp/BUILD
           size=$(stat -c %s "${ISO}")
           (( size < 2147483648 )) || { echo "ISO is over GitHub's 2 GiB release file limit" >&2; exit 1; }
           echo "ISO OK: $(basename "${ISO}"), $((size / 1048576)) MiB"

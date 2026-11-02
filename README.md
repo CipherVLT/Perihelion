@@ -85,6 +85,18 @@ changes the recipe (and on demand: **Actions → Build ISOs → Run workflow**).
 They are attached to the **testing** pre-release under **Releases**, each with
 a `.sha256` file. Download one, boot it in a VM, install.
 
+**Which build is this?** Every ISO file name ends in the commit it was built
+from (`perihelion-mango-20261101-a5f31af.iso`), matching the commit shown on
+the release and on GitHub. After installing, check it with:
+
+```sh
+cat /usr/share/perihelion/release   # PERIHELION_COMMIT=a5f31af
+```
+
+The recipe (config, keybinds, package lists) is fixed when the ISO is built.
+The packages themselves (Mango, Firefox, Steam, ...) download during
+installation, so they are always the newest versions in Fedora and Terra.
+
 These builds have no wallpapers (plain login background). Pull requests run
 the same checks and build, but publish nothing.
 
