@@ -113,6 +113,10 @@ check test -L /etc/systemd/system/multi-user.target.wants/perihelion-flathub.ser
 check test -f /home/tester/.config/fastfetch/config.jsonc
 fastfetch_config_ok() { fastfetch --config /home/tester/.config/fastfetch/config.jsonc --pipe >/dev/null 2>/tmp/ff.err && ! grep -qi error /tmp/ff.err; }
 check fastfetch_config_ok
+# CPU/GPU lines must not end in an empty "@  GHz" (field numbers that
+# don't exist in this fastfetch version)
+cpu_gpu_ok() { ! fastfetch --config /home/tester/.config/fastfetch/config.jsonc --pipe 2>/dev/null | grep -q '@  GHz'; }
+check cpu_gpu_ok
 check perihelion-os-age
 check bash -n /etc/profile.d/perihelion-fastfetch.sh
 # Everything the login screen needs (Weston greeter + Qt Wayland + theme)
@@ -135,6 +139,7 @@ case "${flavor}" in
         check ldd /usr/bin/simpbar
         check test -f /home/tester/.config/fuzzel/fuzzel.ini
         check grep -q '"keyColor": "1;38;2;238;212;159"' /home/tester/.config/fastfetch/config.jsonc
+        check grep -q '"1": "38;2;138;173;244", "2": "38;2;238;212;159"' /home/tester/.config/fastfetch/config.jsonc
         check grep -q '"title": "1;38;2;237;135;150", "output": "38;2;138;173;244"' /home/tester/.config/fastfetch/config.jsonc
         check mango -p -c /home/tester/.config/mango/config.conf
         check test "$(stat -c %U /home/tester/.config/mango/config.conf)" = tester

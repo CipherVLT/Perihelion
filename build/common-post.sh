@@ -131,10 +131,14 @@ if [[ "${PERIHELION_FLAVOR}" == mango ]]; then
     # Mango is themed Catppuccin Macchiato (https://catppuccin.com/palette/):
     # title red #ed8796, spec labels bold yellow #eed49f, values blue
     # #8aadf4, separator overlay1 #8087a2. Layout and icons stay Veyl OS's.
+    # Logo: the distro logo's color 1 (Fedora's blue) in #8aadf4 and color 2
+    # (the white "f") in #eed49f.
     sed -i -e 's/"keyColor": "3[123]"/"keyColor": "1;38;2;238;212;159"/' \
+        -e 's/"padding": { "top": 3 }/"padding": { "top": 3 },\n        "color": { "1": "38;2;138;173;244", "2": "38;2;238;212;159" }/' \
         -e 's/"separator": " ➜  "/"separator": " ➜  ",\n          "color": { "title": "1;38;2;237;135;150", "output": "38;2;138;173;244", "separator": "38;2;128;135;162" }/' \
         "${ff_cfg}"
     grep -q '"output": "38;2;138;173;244"' "${ff_cfg}" || die "could not apply Mango's fastfetch colors"
+    grep -q '"1": "38;2;138;173;244", "2": "38;2;238;212;159"' "${ff_cfg}" || die "could not color Mango's fastfetch logo"
     ! grep -qE '"keyColor": "3[123]"' "${ff_cfg}" || die "fastfetch config still has Veyl OS colors"
 fi
 seed_user_file "${ff_cfg}" .config/fastfetch/config.jsonc
