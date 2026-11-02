@@ -126,7 +126,19 @@ systemctl enable perihelion-flathub.service
 
 # --- fastfetch (Veyl OS layout) --------------------------------------------------
 chmod 0644 /etc/profile.d/perihelion-fastfetch.sh
-seed_user_file /usr/share/perihelion/fastfetch/config.jsonc .config/fastfetch/config.jsonc
+ff_cfg=/usr/share/perihelion/fastfetch/config.jsonc
+if [[ "${PERIHELION_FLAVOR}" == mango ]]; then
+    # Mango is themed Catppuccin Macchiato (borders, simpbar, fuzzel): swap
+    # Veyl OS's red/green/yellow keys for its blue, sapphire and lavender.
+    sed -i -e 's/"keyColor": "31"/"keyColor": "38;2;138;173;244"/' \
+        -e 's/"keyColor": "32"/"keyColor": "38;2;125;196;228"/' \
+        -e 's/"keyColor": "33"/"keyColor": "38;2;183;189;248"/' \
+        -e 's/"separator": " ➜  "/"separator": " ➜  ",\n          "color": { "title": "38;2;138;173;244", "separator": "38;2;110;115;141" }/' \
+        "${ff_cfg}"
+    grep -q '"keyColor": "38;2;138;173;244"' "${ff_cfg}" || die "could not apply Mango's fastfetch colors"
+    ! grep -qE '"keyColor": "3[123]"' "${ff_cfg}" || die "fastfetch config still has Veyl OS colors"
+fi
+seed_user_file "${ff_cfg}" .config/fastfetch/config.jsonc
 
 # --- Gaming ------------------------------------------------------------------------
 for tool in steam gamescope; do
