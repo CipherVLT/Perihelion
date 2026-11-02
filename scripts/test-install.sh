@@ -39,6 +39,14 @@ if grep -q 'copr-nett00n-hyprland-install' "${ks}"; then
     )
 fi
 
+# Containers have no SELinux, so label mistakes can't show up below. Guard
+# the one known way to cause them: copying files onto the system with
+# `cp -a`, which carries the source's SELinux label along.
+if grep -rnE '\bcp +-[a-zA-Z]*a' "${repo_dir}/build" "${repo_dir}/kickstart" | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' | grep -v '/mnt/sysimage/var/tmp/perihelion'; then
+    echo "install scripts must not use cp -a onto the system (copies SELinux labels); use cp -R --preserve=mode,timestamps --no-preserve=ownership,context,xattr" >&2
+    exit 1
+fi
+
 echo "::group::Install ${#packages[@]} packages (no weak dependencies)"
 # tsflags= : container images skip documentation; Anaconda installs it.
 dnf5 install -y --setopt=install_weak_deps=False --setopt=tsflags= "${repos[@]}" "${packages[@]}"
@@ -64,6 +72,7 @@ fi
 export PERIHELION_SRC=/var/tmp/perihelion PERIHELION_FLAVOR="${flavor}"
 bash "${PERIHELION_SRC}/build/common-post.sh"
 bash "${PERIHELION_SRC}/build/flavor-${flavor}.sh"
+bash -c 'source "${PERIHELION_SRC}/build/lib.sh" && relabel_system'
 echo "::endgroup::"
 
 echo "::group::Checks"

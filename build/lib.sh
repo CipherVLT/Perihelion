@@ -7,10 +7,28 @@ log() { printf '[perihelion] %s\n' "$*"; }
 die() { printf '[perihelion] ERROR: %s\n' "$*" >&2; exit 1; }
 
 # Copy a flavor's system_files tree onto /.
+# Never `cp -a`: it also copies SELinux labels (security.selinux xattrs),
+# which stamps the installer's temporary-file label onto /etc, /usr/bin and
+# friends; with SELinux enforcing, journald, logind and the login screen
+# then fail at boot. Copy content and modes only, then let the policy label
+# everything (relabel_system at the end of %post).
 apply_system_files() {
     local tree="${PERIHELION_SRC}/system_files/$1"
     [[ -d "${tree}" ]] || die "missing system_files/$1"
-    cp -a --no-preserve=ownership "${tree}/." /
+    cp -R --preserve=mode,timestamps --no-preserve=ownership,context,xattr "${tree}/." /
+}
+
+# Give everything Perihelion wrote its correct SELinux label. Runs last in
+# %post; also schedules a full relabel on first boot as a safety net.
+relabel_system() {
+    if command -v restorecon >/dev/null 2>&1; then
+        log "selinux: restoring labels"
+        restorecon -RF /etc /usr /var/lib /var/tmp /home /root 2>&1 | tail -n 5 || true
+    fi
+    if [[ -f /etc/selinux/config ]] && ! grep -q '^SELINUX=disabled' /etc/selinux/config; then
+        touch /.autorelabel
+        log "selinux: full relabel scheduled for first boot (one extra reboot)"
+    fi
 }
 
 # Regular accounts Anaconda created (UID 1000-59999 with a /home directory).

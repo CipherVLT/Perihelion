@@ -16,7 +16,8 @@ rpm -qa --qf '%{NAME}\n' | sort -u > /tmp/eh-before.txt
 
 # horizon-forge's build script stages everything under /ehroot.
 bash "${PERIHELION_SRC}/build/build-event-horizon.sh"
-cp -a /ehroot/. /
+# Content and modes only; labels come from relabel_system (see lib.sh).
+cp -R --preserve=mode,timestamps --no-preserve=ownership,context,xattr /ehroot/. /
 rm -rf /ehroot /eh-src /tmp/zig /tmp/zig-global-cache /tmp/zig-local-cache
 
 rpm -qa --qf '%{NAME}\n' | sort -u > /tmp/eh-after.txt
