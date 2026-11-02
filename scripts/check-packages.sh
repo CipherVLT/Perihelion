@@ -35,7 +35,7 @@ for flavor in "${flavors[@]}"; do
         done < <(sed -e 's/[[:space:]]*#.*$//' -e '/^[[:space:]]*$/d' "${repo_dir}/packages/${list}.txt")
     done
     # Versions of the packages that matter most, for the build log.
-    key_pkgs=(mangowm hyprland niri jetbrains-mono-nerd-fonts swaybg fuzzel kitty firefox steam gamescope)
+    key_pkgs=(mangowm hyprland niri jetbrainsmono-nerd-fonts swaybg fuzzel kitty firefox steam gamescope)
     for list in ${lists}; do
         while read -r pkg; do
             for key in "${key_pkgs[@]}"; do

@@ -11,7 +11,7 @@ swaylock
 # Top bar: simpbar is built from source by build/install-simpbar.sh; these
 # are what it uses at runtime (font, SVG tray icons, volume via pactl;
 # nmcli for the network module comes with NetworkManager in base.txt)
-jetbrains-mono-nerd-fonts
+jetbrainsmono-nerd-fonts
 librsvg2
 pulseaudio-utils
 # Password prompts (Steam, pkexec); started from the Mango config
