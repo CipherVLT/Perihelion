@@ -2,13 +2,15 @@
 # Build the Perihelion installer ISOs on GitHub's servers.
 #
 # 1. check:   every package each flavor lists exists (Fedora, Terra, COPR)
-#    rehearse: install each flavor's packages in a Fedora container and run
-#             the real %post scripts (scripts/test-install.sh)
-# 2. release: on main, prepare the rolling "testing" pre-release (a full
-#             build replaces it; a one-flavor run replaces only that flavor)
-# 3. build:   per flavor, download + SHA256-check the pinned Fedora 45
-#             Everything netinstall ISO, build perihelion-<flavor>.iso,
-#             verify it, and attach it (plus its .sha256) to "testing"
+# 2. release: on main, make sure the rolling "testing" pre-release exists
+# 3. build:   per flavor, in a fedora:45 container:
+#             - rehearse the install: install the flavor's packages exactly as
+#               the kickstart does and run the real %post scripts
+#               (scripts/test-install.sh); stop here if that fails
+#             - download + SHA256-check the pinned Fedora netinstall ISO,
+#               build perihelion-<flavor>.iso and verify it
+#             - replace that flavor's ISO (+ .sha256) on "testing"
+#             A failing flavor keeps its previous ISO; the others still publish.
 #
 # ISOs go to a GitHub Release, not to workflow artifacts: release files
 # don't count against the Actions storage quota (500 MB on a free private
@@ -94,47 +96,27 @@ jobs:
       - name: Check every listed package exists
         run: scripts/check-packages.sh "${{ matrix.flavor }}"
 
-  rehearse:
-    name: Rehearse install (${{ matrix.flavor }})
-    needs: [plan, check]
-    runs-on: ubuntu-24.04
-    container:
-      image: registry.fedoraproject.org/fedora:45
-    strategy:
-      fail-fast: false
-      matrix:
-        flavor: ${{ fromJSON(needs.plan.outputs.flavors) }}
-    steps:
-      - name: Tools
-        run: dnf5 install -y --setopt=install_weak_deps=False git-core
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - name: Install the packages and run the %post scripts
-        env:
-          PERIHELION_COMMIT: ${{ github.sha }}
-        run: scripts/test-install.sh "${{ matrix.flavor }}"
-
   release:
     name: Prepare "testing" release
-    needs: [plan, check, rehearse]
+    needs: [plan, check]
     if: needs.plan.outputs.publish == 'true'
     runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
-      - name: Prepare the rolling pre-release
+      - name: Make sure the rolling pre-release exists
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           SHA: ${{ github.sha }}
-          FLAVORS: ${{ needs.plan.outputs.flavors }}
         run: |
           set -euo pipefail
           notes=$(cat <<EOF
           Automatic test builds. Not a stable release.
 
-          Each ISO file name ends in the commit it was built from; after installing,
-          \`cat /usr/share/perihelion/release\` shows the same commit.
+          Each flavor's ISO is replaced only when that flavor builds and its install
+          rehearsal passes, so the file name's commit can differ between flavors.
+          After installing, \`cat /usr/share/perihelion/release\` shows the same commit.
 
           Each ISO is Fedora's Everything netinstall installer with the Perihelion
           kickstart. Boot it, pick a disk and create your user; packages download
@@ -145,28 +127,18 @@ jobs:
           Built without wallpapers (the login screen uses a plain background).
           EOF
           )
-          if [[ "${FLAVORS}" == '["mango","hyprland","niri"]' ]] || ! gh release view "${RELEASE_TAG}" >/dev/null 2>&1; then
-            # Full build (or no release yet): start a fresh release so it only
-            # holds ISOs from this commit.
-            gh release delete "${RELEASE_TAG}" --cleanup-tag --yes 2>/dev/null || true
+          if gh release view "${RELEASE_TAG}" >/dev/null 2>&1; then
+            gh release edit "${RELEASE_TAG}" --title "Perihelion testing builds" --notes "${notes}"
+          else
             gh release create "${RELEASE_TAG}" --prerelease --target "${SHA}" \
               --title "Perihelion testing builds" --notes "${notes}"
-          else
-            # One flavor: keep the other flavors' ISOs, remove only this
-            # flavor's old files (the build job uploads the new ones).
-            for flavor in $(jq -r '.[]' <<<"${FLAVORS}"); do
-              gh release view "${RELEASE_TAG}" --json assets --jq '.assets[].name' \
-                | grep "^perihelion-${flavor}-" \
-                | while read -r asset; do gh release delete-asset "${RELEASE_TAG}" "${asset}" --yes; done
-            done
-            gh release edit "${RELEASE_TAG}" --title "Perihelion testing builds" --notes "${notes}"
           fi
 
   build:
     name: Build ISO (${{ matrix.flavor }})
-    needs: [plan, check, rehearse, release]
+    needs: [plan, check, release]
     # Run when "release" succeeded or was skipped (pull requests), not when it failed.
-    if: ${{ !cancelled() && needs.check.result == 'success' && needs.rehearse.result == 'success' && needs.release.result != 'failure' }}
+    if: ${{ !cancelled() && needs.check.result == 'success' && needs.release.result != 'failure' }}
     runs-on: ubuntu-24.04
     container:
       image: registry.fedoraproject.org/fedora:45
@@ -183,6 +155,10 @@ jobs:
             git-core xorriso rsync isomd5sum pykickstart curl gh
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Rehearse the install (packages + %post scripts)
+        env:
+          PERIHELION_COMMIT: ${{ github.sha }}
+        run: scripts/test-install.sh "${{ matrix.flavor }}"
       - name: Build
         id: build
         env:
@@ -225,4 +201,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           ISO: ${{ steps.build.outputs.iso }}
-        run: gh release upload "${RELEASE_TAG}" "${ISO}" "${ISO}.sha256" --clobber
+        run: |
+          set -euo pipefail
+          # Replace only this flavor's files; the other flavors keep theirs.
+          gh release view "${RELEASE_TAG}" --json assets --jq '.assets[].name' \
+            | { grep "^perihelion-${{ matrix.flavor }}-" || true; } \
+            | while read -r asset; do gh release delete-asset "${RELEASE_TAG}" "${asset}" --yes; done
+          gh release upload "${RELEASE_TAG}" "${ISO}" "${ISO}.sha256" --clobber

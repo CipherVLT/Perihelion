@@ -40,7 +40,8 @@ if grep -q 'copr-nett00n-hyprland-install' "${ks}"; then
 fi
 
 echo "::group::Install ${#packages[@]} packages (no weak dependencies)"
-dnf5 install -y --setopt=install_weak_deps=False "${repos[@]}" "${packages[@]}"
+# tsflags= : container images skip documentation; Anaconda installs it.
+dnf5 install -y --setopt=install_weak_deps=False --setopt=tsflags= "${repos[@]}" "${packages[@]}"
 echo "::endgroup::"
 
 # Anaconda creates the user before %post runs; do the same.

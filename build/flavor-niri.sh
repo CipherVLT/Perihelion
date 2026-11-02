@@ -10,17 +10,21 @@ command -v niri >/dev/null || die "niri binary missing"
 log "niri: $(niri --version)"
 
 apply_system_files niri
-rm -f /.gitkeep
 bash "${PERIHELION_SRC}/build/event-horizon.sh"
 
 # niri writes its built-in default to ~/.config/niri/config.kdl on first
 # start; Fedora's package also ships that file as documentation. Seed an
 # edited copy instead, so the binds open apps that are installed.
-default_cfg=$(find /usr/share/doc -path '*niri*' -name default-config.kdl -print -quit)
+# Prefer the copy matching the installed niri; fall back to the one shipped
+# with Perihelion (niri 26.04) when docs aren't installed.
+default_cfg=$(find /usr/share/doc -path '*niri*' -name default-config.kdl -print -quit 2>/dev/null || true)
 if [[ -z "${default_cfg}" ]]; then
-    die "niri's default-config.kdl not found under /usr/share/doc (package layout changed?)"
+    default_cfg=/usr/share/perihelion/niri/default-config.kdl
+    log "niri: no default-config.kdl in /usr/share/doc; using Perihelion's copy (niri 26.04)"
 fi
+[[ -f "${default_cfg}" ]] || die "no niri default config found"
 cfg=$(mktemp)
+chmod 644 "${cfg}"
 sed -e 's/spawn "alacritty"/spawn "kitty"/; s/Open a Terminal: alacritty/Open a Terminal: kitty/' \
     -e 's/^spawn-at-startup "waybar"$/spawn-at-startup "horizon"/' \
     -e 's/spawn "swaylock"/spawn "loginctl" "lock-session"/; s/Lock the Screen: swaylock/Lock the Screen/' \
