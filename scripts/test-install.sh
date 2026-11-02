@@ -51,6 +51,15 @@ rm -rf /var/tmp/perihelion
 cp -a "${repo_dir}" /var/tmp/perihelion
 rm -rf /var/tmp/perihelion/.git /var/tmp/perihelion/out
 printf 'PERIHELION_COMMIT=%s\n' "${PERIHELION_COMMIT:-test}" > /var/tmp/perihelion/BUILD
+# Also exercise the local-build path with wallpapers (scripts/fetch-wallpapers.sh):
+# two stand-in 1x1 PNGs, the second marked as the default.
+if [[ "${PERIHELION_TEST_WALLPAPERS:-1}" == 1 ]]; then
+    for name in test-a.png test-b.png; do
+        printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\rIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82' \
+            > "/var/tmp/perihelion/branding/wallpapers/${name}"
+    done
+    echo test-b.png > /var/tmp/perihelion/branding/wallpapers/DEFAULT
+fi
 export PERIHELION_SRC=/var/tmp/perihelion PERIHELION_FLAVOR="${flavor}"
 bash "${PERIHELION_SRC}/build/common-post.sh"
 bash "${PERIHELION_SRC}/build/flavor-${flavor}.sh"
@@ -65,6 +74,10 @@ check grep -qx 'install_weak_deps=False' /etc/dnf/dnf.conf
 check grep -q "PERIHELION_FLAVOR=${flavor}" /usr/share/perihelion/release
 check test -L /etc/systemd/system/display-manager.service
 check test -x /usr/bin/perihelion-doctor
+if [[ "${PERIHELION_TEST_WALLPAPERS:-1}" == 1 ]]; then
+    check test "$(readlink /usr/share/backgrounds/perihelion/default.png)" = test-b.png
+    check test -s /usr/share/sddm/themes/pixie/assets/background.png
+fi
 case "${flavor}" in
     mango)
         check test -f /home/tester/.config/mango/config.conf

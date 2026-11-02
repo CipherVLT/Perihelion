@@ -26,6 +26,7 @@ chmod 0755 /usr/bin/strata /usr/bin/perihelion-doctor /usr/libexec/perihelion-tr
 # Present only if scripts/fetch-wallpapers.sh ran before the ISO was built
 # (they are personal-use artwork and never committed). Without them the login
 # screen keeps the theme's background color and desktops start plain.
+install -d /usr/share/backgrounds/perihelion /usr/share/perihelion
 walls="${PERIHELION_SRC}/branding/wallpapers"
 wall_default=
 shopt -s nullglob
