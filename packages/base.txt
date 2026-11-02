@@ -16,6 +16,15 @@
 #   glibc-langpack-en: an English UTF-8 locale (otherwise everything runs in "C")
 systemd-pam
 glibc-langpack-en
+#   dconf: where GTK apps keep their settings (dark mode, Strata's theme sync)
+#   cracklib-dicts: passwd can't check (or set) new passwords without it
+#   glibc-gconv-extra: character-set converters some apps and games need
+dconf
+cracklib-dicts
+glibc-gconv-extra
+# A terminal text editor (sudoedit needs one: nano-default-editor)
+nano
+nano-default-editor
 # CPU microcode and firmware for Wi-Fi, Bluetooth and GPUs (laptops need it)
 @hardware-support
 # `dnf copr` (the Hyprland flavor keeps its COPR enabled with it)
@@ -37,9 +46,12 @@ pipewire-pulseaudio
 wireplumber
 
 # --- Graphics ----------------------------------------------------------------
-mesa-dri-drivers
-mesa-vulkan-drivers
-vulkan-loader
+# 64-bit drivers, arch spelled out: gaming.txt also asks for the .i686
+# builds, and with both listed dnf can resolve the bare name to i686 only
+# (that left the system without a 64-bit Vulkan driver).
+mesa-dri-drivers.x86_64
+mesa-vulkan-drivers.x86_64
+vulkan-loader.x86_64
 # X11 apps (Steam, most games)
 xorg-x11-server-Xwayland
 

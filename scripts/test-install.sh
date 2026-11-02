@@ -100,6 +100,10 @@ while read -r module; do
 done < <(grep -hE '^[[:space:]]*[a-z]' /etc/pam.d/* | grep -oE 'pam_[a-z0-9_]+\.so' | sort -u)
 has_en_utf8_locale() { locale -a 2>/dev/null | grep -qi '^en_US\.utf8$'; }
 check has_en_utf8_locale
+# 64-bit and 32-bit graphics drivers (Steam needs both)
+check rpm -q mesa-dri-drivers.x86_64 mesa-vulkan-drivers.x86_64 vulkan-loader.x86_64
+check rpm -q mesa-dri-drivers.i686 mesa-vulkan-drivers.i686 vulkan-loader.i686
+check rpm -q dconf cracklib-dicts nano
 # Everything the login screen needs (Weston greeter + Qt Wayland + theme)
 check rpm -q sddm sddm-wayland-generic weston qt6-qtwayland qt6-qtdeclarative
 check test -x /usr/bin/weston
