@@ -9,6 +9,13 @@
 # --- System ------------------------------------------------------------------
 # Fedora's smallest bootable system: kernel, systemd, dnf, sudo, basic tools
 @core
+# Weak dependencies of @core that a desktop can't do without (systemd and
+# glibc only "recommend" them, so --exclude-weakdeps drops them):
+#   systemd-pam: pam_systemd.so registers logins with logind. Without it
+#     there is no seat for the login screen or any Wayland session.
+#   glibc-langpack-en: an English UTF-8 locale (otherwise everything runs in "C")
+systemd-pam
+glibc-langpack-en
 # CPU microcode and firmware for Wi-Fi, Bluetooth and GPUs (laptops need it)
 @hardware-support
 # `dnf copr` (the Hyprland flavor keeps its COPR enabled with it)

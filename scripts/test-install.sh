@@ -75,6 +75,15 @@ bash "${PERIHELION_SRC}/build/flavor-${flavor}.sh"
 bash -c 'source "${PERIHELION_SRC}/build/lib.sh" && relabel_system'
 echo "::endgroup::"
 
+echo "::group::Weak dependencies left out (review: anything essential belongs in packages/)"
+# Every "Recommends" of an installed package that nothing installed provides.
+rpm -qa --qf '[%{NAME}\t%{RECOMMENDNAME}\n]' | sort -u | while IFS=$'\t' read -r pkg cap; do
+    [[ -n "${cap}" && "${cap}" != "(none)" ]] || continue
+    case "${cap}" in \(*) continue ;; esac   # rich dependencies: skip
+    rpm -q --whatprovides "${cap}" >/dev/null 2>&1 || printf '  %-40s recommended by %s\n' "${cap}" "${pkg}"
+done | sort
+echo "::endgroup::"
+
 echo "::group::Checks"
 fail=0
 check() { if "$@"; then echo "  ok    $*"; else echo "  FAIL  $*"; fail=1; fi; }
@@ -83,6 +92,14 @@ check grep -q 'inode/directory=io.github.lgse.Strata.desktop' /etc/xdg/mimeapps.
 check grep -qx 'install_weak_deps=False' /etc/dnf/dnf.conf
 check grep -q "PERIHELION_FLAVOR=${flavor}" /usr/share/perihelion/release
 check test -L /etc/systemd/system/display-manager.service
+# Every PAM module the PAM configuration requires must exist (a missing
+# pam_systemd.so left the login screen without a seat). Lines starting with
+# "-" are optional by design and may name absent modules.
+while read -r module; do
+    check test -f "/usr/lib64/security/${module}"
+done < <(grep -hE '^[[:space:]]*[a-z]' /etc/pam.d/* | grep -oE 'pam_[a-z0-9_]+\.so' | sort -u)
+has_en_utf8_locale() { locale -a 2>/dev/null | grep -qi '^en_US\.utf8$'; }
+check has_en_utf8_locale
 # Everything the login screen needs (Weston greeter + Qt Wayland + theme)
 check rpm -q sddm sddm-wayland-generic weston qt6-qtwayland qt6-qtdeclarative
 check test -x /usr/bin/weston
