@@ -140,6 +140,12 @@ case "${flavor}" in
         check test -f "$(sed -n 's/.*"font_path": "\([^"]*\)".*/\1/p' /home/tester/.config/simpbar/config.json)"
         check grep -q '/JetBrainsMonoNerdFont-Regular.ttf"' /home/tester/.config/simpbar/config.json
         check ldd /usr/bin/simpbar
+        check test -x /usr/bin/perihelion-power-menu
+        check test -x /usr/bin/appdrawer
+        check test -f /usr/share/doc/perihelion/simpbar.md
+        check rpm -q cava
+        check grep -q '"position": "bottom"' /home/tester/.config/simpbar/config.json
+        check grep -q '"kind": "power"' /home/tester/.config/simpbar/config.json
         check test -f /home/tester/.config/fuzzel/fuzzel.ini
         check grep -q '"keyColor": "1;38;2;238;212;159"' /home/tester/.config/fastfetch/config.jsonc
         check grep -q '"1": "38;2;138;173;244", "2": "38;2;238;212;159"' /home/tester/.config/fastfetch/config.jsonc

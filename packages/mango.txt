@@ -14,6 +14,8 @@ swaylock
 jetbrainsmono-nerd-fonts
 librsvg2
 pulseaudio-utils
+# Audio visualizer simpbar draws in the bar (cava module)
+cava
 # Password prompts (Steam, pkexec); started from the Mango config
 mate-polkit
 # Screenshots: slurp picks a region, grim captures, wl-copy copies

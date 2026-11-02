@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Power menu (simpbar's power button, far right). Pick with the mouse or
+# arrow keys + Enter; Esc closes it.
+set -euo pipefail
+
+choice=$(printf '%s\n' \
+    "  Lock" \
+    "󰗽  Log out" \
+    "󰤄  Suspend" \
+    "  Reboot" \
+    "  Power off" |
+    fuzzel --dmenu --prompt 'power > ' --lines 5 --width 22) || exit 0
+
+case "${choice}" in
+    *Lock) exec swaylock -f -c 24273a ;;
+    *"Log out") exec mmsg dispatch quit ;;
+    *Suspend) exec systemctl suspend ;;
+    *Reboot) exec systemctl reboot ;;
+    *"Power off") exec systemctl poweroff ;;
+esac

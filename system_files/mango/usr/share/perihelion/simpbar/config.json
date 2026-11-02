@@ -15,11 +15,11 @@
     "bezel_style": "solid",
     "bezel_effect": "solid",
     "bg_mode": "none",
-    "position": "top",
+    "position": "bottom",
     "bar_mode": "taskbar",
     "bar_height": 28,
-    "border_top_px": 0,
-    "border_bottom_px": 2,
+    "border_top_px": 2,
+    "border_bottom_px": 0,
     "border_left_px": 0,
     "border_right_px": 0,
     "corner_radius_px": 0,
@@ -28,29 +28,67 @@
     "pill_borders": false,
     "clock_format": "date_12h",
     "font_path": "@FONT_PATH@",
-    "animations_enabled": true
+    "animations_enabled": true,
+    "cava_color": "#F5BDE6",
+    "cava_style": "bars"
   },
   "modules": {
     "left": [
-      { "kind": "workspaces" },
-      { "kind": "layout" },
-      { "kind": "mpris" }
+      {
+        "kind": "workspaces"
+      },
+      {
+        "kind": "mpris"
+      }
     ],
     "center": [
-      { "kind": "launchers" },
-      { "kind": "clock" }
+      {
+        "kind": "launchers"
+      },
+      {
+        "kind": "clock"
+      }
     ],
     "right": [
-      { "kind": "tray" },
-      { "kind": "network" },
-      { "kind": "volume" },
-      { "kind": "battery" }
+      {
+        "kind": "power"
+      },
+      {
+        "kind": "battery"
+      },
+      {
+        "kind": "volume"
+      },
+      {
+        "kind": "network"
+      },
+      {
+        "kind": "tray"
+      },
+      {
+        "kind": "layout"
+      },
+      {
+        "kind": "cava"
+      }
     ]
   },
   "launchers": [
-    { "label": "Browser", "command": "firefox" },
-    { "label": "Files", "command": "strata" },
-    { "label": "Term", "command": "kitty" },
-    { "label": "Steam", "command": "steam" }
+    {
+      "label": "Browser",
+      "command": "firefox"
+    },
+    {
+      "label": "Files",
+      "command": "strata"
+    },
+    {
+      "label": "Term",
+      "command": "kitty"
+    },
+    {
+      "label": "Steam",
+      "command": "steam"
+    }
   ]
 }

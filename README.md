@@ -58,7 +58,8 @@ Pick **Mango** on the login screen. Super is the Windows key.
   border on the focused window, see-through blurred kitty.
 - Your config: `~/.config/mango/config.conf` (Super+Shift+R reloads it).
   Bar: [simpbar](https://github.com/jaytheoutpatient/simpbar) by jaytheoutpatient,
-  `~/.config/simpbar/config.json` (Super+Shift+D restarts it).
+  `~/.config/simpbar/config.json` (Super+Shift+D restarts it). Guide:
+  [docs/simpbar.md](docs/simpbar.md), also at `/usr/share/doc/perihelion/simpbar.md`.
   Launcher: `~/.config/fuzzel/fuzzel.ini`.
 - Wallpaper: `perihelion-wallpaper ~/Pictures/some-image.png` (remembered).
 - Something wrong? Run `perihelion-doctor` in a terminal: it checks the
