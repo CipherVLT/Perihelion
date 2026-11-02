@@ -25,6 +25,12 @@ glibc-gconv-extra
 # A terminal text editor (sudoedit needs one: nano-default-editor)
 nano
 nano-default-editor
+# System info in every new terminal (Veyl OS layout; perihelion-fastfetch.sh)
+fastfetch
+# Hardware sensors (sensors, sensors-detect) and per-app network usage, as
+# system monitors like Mission Center expect
+lm_sensors
+nethogs
 # CPU microcode and firmware for Wi-Fi, Bluetooth and GPUs (laptops need it)
 @hardware-support
 # `dnf copr` (the Hyprland flavor keeps its COPR enabled with it)

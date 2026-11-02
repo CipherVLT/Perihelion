@@ -20,7 +20,7 @@ grep -qx 'install_weak_deps=False' /etc/dnf/dnf.conf
 
 log "common: system files"
 apply_system_files common
-chmod 0755 /usr/bin/strata /usr/bin/perihelion-doctor /usr/libexec/perihelion-trash /usr/libexec/perihelion-strata-theme
+chmod 0755 /usr/bin/perihelion-os-age /usr/bin/strata /usr/bin/perihelion-doctor /usr/libexec/perihelion-trash /usr/libexec/perihelion-strata-theme
 
 # --- Wallpapers -----------------------------------------------------------------
 # Present only if scripts/fetch-wallpapers.sh ran before the ISO was built
@@ -117,6 +117,10 @@ EOF
 # Strata must be the only "Show in folder" handler.
 mapfile -t fm1 < <(grep -l -x 'Name=org.freedesktop.FileManager1' /usr/share/dbus-1/services/*.service)
 (( ${#fm1[@]} == 1 )) || die "FileManager1 is provided by: ${fm1[*]}"
+
+# --- fastfetch (Veyl OS layout) --------------------------------------------------
+chmod 0644 /etc/profile.d/perihelion-fastfetch.sh
+seed_user_file /usr/share/perihelion/fastfetch/config.jsonc .config/fastfetch/config.jsonc
 
 # --- Gaming ------------------------------------------------------------------------
 for tool in steam gamescope; do

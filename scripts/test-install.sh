@@ -104,6 +104,12 @@ check has_en_utf8_locale
 check rpm -q mesa-dri-drivers.x86_64 mesa-vulkan-drivers.x86_64 vulkan-loader.x86_64
 check rpm -q mesa-dri-drivers.i686 mesa-vulkan-drivers.i686 vulkan-loader.i686
 check rpm -q dconf cracklib-dicts nano
+check rpm -q fastfetch lm_sensors nethogs
+check test -f /home/tester/.config/fastfetch/config.jsonc
+fastfetch_config_ok() { fastfetch --config /home/tester/.config/fastfetch/config.jsonc --pipe >/dev/null 2>/tmp/ff.err && ! grep -qi error /tmp/ff.err; }
+check fastfetch_config_ok
+check perihelion-os-age
+check bash -n /etc/profile.d/perihelion-fastfetch.sh
 # Everything the login screen needs (Weston greeter + Qt Wayland + theme)
 check rpm -q sddm sddm-wayland-generic weston qt6-qtwayland qt6-qtdeclarative
 check test -x /usr/bin/weston

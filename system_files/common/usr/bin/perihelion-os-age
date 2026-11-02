@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# How long ago this system was installed, e.g. "73 days" (fastfetch's
+# "OS Age" line). From Veyl OS's os-age: the root filesystem's birth time,
+# falling back to /etc's.
+set -euo pipefail
+
+born=$(stat -c %W / 2>/dev/null || echo 0)
+if [[ ! $born =~ ^[0-9]+$ ]] || ((born == 0)); then
+    born=$(stat -c %W /etc 2>/dev/null || echo 0)
+    [[ $born =~ ^[0-9]+$ ]] || born=0
+fi
+((born > 0)) || { echo "unknown"; exit 0; }
+
+days=$(( ($(date +%s) - born) / 86400 ))
+if ((days == 1)); then echo "1 day"; else echo "$days days"; fi

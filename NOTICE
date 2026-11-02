@@ -10,7 +10,8 @@ horizon-forge (https://github.com/CipherVLT/horizon-forge), Apache-2.0
   system_files/event-horizon/*: ported and renamed from horizon-forge.
 
 Veyl OS (https://github.com/CipherVLT/veyl-os)
-  Hyprland and Event Horizon configuration the horizon-forge defaults derive from.
+  Hyprland and Event Horizon configuration the horizon-forge defaults derive from;
+  the fastfetch layout and perihelion-os-age (from os-age).
 
 dwm-titus by Chris Titus Tech (https://github.com/ChrisTitusTech/dwm-titus), MIT
   scripts/build-iso.sh is adapted from scripts/build-dwm-fedora-installer-iso.sh,
