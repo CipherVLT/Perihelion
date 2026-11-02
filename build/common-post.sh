@@ -128,14 +128,13 @@ systemctl enable perihelion-flathub.service
 chmod 0644 /etc/profile.d/perihelion-fastfetch.sh
 ff_cfg=/usr/share/perihelion/fastfetch/config.jsonc
 if [[ "${PERIHELION_FLAVOR}" == mango ]]; then
-    # Mango is themed Catppuccin Macchiato (borders, simpbar, fuzzel): swap
-    # Veyl OS's red/green/yellow keys for its blue, sapphire and lavender.
-    sed -i -e 's/"keyColor": "31"/"keyColor": "38;2;138;173;244"/' \
-        -e 's/"keyColor": "32"/"keyColor": "38;2;125;196;228"/' \
-        -e 's/"keyColor": "33"/"keyColor": "38;2;183;189;248"/' \
-        -e 's/"separator": " ➜  "/"separator": " ➜  ",\n          "color": { "title": "38;2;138;173;244", "separator": "38;2;110;115;141" }/' \
+    # Mango is themed Catppuccin Macchiato (https://catppuccin.com/palette/):
+    # title red #ed8796, spec labels bold yellow #eed49f, values blue
+    # #8aadf4, separator overlay1 #8087a2. Layout and icons stay Veyl OS's.
+    sed -i -e 's/"keyColor": "3[123]"/"keyColor": "1;38;2;238;212;159"/' \
+        -e 's/"separator": " ➜  "/"separator": " ➜  ",\n          "color": { "title": "1;38;2;237;135;150", "output": "38;2;138;173;244", "separator": "38;2;128;135;162" }/' \
         "${ff_cfg}"
-    grep -q '"keyColor": "38;2;138;173;244"' "${ff_cfg}" || die "could not apply Mango's fastfetch colors"
+    grep -q '"output": "38;2;138;173;244"' "${ff_cfg}" || die "could not apply Mango's fastfetch colors"
     ! grep -qE '"keyColor": "3[123]"' "${ff_cfg}" || die "fastfetch config still has Veyl OS colors"
 fi
 seed_user_file "${ff_cfg}" .config/fastfetch/config.jsonc

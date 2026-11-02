@@ -134,7 +134,8 @@ case "${flavor}" in
         check grep -q '/JetBrainsMonoNerdFont-Regular.ttf"' /home/tester/.config/simpbar/config.json
         check ldd /usr/bin/simpbar
         check test -f /home/tester/.config/fuzzel/fuzzel.ini
-        check grep -q '"keyColor": "38;2;138;173;244"' /home/tester/.config/fastfetch/config.jsonc
+        check grep -q '"keyColor": "1;38;2;238;212;159"' /home/tester/.config/fastfetch/config.jsonc
+        check grep -q '"title": "1;38;2;237;135;150", "output": "38;2;138;173;244"' /home/tester/.config/fastfetch/config.jsonc
         check mango -p -c /home/tester/.config/mango/config.conf
         check test "$(stat -c %U /home/tester/.config/mango/config.conf)" = tester
         check test -f /etc/xdg/xdg-desktop-portal/mango-portals.conf
