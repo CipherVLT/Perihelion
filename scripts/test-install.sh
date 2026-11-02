@@ -83,6 +83,11 @@ check grep -q 'inode/directory=io.github.lgse.Strata.desktop' /etc/xdg/mimeapps.
 check grep -qx 'install_weak_deps=False' /etc/dnf/dnf.conf
 check grep -q "PERIHELION_FLAVOR=${flavor}" /usr/share/perihelion/release
 check test -L /etc/systemd/system/display-manager.service
+# Everything the login screen needs (Weston greeter + Qt Wayland + theme)
+check rpm -q sddm sddm-wayland-generic weston qt6-qtwayland qt6-qtdeclarative
+check test -x /usr/bin/weston
+check grep -q '^Current=pixie' /etc/sddm.conf.d/10-perihelion.conf
+check test -f /usr/share/sddm/themes/pixie/Main.qml
 check test -x /usr/bin/perihelion-doctor
 if [[ "${PERIHELION_TEST_WALLPAPERS:-1}" == 1 ]]; then
     check test "$(readlink /usr/share/backgrounds/perihelion/default.png)" = test-b.png

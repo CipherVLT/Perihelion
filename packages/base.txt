@@ -38,7 +38,11 @@ xorg-x11-server-Xwayland
 
 # --- Login screen: SDDM on a Wayland greeter + Pixie theme ---------------------
 sddm
+# The greeter runs on Weston (sddm-wayland-generic) and is a Qt 6 Wayland
+# client; with weak dependencies off, list both explicitly.
 sddm-wayland-generic
+weston
+qt6-qtwayland
 qt6-qtdeclarative
 qt6-qtsvg
 
