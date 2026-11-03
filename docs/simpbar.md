@@ -138,6 +138,41 @@ simpbar's small equalizer. Move the `{ "kind": "cava" }` entry to switch.
 For the visualizer filling the whole bar behind the modules, try
 `"bg_mode": "cava"` with `"cava_style": "curve"` and `"cava_bg_strength": 45`.
 
+## Desktop widgets (simpbar-shell)
+
+Eight widgets can sit on the wallpaper: clock, weather, media (now playing),
+system, calendar, watch (analog), sticky note, and desktop icons. Perihelion
+starts with just the clock.
+
+- **Add or remove:** open **Simpbar Config** from the app launcher (Super+D)
+  or the app drawer (Super+A). Under *Appearance → Desktop Widgets*, each
+  widget has a switch, and the desktop updates right away.
+- **Remove one quickly:** hold **Alt** and right-click it. Turn it back on in
+  Simpbar Config; it comes back where it was.
+- **Move:** hold **Ctrl** and drag a card.
+- **Resize:** drag the grip in a card's bottom-right corner.
+- The last widget can't be removed with Alt + right-click: with none left,
+  simpbar-shell stops, and the Alt+W overview with it.
+
+What some of them need:
+
+- **Weather** comes from wttr.in, which guesses your city from your internet
+  address. There's no city setting.
+- **Desktop icons** shows the `.desktop` files in `~/Desktop`. In Steam,
+  *Manage → Add desktop shortcut* puts a game there.
+- **Sticky note:** click it and type; it saves to `~/.config/simpbar/notes/`.
+- **Calendar reminders:** `~/.config/simpbar/reminders.txt`, one per line as
+  `2026-11-25 18:00 Dinner`.
+
+By hand: `~/.config/simpbar/widgets-disabled` lists hidden widgets (ids
+`clock weather media system calendar watch note1 icons`, one per line), and
+`~/.config/simpbar/shell.json` holds positions in pixels. After editing:
+`pkill -x simpbar-shell; setsid -f simpbar-shell`.
+
+Simpbar Config's Bar pages also change the bar's colors, modules and
+launcher buttons. Perihelion hides its Mango and System pages, which would
+edit files Perihelion doesn't use.
+
 ## Wallpaper to match
 
 ```sh

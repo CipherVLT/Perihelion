@@ -16,6 +16,9 @@ librsvg2
 pulseaudio-utils
 # Audio visualizer simpbar draws in the bar (cava module)
 cava
+# Simpbar Config (GTK 4 + libadwaita)
+gtk4
+libadwaita
 # Password prompts (Steam, pkexec); started from the Mango config
 mate-polkit
 # Screenshots: slurp picks a region, grim captures, wl-copy copies

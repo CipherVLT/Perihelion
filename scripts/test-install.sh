@@ -176,6 +176,12 @@ case "${flavor}" in
         check test -f /home/tester/.config/simpbar/shell.json
         check test -f /home/tester/.config/simpbar/matugen.json
         check grep -qx weather /home/tester/.config/simpbar/widgets-disabled
+        clock_only_ok() { ! grep -qx clock /home/tester/.config/simpbar/widgets-disabled && [[ $(grep -c . /home/tester/.config/simpbar/widgets-disabled) -eq 7 ]]; }
+        check clock_only_ok
+        check test -x /usr/bin/simpbar-config
+        check ldd /usr/bin/simpbar-config
+        check test -f /usr/share/applications/simpbar-config.desktop
+        check rpm -q gtk4 libadwaita
         check grep -q 'ALT,w,spawn,simpbar-shell overview toggle' /home/tester/.config/mango/config.conf
         check grep -qx 'bind=SUPER,g,spawn,perihelion-glass' /home/tester/.config/mango/config.conf
         check grep -qx 'source_optional=~/.config/mango/glass.conf' /home/tester/.config/mango/config.conf

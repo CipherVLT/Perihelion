@@ -55,7 +55,8 @@ git -C "${work}" init -q simpbar
 git -C "${src}" remote add origin "${SIMPBAR_REPO}"
 retry git -C "${src}" fetch -q --depth 1 origin "${SIMPBAR_REF}"
 git -C "${src}" checkout -q --detach FETCH_HEAD
-# Perihelion's patches: cava as a sound wave in the left group (beside mpris).
+# Perihelion's patches: cava as a sound wave beside mpris, Alt + right-click
+# removes a desktop widget, Simpbar Config shows only its Bar pages.
 for patch in "${PERIHELION_SRC}"/build/patches/simpbar-*.patch; do
     git -C "${src}" apply "${patch}" || die "simpbar patch does not apply: ${patch##*/}"
 done
@@ -67,6 +68,11 @@ done
     "${zig_dir}/zig" build -Doptimize=ReleaseFast "-Dcpu=${ZIG_CPU}"
 )
 install -Dm755 "${src}/simpbar/zig-out/bin/simpbar" /usr/bin/simpbar
+# Simpbar Config (GTK): the bar's look and modules, and a switch for each
+# desktop widget. Perihelion's patch shows only its Bar pages.
+install -Dm755 "${src}/simpbar/zig-out/bin/simpbar-config" /usr/bin/simpbar-config
+install -Dm644 "${src}/simpbar-config.desktop" /usr/share/applications/simpbar-config.desktop
+install -Dm644 "${src}/assets/icons/simpbar-config.svg" /usr/share/icons/hicolor/scalable/apps/simpbar-config.svg
 
 # simpbar-shell (desktop widgets, window overview); shares the bar's font code.
 (
@@ -86,9 +92,9 @@ if (( ${#build_only[@]} )); then
 fi
 rm -f /tmp/simpbar-before.txt /tmp/simpbar-after.txt
 
-for bin in /usr/bin/simpbar /usr/bin/simpbar-shell; do
+for bin in /usr/bin/simpbar /usr/bin/simpbar-shell /usr/bin/simpbar-config; do
     if ldd "${bin}" | grep -F 'not found'; then
         die "${bin} is missing shared libraries"
     fi
 done
-log "simpbar: installed /usr/bin/simpbar and /usr/bin/simpbar-shell"
+log "simpbar: installed simpbar, simpbar-shell and simpbar-config"
