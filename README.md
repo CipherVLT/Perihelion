@@ -36,6 +36,18 @@ on real hardware yet. Mango is the first flavor to test.
 
 NVIDIA ISOs are planned for later and are not built yet.
 
+## Time zone
+
+If the installer leaves the system on UTC, Perihelion sets the time zone
+from where the machine is (Fedora's geoip, the same service the installer
+uses), during the install or at the next boot that's online. A time zone
+you picked is never changed. By hand: `sudo timedatectl set-timezone
+America/Chicago`, then log out and back in.
+
+## Something wrong?
+
+Run `perihelion-doctor --save` and share `~/perihelion-doctor.txt`.
+
 ## Keybinds
 
 All three flavors share your Veyl OS keybind set: Super+Return terminal,

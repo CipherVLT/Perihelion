@@ -128,6 +128,13 @@ chmod 0755 /usr/libexec/perihelion-flathub
 /usr/libexec/perihelion-flathub || log "WARNING: Flathub not reachable now; perihelion-flathub.service adds it at first boot"
 systemctl enable perihelion-flathub.service
 
+# --- Time zone ------------------------------------------------------------------
+# A system left on UTC gets the time zone of where it is (Fedora's geoip, as
+# the installer uses); the boot service retries if the network is down now.
+chmod 0755 /usr/libexec/perihelion-auto-timezone
+/usr/libexec/perihelion-auto-timezone --install || true
+systemctl enable perihelion-auto-timezone.service
+
 # --- Look: Numix-Circle icons, Bibata cursor, DejaVu Sans Mono --------------------
 # gsettings (GTK 4, portals, Event Horizon) and settings.ini (GTK 3, Event
 # Horizon's dock, Strata) both carry it; the compositors set the cursor too.

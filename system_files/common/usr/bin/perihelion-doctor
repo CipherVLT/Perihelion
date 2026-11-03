@@ -51,6 +51,17 @@ report() {
         if pgrep -x "${proc}" >/dev/null; then ok "${proc}"; fi
     done
 
+    section "Time"
+    timedatectl 2>/dev/null | sed 's/^ *//' || bad "timedatectl failed"
+    case "$(timedatectl show -p Timezone --value 2>/dev/null)" in
+        UTC | Etc/UTC) bad "time zone is UTC: sudo timedatectl set-timezone Your/City (list: timedatectl list-timezones)" ;;
+    esac
+    if [[ -f /var/lib/perihelion/auto-timezone.done ]]; then
+        ok "automatic time zone: done"
+    else
+        printf '  info  automatic time zone not done yet (tries at each boot until online)\n'
+    fi
+
     section "Network"
     nmcli -t -f STATE,CONNECTIVITY general 2>/dev/null || bad "nmcli failed"
 

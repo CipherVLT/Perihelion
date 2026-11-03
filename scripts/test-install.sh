@@ -142,6 +142,9 @@ flathub_configured() { flatpak remotes --system --columns=name | grep -qx flathu
 check flathub_configured
 check test -f /var/lib/perihelion/flathub-added
 check test -L /etc/systemd/system/multi-user.target.wants/perihelion-flathub.service
+check test -x /usr/libexec/perihelion-auto-timezone
+check test -L /etc/systemd/system/multi-user.target.wants/perihelion-auto-timezone.service
+check bash -n /usr/bin/perihelion-doctor
 check test -f /home/tester/.config/fastfetch/config.jsonc
 fastfetch_config_ok() { fastfetch --config /home/tester/.config/fastfetch/config.jsonc --pipe >/dev/null 2>/tmp/ff.err && ! grep -qi error /tmp/ff.err; }
 check fastfetch_config_ok

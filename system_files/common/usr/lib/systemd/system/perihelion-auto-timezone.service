@@ -1,0 +1,17 @@
+[Unit]
+Description=Set the time zone from the network location (Perihelion)
+# Only until it has worked once (also when the installer already did it, or
+# the time zone was never UTC). Runs before the login screen so the bar's
+# clock starts in local time; it gives up after a few seconds when offline
+# and tries again at the next boot.
+ConditionPathExists=!/var/lib/perihelion/auto-timezone.done
+After=NetworkManager.service time-set.target
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/perihelion-auto-timezone
+TimeoutStartSec=40
+
+[Install]
+WantedBy=multi-user.target

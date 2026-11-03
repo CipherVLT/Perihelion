@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# Sets the time zone from the network location when the system is still on
+# UTC, so a new install shows the right local time without anyone having to
+# pick it. The location comes from Fedora's geoip service, the same one
+# Fedora's installer uses. A time zone that isn't UTC (one somebody chose)
+# is never touched.
+#
+#   perihelion-auto-timezone           on a running system (the boot service)
+#   perihelion-auto-timezone --install inside the installer's %post (no systemd)
+#
+# Done once: /var/lib/perihelion/auto-timezone.done. To keep UTC on purpose:
+#   sudo touch /var/lib/perihelion/auto-timezone.done
+set -uo pipefail
+
+mode=${1:-}
+done_file=/var/lib/perihelion/auto-timezone.done
+
+finish() {
+    mkdir -p "${done_file%/*}"
+    touch "${done_file}"
+}
+
+if [[ "${mode}" == --install ]]; then
+    current=$(readlink -f /etc/localtime 2>/dev/null)
+    current=${current#*/zoneinfo/}
+else
+    current=$(timedatectl show -p Timezone --value 2>/dev/null)
+fi
+case "${current}" in
+    "" | UTC | Etc/UTC | Universal | Etc/Universal | Zulu | Etc/Zulu | Etc/GMT | GMT) ;;
+    *)
+        echo "time zone is ${current}; leaving it"
+        finish
+        exit 0
+        ;;
+esac
+
+tz=""
+for _ in 1 2 3 4 5; do
+    if json=$(curl -fsS --max-time 3 https://geoip.fedoraproject.org/city 2>/dev/null); then
+        tz=$(sed -n 's/.*"time_zone": *"\([^"]*\)".*/\1/p' <<<"${json}")
+        break
+    fi
+    sleep 2
+done
+if [[ -z "${tz}" ]]; then
+    echo "location not available (offline?); trying again at the next boot"
+    exit 0
+fi
+if [[ "${tz}" == */../* || ! -f "/usr/share/zoneinfo/${tz}" ]]; then
+    echo "unknown time zone from geoip: ${tz}"
+    exit 0
+fi
+
+if [[ "${mode}" == --install ]]; then
+    ln -sf "../usr/share/zoneinfo/${tz}" /etc/localtime
+else
+    timedatectl set-timezone "${tz}" || exit 0
+    timedatectl set-ntp true 2>/dev/null || true
+fi
+finish
+echo "time zone set to ${tz}"
