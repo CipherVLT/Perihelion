@@ -105,6 +105,18 @@ check rpm -q mesa-dri-drivers.x86_64 mesa-vulkan-drivers.x86_64 vulkan-loader.x8
 check rpm -q mesa-dri-drivers.i686 mesa-vulkan-drivers.i686 vulkan-loader.i686
 check rpm -q dconf cracklib-dicts nano
 check rpm -q fastfetch lm_sensors nethogs
+# Look: Numix-Circle icons, Bibata cursor 24 px, DejaVu Sans Mono 11 pt
+check rpm -q numix-icon-theme-circle bibata-cursor-theme dejavu-sans-mono-fonts
+check test -d /usr/share/icons/Bibata-Modern-Classic/cursors
+check grep -qx 'font_family DejaVu Sans Mono' /etc/xdg/kitty/kitty.conf
+check grep -qx 'font_size 11.0' /etc/xdg/kitty/kitty.conf
+dejavu_ok() { fc-match 'DejaVu Sans Mono' | grep -q '^DejaVuSansMono\.ttf'; }
+check dejavu_ok
+check grep -qx 'gtk-cursor-theme-name=Bibata-Modern-Classic' /home/tester/.config/gtk-3.0/settings.ini
+check grep -qx 'gtk-icon-theme-name=Numix-Circle' /home/tester/.config/gtk-4.0/settings.ini
+check grep -qx 'CursorTheme=Bibata-Modern-Classic' /etc/sddm.conf.d/10-perihelion.conf
+dconf_ok() { [[ "$(dconf read /org/gnome/desktop/interface/cursor-theme 2>/dev/null)" == "'Bibata-Modern-Classic'" ]]; }
+check dconf_ok
 # kitty: Catppuccin Macchiato in every flavor
 check grep -qx 'background              #24273A' /etc/xdg/kitty/kitty.conf
 check grep -qx 'color4  #8AADF4' /etc/xdg/kitty/kitty.conf
@@ -189,6 +201,7 @@ case "${flavor}" in
         check grep -q 'Mod+Shift+W hotkey-overlay-title="Wallpaper picker"' /home/tester/.config/niri/config.kdl
         has_one_binds_block() { [[ $(grep -c '^binds {' /home/tester/.config/niri/config.kdl) -eq 1 ]]; }
         check has_one_binds_block
+        check grep -q 'xcursor-theme "Bibata-Modern-Classic"' /home/tester/.config/niri/config.kdl
         check test -f /etc/xdg/xdg-desktop-portal/niri-portals.conf
         ;;
 esac

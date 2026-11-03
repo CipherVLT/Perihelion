@@ -44,6 +44,14 @@ Super+S Steam, Super+O overview, Super+Shift+W wallpaper, Super+Shift+Q
 power menu, Super+H every keybind. Hyprland and Niri also have Super+V
 clipboard history and Super+T settings (Event Horizon).
 
+## Look
+
+Every flavor: Numix-Circle icons, the Bibata Modern Classic cursor at 24 px,
+and DejaVu Sans Mono 11 pt in kitty, with kitty in Catppuccin Macchiato.
+Change the icons or cursor in `~/.config/gtk-3.0/settings.ini` and
+`gtk-4.0/settings.ini` (plus `gsettings set org.gnome.desktop.interface ...`),
+and the font in `~/.config/kitty/kitty.conf`.
+
 ## Mango: first login
 
 Pick **Mango** on the login screen. Super is the Windows key.

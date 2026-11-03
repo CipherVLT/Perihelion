@@ -1,0 +1,7 @@
+# Perihelion defaults (your own settings override these).
+# After editing: sudo dconf update
+[org/gnome/desktop/interface]
+icon-theme='Numix-Circle'
+cursor-theme='Bibata-Modern-Classic'
+cursor-size=24
+monospace-font-name='DejaVu Sans Mono 11'

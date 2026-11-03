@@ -1,0 +1,4 @@
+# The cursor for apps that don't read any other setting.
+[Icon Theme]
+Name=Default
+Inherits=Bibata-Modern-Classic

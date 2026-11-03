@@ -23,7 +23,11 @@ include(config_dir .. "/eh/gpu.lua")
 -- on a 4K screen. Text and panel sizes: Settings > Appearance.
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
 
+-- Cursor: Bibata Modern Classic, 24 px (GTK apps read it from gsettings).
+hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
 hl.env("XCURSOR_SIZE", "24")
+hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Classic")
+hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("QT_QPA_PLATFORM", "wayland")
 hl.env("GDK_BACKEND", "wayland,x11")
 hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")

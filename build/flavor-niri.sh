@@ -33,6 +33,14 @@ sed -e 's/^spawn-at-startup "waybar"$/spawn-at-startup "horizon"/' "${default_cf
 grep -q '^spawn-at-startup "horizon"$' "${cfg}" || die "could not start Event Horizon from niri's config"
 grep -q '^binds {' "${cfg}" && die "could not remove niri's default binds block"
 cat /usr/share/perihelion/niri/binds.kdl >> "${cfg}"
+# Cursor: Bibata Modern Classic, 24 px (niri passes it on to apps).
+cat >> "${cfg}" <<'EOF'
+
+cursor {
+    xcursor-theme "Bibata-Modern-Classic"
+    xcursor-size 24
+}
+EOF
 [[ $(grep -c '^binds {' "${cfg}") -eq 1 ]] || die "niri config must have exactly one binds block"
 niri validate -c "${cfg}" || die "Perihelion's niri config does not validate with $(niri --version)"
 seed_user_file "${cfg}" .config/niri/config.kdl

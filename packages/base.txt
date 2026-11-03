@@ -114,6 +114,10 @@ bubblewrap
 
 # --- Fonts -----------------------------------------------------------------------
 adwaita-icon-theme
+# Look: Numix-Circle icons, Bibata cursor (Terra), DejaVu Sans Mono (terminal)
+numix-icon-theme-circle
+bibata-cursor-theme
+dejavu-sans-mono-fonts
 hicolor-icon-theme
 google-noto-sans-fonts
 google-noto-sans-mono-fonts

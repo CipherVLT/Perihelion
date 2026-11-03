@@ -63,6 +63,9 @@ DisplayServer=wayland
 [Theme]
 Current=pixie
 
+CursorTheme=Bibata-Modern-Classic
+CursorSize=24
+
 [Users]
 MinimumUid=1000
 MaximumUid=60000
@@ -124,6 +127,22 @@ chmod 0755 /usr/libexec/perihelion-flathub
 # Add it now; if the installer has no network, the service adds it at boot.
 /usr/libexec/perihelion-flathub || log "WARNING: Flathub not reachable now; perihelion-flathub.service adds it at first boot"
 systemctl enable perihelion-flathub.service
+
+# --- Look: Numix-Circle icons, Bibata cursor, DejaVu Sans Mono --------------------
+# gsettings (GTK 4, portals, Event Horizon) and settings.ini (GTK 3, Event
+# Horizon's dock, Strata) both carry it; the compositors set the cursor too.
+log "common: icons, cursor, monospace font"
+for theme in /usr/share/icons/Numix-Circle /usr/share/icons/Bibata-Modern-Classic; do
+    [[ -d "${theme}" ]] || die "missing ${theme}"
+done
+if [[ ! -f /etc/dconf/profile/user ]]; then
+    install -d /etc/dconf/profile
+    printf 'user-db:user\nsystem-db:local\n' > /etc/dconf/profile/user
+fi
+grep -qx 'system-db:local' /etc/dconf/profile/user || echo 'system-db:local' >> /etc/dconf/profile/user
+dconf update
+seed_user_file /usr/share/perihelion/gtk/settings.ini .config/gtk-3.0/settings.ini
+seed_user_file /usr/share/perihelion/gtk/settings.ini .config/gtk-4.0/settings.ini
 
 # --- App drawer (nwg-drawer, Super+A) ---------------------------------------------
 [[ -x /usr/bin/nwg-drawer ]] || die "nwg-drawer is missing from the image (scripts/build-nwg-drawer.sh did not run)"
