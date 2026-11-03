@@ -53,7 +53,7 @@ pin_lines=$(grep -v -e '^#' -e '^[[:space:]]*$' "${pins}")
 [[ -n "${pin_lines}" ]] || { err "no ISOs pinned in ${pins}"; exit 1; }
 
 if (( download )); then
-    read -r pin_name _ pin_url <<<"$(tail -n 1 <<<"${pin_lines}")"
+    read -r pin_name pin_sha pin_url pin_checksum <<<"$(tail -n 1 <<<"${pin_lines}")"
     input_iso="${repo_dir}/out/$(basename "${pin_url}")"
     if [[ ! -f "${input_iso}" ]]; then
         command -v curl >/dev/null || { err "missing required command: curl"; exit 1; }
@@ -61,6 +61,29 @@ if (( download )); then
         printf 'Downloading Fedora %s netinstall...\n' "${pin_name}"
         curl --fail --location --retry 3 -C - -o "${input_iso}.part" "${pin_url}"
         mv -f "${input_iso}.part" "${input_iso}"
+    fi
+    # Fedora's GPG-signed CHECKSUM file must list the same SHA256 as the pin.
+    if [[ -n "${pin_checksum:-}" ]]; then
+        release=${pin_name%%-*}
+        key="/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-${release}-primary"
+        [[ -f "${key}" ]] || key="/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-${release}-x86_64"
+        if [[ -f "${key}" ]] && command -v gpgv >/dev/null && command -v gpg >/dev/null; then
+            sums="${repo_dir}/out/$(basename "${pin_checksum}")"
+            curl --fail --location --retry 3 -s -o "${sums}" "${pin_checksum}"
+            gpg --dearmor < "${key}" > "${sums}.key"
+            if ! gpgv --keyring "${sums}.key" "${sums}" 2>/dev/null; then
+                err "the GPG signature on $(basename "${sums}") does not check out with ${key}"
+                exit 1
+            fi
+            if ! grep -qE "^SHA256 \($(basename "${pin_url}")\) = ${pin_sha}\$" "${sums}"; then
+                err "Fedora's signed CHECKSUM file does not list ${pin_sha} for $(basename "${pin_url}")"
+                exit 1
+            fi
+            printf "Fedora's signed CHECKSUM file confirms %s\n" "${pin_sha}"
+            rm -f "${sums}.key"
+        else
+            printf 'note: no gpgv or Fedora %s key here; skipping the signed CHECKSUM check\n' "${release}"
+        fi
     fi
 fi
 [[ -f "${input_iso}" ]] || { err "input ISO not found: ${input_iso}"; exit 1; }

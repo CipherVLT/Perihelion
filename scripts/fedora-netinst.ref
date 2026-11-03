@@ -2,13 +2,14 @@
 # The input ISO's SHA256 must match a line here, or the build stops, so every
 # Perihelion ISO is built from a known, unmodified Fedora installer.
 #
-# Format: <name> <sha256> <url>
-# The last line is the default for --download.
+# Format: <name> <sha256> <url> [<CHECKSUM file url>]
+# The last line is the default for --download. With a CHECKSUM file URL,
+# --download also checks Fedora's GPG signature on that file (with the
+# release key from /etc/pki/rpm-gpg) and that it lists the same SHA256.
 #
-# To add a release: download it from fedoraproject.org, check it against
-# Fedora's GPG-signed CHECKSUM file (https://fedoraproject.org/security),
-# then add a line. Replace the Beta line once Fedora 45 is final.
+# To add a release: take the SHA256 from https://fedoraproject.org/misc/
+# and its signed CHECKSUM file, then add a line.
 #
-# 45-beta-1.3: SHA256 as published on https://fedoraproject.org/misc/beta/
-# (2026-11-01). Not yet cross-checked against the signed CHECKSUM file.
-45-beta-1.3 5d5a7592e6759c37367ac3ef93212307f484c6ca8f5fb6a4c368efa59ecdaf00 https://download.fedoraproject.org/pub/fedora/linux/releases/test/45_Beta/Everything/x86_64/iso/Fedora-Everything-netinst-x86_64-45_Beta-1.3.iso
+# 45-1.4: Fedora 45 final (released 2026-11-03). SHA256 as published on
+# https://fedoraproject.org/misc/#everything; CI checks the signed CHECKSUM.
+45-1.4 42abc36792f91575b2f541db19110cc661864819031e57cd5f5c9ec764ebbddf https://download.fedoraproject.org/pub/fedora/linux/releases/45/Everything/x86_64/iso/Fedora-Everything-netinst-x86_64-45-1.4.iso https://download.fedoraproject.org/pub/fedora/linux/releases/45/Everything/x86_64/iso/Fedora-Everything-45-1.4-x86_64-CHECKSUM

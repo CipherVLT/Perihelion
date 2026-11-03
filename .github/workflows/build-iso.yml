@@ -152,7 +152,7 @@ jobs:
       - name: Tools
         run: |
           dnf5 install -y --setopt=install_weak_deps=False \
-            git-core xorriso rsync isomd5sum pykickstart curl gh
+            git-core xorriso rsync isomd5sum pykickstart curl gh gnupg2 fedora-gpg-keys
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Cache nwg-drawer

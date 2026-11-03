@@ -167,8 +167,8 @@ scripts/build-iso.sh --flavor mango --download --output out/perihelion-mango.iso
 ```
 
 Like dwm-titus, the build only accepts a Fedora ISO whose SHA256 is pinned in
-`scripts/fedora-netinst.ref` (currently Fedora 45 Beta 1.3; swap in the final
-release's line when it ships). `--input FILE` uses an ISO you already have,
+`scripts/fedora-netinst.ref` (currently the Fedora 45 final release, 45-1.4; the
+build also checks Fedora's GPG-signed CHECKSUM file). `--input FILE` uses an ISO you already have,
 as long as it matches a pinned hash.
 
 Boot the ISO, pick a disk and create your user in the installer, then
