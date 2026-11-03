@@ -65,9 +65,9 @@ if (( download )); then
     # Fedora's GPG-signed CHECKSUM file must list the same SHA256 as the pin.
     if [[ -n "${pin_checksum:-}" ]]; then
         release=${pin_name%%-*}
-        key="/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-${release}-primary"
-        [[ -f "${key}" ]] || key="/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-${release}-x86_64"
-        if [[ -f "${key}" ]] && command -v gpgv >/dev/null && command -v gpg >/dev/null; then
+        # Fedora's release key, wherever fedora-gpg-keys puts it.
+        key=$(rpm -ql fedora-gpg-keys 2>/dev/null | grep -E "RPM-GPG-KEY-fedora-${release}-(primary|x86_64)\$" | head -n 1)
+        if [[ -n "${key}" && -f "${key}" ]] && command -v gpgv >/dev/null && command -v gpg >/dev/null; then
             sums="${repo_dir}/out/$(basename "${pin_checksum}")"
             curl --fail --location --retry 3 -s -o "${sums}" "${pin_checksum}"
             gpg --dearmor < "${key}" > "${sums}.key"
@@ -82,6 +82,11 @@ if (( download )); then
             printf "Fedora's signed CHECKSUM file confirms %s\n" "${pin_sha}"
             rm -f "${sums}.key"
         else
+            if [[ -n "${PERIHELION_REQUIRE_SIGNED:-}" ]]; then
+                err "cannot check Fedora's signed CHECKSUM (no gpgv, or no Fedora ${release} key in fedora-gpg-keys)"
+                rpm -ql fedora-gpg-keys 2>/dev/null | grep -- "-${release}" >&2 || true
+                exit 1
+            fi
             printf 'note: no gpgv or Fedora %s key here; skipping the signed CHECKSUM check\n' "${release}"
         fi
     fi

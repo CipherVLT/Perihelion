@@ -182,6 +182,8 @@ jobs:
           stamp=$(date -u +%Y%m%d)
           name="perihelion-${{ matrix.flavor }}-${stamp}-${GITHUB_SHA:0:7}.iso"
           export PERIHELION_COMMIT="${PERIHELION_COMMIT:0:7}"
+          # Fail rather than skip Fedora's signed CHECKSUM check.
+          export PERIHELION_REQUIRE_SIGNED=1
           scripts/build-iso.sh --flavor "${{ matrix.flavor }}" --download --output "out/${name}"
           (cd out && sha256sum "${name}" > "${name}.sha256")
           ls -lh out/
