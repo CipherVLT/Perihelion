@@ -10,8 +10,7 @@ command -v mango >/dev/null || die "mango binary missing"
 
 apply_system_files mango
 rm -f /.gitkeep
-chmod 0755 /usr/bin/perihelion-wallpaper /usr/bin/perihelion-screenshot /usr/bin/perihelion-keys \
-    /usr/bin/perihelion-power-menu /usr/bin/appdrawer
+chmod 0755 /usr/bin/perihelion-wallpaper /usr/bin/perihelion-screenshot /usr/bin/appdrawer
 
 # Top bar: simpbar, built from source.
 bash "${PERIHELION_SRC}/build/install-simpbar.sh"
@@ -47,6 +46,13 @@ grep -q "\"font_path\": \"${font}\"" "${bar_cfg}" || die "could not set simpbar'
 install -m644 "${bar_cfg}" "${share}/simpbar/config.json"
 rm -f "${bar_cfg}"
 seed_user_file "${share}/simpbar/config.json" .config/simpbar/config.json
+# simpbar-shell: widgets and overview, Macchiato colors (matugen.json is
+# what it reads them from), Perihelion apps in the overview dash.
+sed -i "s|@FONT_PATH@|${font}|" "${share}/simpbar/shell.json"
+grep -q "\"font_path\": \"${font}\"" "${share}/simpbar/shell.json" || die "could not set simpbar-shell's font_path"
+seed_user_file "${share}/simpbar/shell.json" .config/simpbar/shell.json
+seed_user_file "${share}/simpbar/matugen.json" .config/simpbar/matugen.json
+seed_user_file "${share}/simpbar/widgets-disabled" .config/simpbar/widgets-disabled
 install -Dm644 "${PERIHELION_SRC}/docs/simpbar.md" /usr/share/doc/perihelion/simpbar.md
 seed_user_file "${share}/fuzzel/fuzzel.ini" .config/fuzzel/fuzzel.ini
 

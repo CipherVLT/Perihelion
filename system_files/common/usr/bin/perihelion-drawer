@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# App drawer (Super+A): every installed app in a grid (nwg-drawer).
+# Pressing Super+A again, or Esc, closes it. Fuzzel search stays on Super+D.
+# Look: ~/.config/nwg-drawer/drawer.css (Catppuccin Macchiato by default).
+if pgrep -x nwg-drawer >/dev/null; then
+    exec pkill -x nwg-drawer
+fi
+exec nwg-drawer -term kitty -fm strata -ovl -c 6 -is 64 -spacing 20 "$@"

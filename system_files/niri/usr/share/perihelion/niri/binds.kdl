@@ -1,0 +1,103 @@
+// Perihelion keybinds for niri: the Veyl OS set (same keys as the Mango and
+// Hyprland flavors), translated to niri's scrolling layout. Super+H (or
+// Super+Shift+/) shows them all. Mod = Super.
+binds {
+    // --- Applications ----------------------------------------------------
+    Mod+Return hotkey-overlay-title="Terminal: kitty" { spawn "kitty"; }
+    Mod+E hotkey-overlay-title="File manager: Strata" { spawn "strata"; }
+    Mod+B hotkey-overlay-title="Browser: Firefox" { spawn "firefox"; }
+    Mod+D hotkey-overlay-title="App launcher: fuzzel" { spawn "fuzzel"; }
+    Mod+A hotkey-overlay-title="App drawer" { spawn "perihelion-drawer"; }
+    Mod+S hotkey-overlay-title="Steam" { spawn "steam"; }
+    Mod+L hotkey-overlay-title="Lock screen" { spawn "loginctl" "lock-session"; }
+    Mod+Shift+E hotkey-overlay-title="Log out" { quit; }
+    Mod+M hotkey-overlay-title="Log out" { quit; }
+    Mod+Shift+Q hotkey-overlay-title="Power menu" { spawn "perihelion-power-menu"; }
+    Mod+T hotkey-overlay-title="Settings" { spawn "horizon-settings"; }
+    Mod+H hotkey-overlay-title="Show all keybinds" { show-hotkey-overlay; }
+    Mod+Shift+Slash { show-hotkey-overlay; }
+    Mod+Shift+W hotkey-overlay-title="Wallpaper picker" { spawn "perihelion-wallpaper-picker"; }
+    Mod+V hotkey-overlay-title="Clipboard history" { spawn "horizon-clipstack-pick"; }
+    Mod+O repeat=false hotkey-overlay-title="Overview" { toggle-overview; }
+    Mod+Shift+D hotkey-overlay-title="Restart Event Horizon" { spawn-sh "pkill -x horizon; sleep 0.5; horizon"; }
+
+    // --- Windows -----------------------------------------------------------
+    Mod+Q repeat=false hotkey-overlay-title="Close window" { close-window; }
+    Mod+W hotkey-overlay-title="Toggle floating" { toggle-window-floating; }
+    Mod+F hotkey-overlay-title="Toggle fullscreen" { fullscreen-window; }
+
+    // --- Navigation (niri scrolls columns left/right) --------------------------
+    Mod+Left  { focus-column-left; }
+    Mod+Right { focus-column-right; }
+    Mod+Up    { focus-window-up; }
+    Mod+Down  { focus-window-down; }
+    Alt+Tab hotkey-overlay-title="Cycle windows" { focus-column-right-or-first; }
+
+    // Resize: width of the column, height of the window
+    Mod+Shift+Right { set-column-width "+5%"; }
+    Mod+Shift+Left  { set-column-width "-5%"; }
+    Mod+Shift+Up    { set-window-height "-5%"; }
+    Mod+Shift+Down  { set-window-height "+5%"; }
+    Mod+X hotkey-overlay-title="Cycle column widths" { switch-preset-column-width; }
+
+    // Move / swap
+    Mod+Shift+Ctrl+Left  { move-column-left; }
+    Mod+Shift+Ctrl+Right { move-column-right; }
+    Mod+Shift+Ctrl+Up    { move-window-up; }
+    Mod+Shift+Ctrl+Down  { move-window-down; }
+
+    // --- Screenshots (Satty editor: annotate, copy, save) -------------------------
+    Mod+Shift+S hotkey-overlay-title="Screenshot region" { spawn "horizon-screenshot"; }
+    Mod+Print { spawn "horizon-screenshot"; }
+    Print hotkey-overlay-title="Screenshot current screen" { screenshot-screen; }
+    Alt+Print hotkey-overlay-title="Screenshot all screens" { spawn "horizon-screenshot" "full"; }
+
+    // --- Workspaces (niri stacks them vertically, one per monitor) ----------------
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+    Mod+0 { focus-workspace 10; }
+    Mod+Shift+1 { move-column-to-workspace 1; }
+    Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Shift+3 { move-column-to-workspace 3; }
+    Mod+Shift+4 { move-column-to-workspace 4; }
+    Mod+Shift+5 { move-column-to-workspace 5; }
+    Mod+Shift+6 { move-column-to-workspace 6; }
+    Mod+Shift+7 { move-column-to-workspace 7; }
+    Mod+Shift+8 { move-column-to-workspace 8; }
+    Mod+Shift+9 { move-column-to-workspace 9; }
+    Mod+Shift+0 { move-column-to-workspace 10; }
+
+    Mod+Tab       { focus-workspace-down; }
+    Mod+Shift+Tab { focus-workspace-up; }
+    Mod+Ctrl+Right { focus-workspace-down; }
+    Mod+Ctrl+Left  { focus-workspace-up; }
+    Mod+Ctrl+Down  { focus-workspace-previous; }
+    Mod+Ctrl+Alt+Right { move-column-to-workspace-down; }
+    Mod+Ctrl+Alt+Left  { move-column-to-workspace-up; }
+
+    // --- Mouse ---------------------------------------------------------------------
+    // Super + left drag moves a window, Super + right drag resizes (niri built-in).
+    Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
+    Mod+WheelScrollUp   cooldown-ms=150 { focus-workspace-up; }
+
+    // --- Media keys (work on the lock screen too) -------------------------------------
+    XF86AudioPlay        allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioNext        allow-when-locked=true { spawn "playerctl" "next"; }
+    XF86AudioPrev        allow-when-locked=true { spawn "playerctl" "previous"; }
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"; }
+    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+    XF86MonBrightnessUp   allow-when-locked=true { spawn "brightnessctl" "set" "+5%"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "set" "5%-"; }
+
+    // Escape hatch if a fullscreen app grabs every key
+    Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+    Ctrl+Alt+Delete { quit; }
+}

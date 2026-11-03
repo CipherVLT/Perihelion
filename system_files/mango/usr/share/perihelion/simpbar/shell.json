@@ -1,0 +1,41 @@
+{
+  "font_path": "@FONT_PATH@",
+  "overview_favorites": [
+    "kitty",
+    "firefox",
+    "strata",
+    "steam"
+  ],
+  "widgets": [
+    {
+      "id": "clock",
+      "x": 24,
+      "y": 24
+    },
+    {
+      "id": "media",
+      "x": 24,
+      "y": 106
+    },
+    {
+      "id": "system",
+      "x": 24,
+      "y": 280
+    },
+    {
+      "id": "calendar",
+      "x": 24,
+      "y": 400
+    },
+    {
+      "id": "note1",
+      "x": 24,
+      "y": 640
+    },
+    {
+      "id": "watch",
+      "x": 1711,
+      "y": 24
+    }
+  ]
+}

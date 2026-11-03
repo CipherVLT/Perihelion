@@ -3,8 +3,9 @@
 #
 # simpbar by jaytheoutpatient: https://github.com/jaytheoutpatient/simpbar
 # A native Zig/Wayland status bar for Hyprland and MangoWM. Only the bar
-# itself is installed (/usr/bin/simpbar); its Welcome/Config apps, desktop
-# widgets, app drawer and Arch installer are not part of Perihelion.
+# (/usr/bin/simpbar) and simpbar-shell (/usr/bin/simpbar-shell: desktop
+# widgets and window overview, also native Zig) are installed; its
+# Welcome/Config apps, Quickshell app drawer and Arch installer are not.
 #
 # Built from the commit pinned in build/refs/simpbar.ref with Zig 0.16.0
 # (the release tarball from ziglang.org, verified against the Zig Software
@@ -29,7 +30,7 @@ rpm -qa --qf '%{NAME}\n' | sort -u > /tmp/simpbar-before.txt
 # headers are needed for the build even though only the bar is installed.
 dnf5 install -y --setopt=install_weak_deps=False \
     git-core curl xz minisign pkgconf-pkg-config \
-    wayland-devel wayland-protocols-devel freetype-devel gdk-pixbuf2-devel \
+    wayland-devel wayland-protocols-devel freetype-devel gdk-pixbuf2-devel libxkbcommon-devel \
     gtk4-devel libadwaita-devel glib2-devel
 
 work=$(mktemp -d)
@@ -62,6 +63,13 @@ git -C "${src}" checkout -q --detach FETCH_HEAD
     "${zig_dir}/zig" build -Doptimize=ReleaseFast "-Dcpu=${ZIG_CPU}"
 )
 install -Dm755 "${src}/simpbar/zig-out/bin/simpbar" /usr/bin/simpbar
+
+# simpbar-shell (desktop widgets, window overview); shares the bar's font code.
+(
+    cd "${src}/simpbar-shell"
+    "${zig_dir}/zig" build -Doptimize=ReleaseFast "-Dcpu=${ZIG_CPU}"
+)
+install -Dm755 "${src}/simpbar-shell/zig-out/bin/simpbar-shell" /usr/bin/simpbar-shell
 install -d /usr/share/perihelion
 printf '%s\n' "${SIMPBAR_REF}" > /usr/share/perihelion/simpbar.ref
 rm -rf "${work}"
@@ -74,7 +82,9 @@ if (( ${#build_only[@]} )); then
 fi
 rm -f /tmp/simpbar-before.txt /tmp/simpbar-after.txt
 
-if ldd /usr/bin/simpbar | grep -F 'not found'; then
-    die "simpbar is missing shared libraries"
-fi
-log "simpbar: installed /usr/bin/simpbar"
+for bin in /usr/bin/simpbar /usr/bin/simpbar-shell; do
+    if ldd "${bin}" | grep -F 'not found'; then
+        die "${bin} is missing shared libraries"
+    fi
+done
+log "simpbar: installed /usr/bin/simpbar and /usr/bin/simpbar-shell"

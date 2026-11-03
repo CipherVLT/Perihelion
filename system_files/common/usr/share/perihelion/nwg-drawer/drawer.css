@@ -1,0 +1,63 @@
+/* Perihelion app drawer (nwg-drawer): Catppuccin Macchiato.
+ * Your copy: ~/.config/nwg-drawer/drawer.css
+ * base #24273a  surface0 #363a4f  overlay0 #6e738d  text #cad3f5
+ * blue #8aadf4  pink #f5bde6 */
+
+window {
+    background-color: rgba(36, 39, 58, 0.92);
+    color: #cad3f5;
+}
+
+/* search entry */
+entry {
+    background-color: #363a4f;
+    color: #cad3f5;
+    border: 2px solid #8aadf4;
+    border-radius: 8px;
+    box-shadow: none;
+    padding: 6px 10px;
+    margin: 12px;
+}
+
+button, image {
+    background: none;
+    border: none;
+    box-shadow: none;
+}
+
+button {
+    color: #cad3f5;
+    padding: 6px;
+    border-radius: 8px;
+}
+
+button:hover,
+button:focus {
+    background-color: rgba(138, 173, 244, 0.22);
+    color: #8aadf4;
+}
+
+/* category row */
+#category-button {
+    margin: 0 8px;
+}
+
+#category-button:checked,
+#category-button:active {
+    color: #f5bde6;
+}
+
+#pinned-box {
+    padding-bottom: 6px;
+    border-bottom: 1px dotted #6e738d;
+}
+
+#files-box {
+    padding: 6px;
+    border: 1px dotted #6e738d;
+    border-radius: 12px;
+}
+
+#power-button {
+    color: #f5bde6;
+}

@@ -36,6 +36,14 @@ on real hardware yet. Mango is the first flavor to test.
 
 NVIDIA ISOs are planned for later and are not built yet.
 
+## Keybinds
+
+All three flavors share your Veyl OS keybind set: Super+Return terminal,
+Super+D launcher, Super+A app drawer, Super+E files, Super+B browser,
+Super+S Steam, Super+O overview, Super+Shift+W wallpaper, Super+Shift+Q
+power menu, Super+H every keybind. Hyprland and Niri also have Super+V
+clipboard history and Super+T settings (Event Horizon).
+
 ## Mango: first login
 
 Pick **Mango** on the login screen. Super is the Windows key.
@@ -51,6 +59,10 @@ Pick **Mango** on the login screen. Super is the Windows key.
 | Super+Shift+Ctrl+arrows | Swap windows |
 | Super+1-9 / Super+Shift+1-9 | Go to / move window to workspace |
 | Super+W / Super+F | Floating / fullscreen |
+| Super+A | App drawer (grid of every app) |
+| Super+Shift+W | Wallpaper picker (images in `~/Pictures/Wallpapers`) |
+| Super+O / Alt+W | Overview (Mango's own / simpbar-shell's with live previews) |
+| Super+Shift+Q | Power menu (also the power button on the bar) |
 | Super+H | **Every keybind, searchable** |
 | Super+Shift+E | Log out |
 

@@ -94,6 +94,10 @@ flatpak
 kitty
 firefox
 fuzzel
+# App drawer grid (perihelion-drawer, Super+A)
+nwg-drawer
+# Media keys (play/pause, next, previous) in every flavor
+playerctl
 # Strata (the file manager) comes from its release via build/install-strata.sh;
 # these are the libraries it links against. gvfs provides the Trash (trash:///).
 gtk4

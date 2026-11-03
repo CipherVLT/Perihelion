@@ -86,45 +86,105 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("horizon")
 end)
 
-local mod = "SUPER"
-local function key(k) return mod .. " + " .. k end
-
-hl.bind(key("Return"), hl.dsp.exec_cmd("kitty"))
-hl.bind(key("Q"), hl.dsp.window.close())
-hl.bind(key("M"), hl.dsp.exit())
-hl.bind(key("F"), hl.dsp.window.fullscreen())
-hl.bind(key("Space"), hl.dsp.exec_cmd("fuzzel"))
--- Screenshots open in Satty (annotate, copy, save to ~/Pictures/Screenshots,
--- save as). horizon-screenshot opens one editor at a time.
-hl.bind(key("SHIFT + S"), hl.dsp.exec_cmd("horizon-screenshot"))
-hl.bind(key("Print"), hl.dsp.exec_cmd("horizon-screenshot"))
-hl.bind("Print", hl.dsp.exec_cmd("horizon-screenshot screen"))
-hl.bind("ALT + Print", hl.dsp.exec_cmd("horizon-screenshot full"))
-hl.bind(key("V"), hl.dsp.window.float({ action = "toggle" }))
-hl.bind(key("P"), hl.dsp.window.pseudo())
-hl.bind(key("T"), hl.dsp.layout("togglesplit"))
-
-for k, dir in pairs({ left = "left", right = "right", up = "up", down = "down",
-                      H = "left", L = "right", K = "up", J = "down" }) do
-    hl.bind(key(k), hl.dsp.focus({ direction = dir }))
+-- Keybinds: Veyl OS's set (github.com/CipherVLT/veyl-os keybind.lua) with
+-- Perihelion's apps, plus the app drawer, wallpaper picker and power menu.
+-- Super+H lists every bind with its description.
+local mainMod = "SUPER"
+local function key(k) return mainMod .. " + " .. k end
+local function bind(k, action, desc, opts)
+    opts = opts or {}
+    opts.description = desc
+    hl.bind(k, action, opts)
 end
+
+-- 1. Applications
+bind(key("RETURN"), hl.dsp.exec_cmd("kitty"), "Terminal")
+bind(key("E"), hl.dsp.exec_cmd("strata"), "File manager")
+bind(key("B"), hl.dsp.exec_cmd("firefox"), "Browser")
+bind(key("D"), hl.dsp.exec_cmd("fuzzel"), "App launcher")
+bind(key("A"), hl.dsp.exec_cmd("perihelion-drawer"), "App drawer")
+bind(key("S"), hl.dsp.exec_cmd("steam"), "Steam")
+bind(key("L"), hl.dsp.exec_cmd("loginctl lock-session"), "Lock screen")
+bind(key("SHIFT + E"), hl.dsp.exit(), "Log out")
+bind(key("M"), hl.dsp.exit(), "Log out")
+bind(key("SHIFT + Q"), hl.dsp.exec_cmd("perihelion-power-menu"), "Power menu")
+bind(key("T"), hl.dsp.exec_cmd("horizon-settings"), "Settings")
+bind(key("H"), hl.dsp.exec_cmd("perihelion-keys"), "Show all keybinds")
+bind(key("SHIFT + W"), hl.dsp.exec_cmd("perihelion-wallpaper-picker"), "Wallpaper picker")
+bind(key("V"), hl.dsp.exec_cmd("horizon-clipstack-pick"), "Clipboard history")
+bind(key("O"), hl.dsp.exec_cmd("eh-ipc overview-toggle"), "Overview")
+bind(key("SHIFT + D"), hl.dsp.exec_cmd("pkill -x horizon; sleep 0.5; horizon"), "Restart Event Horizon")
+
+-- 2. Window management
+bind(key("Q"), hl.dsp.window.close(), "Close window")
+bind(key("W"), hl.dsp.window.float({ action = "toggle" }), "Toggle floating")
+bind(key("F"), hl.dsp.window.fullscreen(), "Toggle fullscreen")
+
+-- 3. Navigation and layout
+bind(key("TAB"), hl.dsp.focus({ workspace = "m+1" }), "Next workspace on monitor")
+bind(key("SHIFT + TAB"), hl.dsp.focus({ workspace = "m-1" }), "Previous workspace on monitor")
 for _, dir in ipairs({ "left", "right", "up", "down" }) do
-    hl.bind(key("SHIFT + " .. dir), hl.dsp.window.move({ direction = dir }))
+    bind(key(dir), hl.dsp.focus({ direction = dir }), "Focus " .. dir)
 end
+bind("ALT + TAB", hl.dsp.window.cycle_next(), "Cycle windows")
 
+bind(key("SHIFT + right"), hl.dsp.window.resize({ x = 30, y = 0, relative = true }), "Resize window right")
+bind(key("SHIFT + left"), hl.dsp.window.resize({ x = -30, y = 0, relative = true }), "Resize window left")
+bind(key("SHIFT + up"), hl.dsp.window.resize({ x = 0, y = -30, relative = true }), "Resize window up")
+bind(key("SHIFT + down"), hl.dsp.window.resize({ x = 0, y = 30, relative = true }), "Resize window down")
+
+-- Floating windows nudge by 30 px; tiled windows swap in that direction.
+local function moveOrSwap(direction, x, y)
+    return function()
+        local w = hl.get_active_window()
+        if w and w.floating then
+            hl.dispatch(hl.dsp.window.move({ x = x, y = y, relative = true }))
+        else
+            hl.dispatch(hl.dsp.window.move({ direction = direction }))
+        end
+    end
+end
+bind(key("SHIFT + CTRL + left"), moveOrSwap("left", -30, 0), "Move or swap window left")
+bind(key("SHIFT + CTRL + right"), moveOrSwap("right", 30, 0), "Move or swap window right")
+bind(key("SHIFT + CTRL + up"), moveOrSwap("up", 0, -30), "Move or swap window up")
+bind(key("SHIFT + CTRL + down"), moveOrSwap("down", 0, 30), "Move or swap window down")
+
+-- 4. Screenshots open in Satty (annotate, copy, save to ~/Pictures/Screenshots)
+bind(key("SHIFT + S"), hl.dsp.exec_cmd("horizon-screenshot"), "Screenshot region")
+bind(key("PRINT"), hl.dsp.exec_cmd("horizon-screenshot"), "Screenshot region")
+bind("PRINT", hl.dsp.exec_cmd("horizon-screenshot screen"), "Screenshot current screen")
+bind("ALT + PRINT", hl.dsp.exec_cmd("horizon-screenshot full"), "Screenshot all screens")
+
+-- 5. Workspaces
 for i = 1, 9 do
-    hl.bind(key(tostring(i)), hl.dsp.focus({ workspace = i }))
-    hl.bind(key("SHIFT + " .. i), hl.dsp.window.move({ workspace = i }))
+    bind(key(tostring(i)), hl.dsp.focus({ workspace = i }), "Workspace " .. i)
+    bind(key("SHIFT + " .. i), hl.dsp.window.move({ workspace = i }), "Move to workspace " .. i)
 end
+bind(key("0"), hl.dsp.focus({ workspace = 10 }), "Workspace 10")
+bind(key("SHIFT + 0"), hl.dsp.window.move({ workspace = 10 }), "Move to workspace 10")
 
-hl.bind(key("mouse:272"), hl.dsp.window.drag(), { mouse = true })
-hl.bind(key("mouse:273"), hl.dsp.window.resize(), { mouse = true })
+bind(key("CTRL + right"), hl.dsp.focus({ workspace = "r+1" }), "Next workspace")
+bind(key("CTRL + left"), hl.dsp.focus({ workspace = "r-1" }), "Previous workspace")
+bind(key("CTRL + down"), hl.dsp.focus({ workspace = "empty" }), "Open empty workspace")
+bind(key("CTRL + ALT + right"), hl.dsp.window.move({ workspace = "r+1" }), "Move to next workspace")
+bind(key("CTRL + ALT + left"), hl.dsp.window.move({ workspace = "r-1" }), "Move to previous workspace")
 
--- Resize the focused window from the keyboard, 30 px per press.
-hl.bind(key("ALT + right"), hl.dsp.window.resize({ x = 30, y = 0, relative = true }))
-hl.bind(key("ALT + left"), hl.dsp.window.resize({ x = -30, y = 0, relative = true }))
-hl.bind(key("ALT + up"), hl.dsp.window.resize({ x = 0, y = -30, relative = true }))
-hl.bind(key("ALT + down"), hl.dsp.window.resize({ x = 0, y = 30, relative = true }))
+-- 6. Mouse
+bind(key("mouse_down"), hl.dsp.focus({ workspace = "e+1" }), "Scroll to next workspace")
+bind(key("mouse_up"), hl.dsp.focus({ workspace = "e-1" }), "Scroll to previous workspace")
+bind(key("mouse:272"), hl.dsp.window.drag(), "Drag window", { mouse = true })
+bind(key("mouse:273"), hl.dsp.window.resize(), "Resize window", { mouse = true })
+bind(key("X"), hl.dsp.window.resize(), "Resize mode")
+
+-- 7. Media keys (work on the lock screen too)
+bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), "Play or pause", { locked = true })
+bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), "Next track", { locked = true })
+bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), "Previous track", { locked = true })
+bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+"), "Volume up", { locked = true })
+bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), "Volume down", { locked = true })
+bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), "Mute", { locked = true })
+bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl set +5%"), "Brightness up", { locked = true })
+bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl set 5%-"), "Brightness down", { locked = true })
 
 -- Window border colours from Event Horizon (rewritten when you pick a
 -- wallpaper); last, so they win over the defaults above.

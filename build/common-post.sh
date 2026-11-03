@@ -20,7 +20,8 @@ grep -qx 'install_weak_deps=False' /etc/dnf/dnf.conf
 
 log "common: system files"
 apply_system_files common
-chmod 0755 /usr/bin/perihelion-os-age /usr/bin/strata /usr/bin/perihelion-doctor /usr/libexec/perihelion-trash /usr/libexec/perihelion-strata-theme
+chmod 0755 /usr/bin/perihelion-os-age /usr/bin/strata /usr/bin/perihelion-doctor \
+    /usr/bin/perihelion-power-menu /usr/bin/perihelion-wallpaper-picker /usr/bin/perihelion-drawer /usr/bin/perihelion-keys /usr/libexec/perihelion-trash /usr/libexec/perihelion-strata-theme
 
 # --- Wallpapers -----------------------------------------------------------------
 # Present only if scripts/fetch-wallpapers.sh ran before the ISO was built
@@ -123,6 +124,9 @@ chmod 0755 /usr/libexec/perihelion-flathub
 # Add it now; if the installer has no network, the service adds it at boot.
 /usr/libexec/perihelion-flathub || log "WARNING: Flathub not reachable now; perihelion-flathub.service adds it at first boot"
 systemctl enable perihelion-flathub.service
+
+# --- App drawer (nwg-drawer, Super+A) ---------------------------------------------
+seed_user_file /usr/share/perihelion/nwg-drawer/drawer.css .config/nwg-drawer/drawer.css
 
 # --- fastfetch (Veyl OS layout) --------------------------------------------------
 chmod 0644 /etc/profile.d/perihelion-fastfetch.sh

@@ -22,8 +22,6 @@ mate-polkit
 grim
 slurp
 wl-clipboard
-# Media keys
-playerctl
 # Makes the session visible to portals (dbus-update-activation-environment)
 dbus-tools
 # Shows the name of any key you press (for writing your own binds)

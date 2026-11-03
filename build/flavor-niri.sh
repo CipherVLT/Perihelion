@@ -25,18 +25,16 @@ fi
 [[ -f "${default_cfg}" ]] || die "no niri default config found"
 cfg=$(mktemp)
 chmod 644 "${cfg}"
-sed -e 's/spawn "alacritty"/spawn "kitty"/; s/Open a Terminal: alacritty/Open a Terminal: kitty/' \
-    -e 's/^spawn-at-startup "waybar"$/spawn-at-startup "horizon"/' \
-    -e 's/spawn "swaylock"/spawn "loginctl" "lock-session"/; s/Lock the Screen: swaylock/Lock the Screen/' \
-    "${default_cfg}" > "${cfg}"
-grep -q 'spawn "kitty"' "${cfg}" || die "could not point niri's terminal bind at kitty"
+# niri's own default config with Event Horizon instead of waybar, and its
+# binds block (niri allows exactly one) replaced by Perihelion's Veyl OS set
+# from /usr/share/perihelion/niri/binds.kdl.
+sed -e 's/^spawn-at-startup "waybar"$/spawn-at-startup "horizon"/' "${default_cfg}" |
+    awk '/^binds \{$/ { skip = 1; next } skip && /^\}$/ { skip = 0; next } !skip' > "${cfg}"
 grep -q '^spawn-at-startup "horizon"$' "${cfg}" || die "could not start Event Horizon from niri's config"
-# Super+Shift+S: region screenshot into the editor (Satty). niri's own Print
-# binds stay as they are. Added inside the existing binds block, since niri
-# allows only one; fails if upstream ever binds Mod+Shift+S itself.
-grep -q 'Mod+Shift+S ' "${cfg}" && die "niri's default config already binds Mod+Shift+S"
-sed -i '0,/^binds {$/s//binds {\n    \/\/ Perihelion: region screenshot into the editor (Satty).\n    Mod+Shift+S hotkey-overlay-title="Screenshot to editor" { spawn "horizon-screenshot"; }\n/' "${cfg}"
-grep -q 'spawn "horizon-screenshot"' "${cfg}" || die "could not add the screenshot bind"
+grep -q '^binds {' "${cfg}" && die "could not remove niri's default binds block"
+cat /usr/share/perihelion/niri/binds.kdl >> "${cfg}"
+[[ $(grep -c '^binds {' "${cfg}") -eq 1 ]] || die "niri config must have exactly one binds block"
+niri validate -c "${cfg}" || die "Perihelion's niri config does not validate with $(niri --version)"
 seed_user_file "${cfg}" .config/niri/config.kdl
 rm -f "${cfg}"
 

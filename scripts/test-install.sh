@@ -108,6 +108,14 @@ check rpm -q fastfetch lm_sensors nethogs
 # kitty: Catppuccin Macchiato in every flavor
 check grep -qx 'background              #24273A' /etc/xdg/kitty/kitty.conf
 check grep -qx 'color4  #8AADF4' /etc/xdg/kitty/kitty.conf
+# Shared helpers (every flavor)
+for helper in perihelion-power-menu perihelion-wallpaper-picker perihelion-drawer perihelion-keys; do
+    check test -x "/usr/bin/${helper}"
+done
+check rpm -q nwg-drawer playerctl
+check test -f /home/tester/.config/nwg-drawer/drawer.css
+drawer_flags_ok() { local h; h=$(nwg-drawer -h 2>&1 || true); for f in -term -fm -ovl -c -is -spacing; do grep -q -- "^ *${f}\b" <<<"${h}" || { echo "nwg-drawer has no ${f}"; return 1; }; done; }
+check drawer_flags_ok
 check rpm -q flatpak
 flathub_configured() { flatpak remotes --system --columns=name | grep -qx flathub; }
 check flathub_configured
@@ -142,6 +150,12 @@ case "${flavor}" in
         check ldd /usr/bin/simpbar
         check test -x /usr/bin/perihelion-power-menu
         check test -x /usr/bin/appdrawer
+        check test -x /usr/bin/simpbar-shell
+        check ldd /usr/bin/simpbar-shell
+        check test -f /home/tester/.config/simpbar/shell.json
+        check test -f /home/tester/.config/simpbar/matugen.json
+        check grep -qx weather /home/tester/.config/simpbar/widgets-disabled
+        check grep -q 'ALT,w,spawn,simpbar-shell overview toggle' /home/tester/.config/mango/config.conf
         check test -f /usr/share/doc/perihelion/simpbar.md
         check rpm -q cava
         check grep -q '"position": "bottom"' /home/tester/.config/simpbar/config.json
@@ -157,12 +171,20 @@ case "${flavor}" in
     hyprland)
         check test -x /usr/bin/horizon
         check test -f /usr/share/wayland-sessions/event-horizon.desktop
+        check grep -q 'bind(key("A"), hl.dsp.exec_cmd("perihelion-drawer"), "App drawer")' /usr/share/event-horizon/skel/hypr/hyprland.lua
+        check grep -q 'bind(key("O"), hl.dsp.exec_cmd("eh-ipc overview-toggle"), "Overview")' /usr/share/event-horizon/skel/hypr/hyprland.lua
+        check test -x /usr/bin/horizon-wallpaper
+        check test -x /usr/bin/horizon-clipstack-pick
         check test -f /etc/xdg/xdg-desktop-portal/hyprland-portals.conf
         ;;
     niri)
         check test -x /usr/bin/horizon
         check test -f /home/tester/.config/niri/config.kdl
         check niri validate -c /home/tester/.config/niri/config.kdl
+        check grep -q 'Mod+A hotkey-overlay-title="App drawer" { spawn "perihelion-drawer"; }' /home/tester/.config/niri/config.kdl
+        check grep -q 'Mod+Shift+W hotkey-overlay-title="Wallpaper picker"' /home/tester/.config/niri/config.kdl
+        has_one_binds_block() { [[ $(grep -c '^binds {' /home/tester/.config/niri/config.kdl) -eq 1 ]]; }
+        check has_one_binds_block
         check test -f /etc/xdg/xdg-desktop-portal/niri-portals.conf
         ;;
 esac
