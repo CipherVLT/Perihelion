@@ -142,7 +142,7 @@ For the visualizer filling the whole bar behind the modules, try
 
 Eight widgets can sit on the wallpaper: clock, weather, media (now playing),
 system, calendar, watch (analog), sticky note, and desktop icons. Perihelion
-starts with just the clock.
+starts with just the calendar and weather, on see-through cards.
 
 - **Add or remove:** open **Simpbar Config** from the app launcher (Super+D)
   or the app drawer (Super+A). Under *Appearance → Desktop Widgets*, each
@@ -153,6 +153,15 @@ starts with just the clock.
 - **Resize:** drag the grip in a card's bottom-right corner.
 - The last widget can't be removed with Alt + right-click: with none left,
   simpbar-shell stops, and the Alt+W overview with it.
+
+**More or less see-through:** `"card_bg_opacity"` in
+`~/.config/simpbar/shell.json`, from 0 (clear) to 100 (solid). Perihelion
+uses 25; simpbar's own default is 55. Restart the widgets after changing it
+(command below). Super+G doesn't affect the widgets: it changes app windows.
+
+**Holidays on the calendar:** `"holiday_country"` (default `"US"`) and
+`"holiday_region"` (for example `"US-TX"` for Texas's own holidays) in the
+same file.
 
 What some of them need:
 

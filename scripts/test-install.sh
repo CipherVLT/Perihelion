@@ -175,9 +175,10 @@ case "${flavor}" in
         check ldd /usr/bin/simpbar-shell
         check test -f /home/tester/.config/simpbar/shell.json
         check test -f /home/tester/.config/simpbar/matugen.json
-        check grep -qx weather /home/tester/.config/simpbar/widgets-disabled
-        clock_only_ok() { ! grep -qx clock /home/tester/.config/simpbar/widgets-disabled && [[ $(grep -c . /home/tester/.config/simpbar/widgets-disabled) -eq 7 ]]; }
-        check clock_only_ok
+        # Minimal desktop: only weather and calendar on, see-through cards
+        minimal_widgets_ok() { ! grep -qxE 'weather|calendar' /home/tester/.config/simpbar/widgets-disabled && [[ $(grep -c . /home/tester/.config/simpbar/widgets-disabled) -eq 6 ]]; }
+        check minimal_widgets_ok
+        check grep -q '"card_bg_opacity": 25' /home/tester/.config/simpbar/shell.json
         check test -x /usr/bin/simpbar-config
         check ldd /usr/bin/simpbar-config
         check test -f /usr/share/applications/simpbar-config.desktop
