@@ -39,6 +39,9 @@
       },
       {
         "kind": "mpris"
+      },
+      {
+        "kind": "cava"
       }
     ],
     "center": [
@@ -67,9 +70,6 @@
       },
       {
         "kind": "layout"
-      },
-      {
-        "kind": "cava"
       }
     ]
   },

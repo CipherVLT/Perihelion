@@ -25,11 +25,10 @@ The bar has three groups:
 
 ```json
 "modules": {
-  "left":   [ { "kind": "workspaces" }, { "kind": "mpris" } ],
+  "left":   [ { "kind": "workspaces" }, { "kind": "mpris" }, { "kind": "cava" } ],
   "center": [ { "kind": "launchers" },  { "kind": "clock" } ],
   "right":  [ { "kind": "power" }, { "kind": "battery" }, { "kind": "volume" },
-              { "kind": "network" }, { "kind": "tray" }, { "kind": "layout" },
-              { "kind": "cava" } ]
+              { "kind": "network" }, { "kind": "tray" }, { "kind": "layout" } ]
 }
 ```
 
@@ -44,6 +43,7 @@ The bar has three groups:
 | Group | Modules |
 |---|---|
 | left, center | `workspaces`, `mpris` (now playing), `clock`, `launchers` |
+| left (Perihelion) | `cava` as a mirrored sound wave, best right after `mpris` |
 | right | `power`, `battery`, `volume`, `network`, `tray`, `layout` (Mango layout picker), `cava`, `cpu`, `cpu_temp`, `ram`, `disk`, `weather`, `custom_script`, `drawer_toggle` |
 
 A module put in a group that doesn't draw it is silently skipped.
@@ -130,6 +130,10 @@ Colors are `"#RRGGBB"`. Perihelion uses Catppuccin Macchiato
 | `cava_style` | `"bars"`, `"wave"`, `"curve"` | `"bars"` |
 | `bg_mode` | `"none"`, `"cava"` (equalizer across the whole bar background), `"matrix"`, `"lava"` | `"none"` |
 | `cava_bg_strength` | 0–100, how strongly `bg_mode: "cava"` tints the bar | `35` |
+
+`cava` in **left** draws a mirrored sound wave (a Perihelion patch to
+simpbar, `build/patches/simpbar-left-cava-wave.patch`); in **right** it is
+simpbar's small equalizer. Move the `{ "kind": "cava" }` entry to switch.
 
 For the visualizer filling the whole bar behind the modules, try
 `"bg_mode": "cava"` with `"cava_style": "curve"` and `"cava_bg_strength": 45`.

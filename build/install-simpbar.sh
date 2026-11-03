@@ -55,6 +55,10 @@ git -C "${work}" init -q simpbar
 git -C "${src}" remote add origin "${SIMPBAR_REPO}"
 retry git -C "${src}" fetch -q --depth 1 origin "${SIMPBAR_REF}"
 git -C "${src}" checkout -q --detach FETCH_HEAD
+# Perihelion's patches: cava as a sound wave in the left group (beside mpris).
+for patch in "${PERIHELION_SRC}"/build/patches/simpbar-*.patch; do
+    git -C "${src}" apply "${patch}" || die "simpbar patch does not apply: ${patch##*/}"
+done
 
 # The bar lives in the simpbar/ subfolder; its Wayland dependency is vendored
 # in simpbar/zig-pkg, so the build needs no further downloads.
