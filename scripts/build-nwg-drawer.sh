@@ -20,7 +20,7 @@ work=$(mktemp -d)
 trap 'rm -rf "${work}"' EXIT
 
 dnf5 install -y --setopt=install_weak_deps=False \
-    git-core golang gtk3-devel gtk-layer-shell-devel
+    git-core golang gtk3-devel gtk-layer-shell-devel gobject-introspection-devel
 
 git clone -q --depth 1 --branch "${version}" https://github.com/nwg-piotr/nwg-drawer "${work}/src"
 got=$(git -C "${work}/src" rev-parse HEAD)
