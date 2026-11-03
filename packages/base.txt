@@ -95,7 +95,10 @@ kitty
 firefox
 fuzzel
 # App drawer grid (perihelion-drawer, Super+A)
-nwg-drawer
+# nwg-drawer itself is built by scripts/build-nwg-drawer.sh (Fedora dropped it);
+# these are the libraries it links against.
+gtk3
+gtk-layer-shell
 # Media keys (play/pause, next, previous) in every flavor
 playerctl
 # Strata (the file manager) comes from its release via build/install-strata.sh;

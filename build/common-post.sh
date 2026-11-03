@@ -126,6 +126,8 @@ chmod 0755 /usr/libexec/perihelion-flathub
 systemctl enable perihelion-flathub.service
 
 # --- App drawer (nwg-drawer, Super+A) ---------------------------------------------
+[[ -x /usr/bin/nwg-drawer ]] || die "nwg-drawer is missing from the image (scripts/build-nwg-drawer.sh did not run)"
+chmod 0755 /usr/bin/nwg-drawer
 seed_user_file /usr/share/perihelion/nwg-drawer/drawer.css .config/nwg-drawer/drawer.css
 
 # --- fastfetch (Veyl OS layout) --------------------------------------------------

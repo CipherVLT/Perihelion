@@ -151,6 +151,8 @@ To read the final kickstart without building: `scripts/render-ks.sh mango`.
 
 The Mango flavor's top bar is [simpbar](https://github.com/jaytheoutpatient/simpbar)
 by **jaytheoutpatient**, a native Zig/Wayland bar for Hyprland and MangoWM.
+The Super+A app drawer is [nwg-drawer](https://github.com/nwg-piotr/nwg-drawer)
+by **Piotr Miller** (MIT).
 
 Built from pieces of [horizon-forge](https://github.com/CipherVLT/horizon-forge)
 and [Veyl OS](https://github.com/CipherVLT/veyl-os). The ISO build approach

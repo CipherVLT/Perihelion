@@ -3,6 +3,11 @@ out/
 .env
 .env.*
 
+# Built in CI by scripts/build-nwg-drawer.sh
+system_files/common/usr/bin/nwg-drawer
+system_files/common/usr/share/nwg-drawer/
+system_files/common/usr/share/licenses/nwg-drawer/
+
 # Wallpapers are fetched locally (scripts/fetch-wallpapers.sh), never committed
 branding/wallpapers/*
 !branding/wallpapers/README.md

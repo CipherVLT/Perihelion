@@ -67,6 +67,12 @@ Catppuccin (https://catppuccin.com), MIT
 Pixie SDDM theme by xCaptaiN09 (https://github.com/xCaptaiN09/pixie-sddm), MIT
   system_files/common/usr/share/sddm/themes/pixie (see LICENSE and SOURCE there).
 
+Built in CI and shipped on the ISO (not stored in this repository):
+  nwg-drawer by Piotr Miller (https://github.com/nwg-piotr/nwg-drawer), MIT
+    The Super+A app drawer, v0.7.5, built by scripts/build-nwg-drawer.sh.
+    Its license and the gotk4 license are installed in
+    /usr/share/licenses/nwg-drawer.
+
 Downloaded at install time, not redistributed in this repository:
   simpbar by jaytheoutpatient (https://github.com/jaytheoutpatient/simpbar)
     The Mango flavor's top bar, built from the commit in build/refs/simpbar.ref.

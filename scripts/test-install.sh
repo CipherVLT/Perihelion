@@ -112,7 +112,11 @@ check grep -qx 'color4  #8AADF4' /etc/xdg/kitty/kitty.conf
 for helper in perihelion-power-menu perihelion-wallpaper-picker perihelion-drawer perihelion-keys; do
     check test -x "/usr/bin/${helper}"
 done
-check rpm -q nwg-drawer playerctl
+check rpm -q playerctl gtk-layer-shell
+check test -x /usr/bin/nwg-drawer
+check test -d /usr/share/nwg-drawer/desktop-directories
+drawer_links_ok() { ! ldd /usr/bin/nwg-drawer | grep -q 'not found'; }
+check drawer_links_ok
 check test -f /home/tester/.config/nwg-drawer/drawer.css
 drawer_flags_ok() { local h; h=$(nwg-drawer -h 2>&1 || true); for f in -term -fm -ovl -c -is -spacing; do grep -q -- "^ *${f}\b" <<<"${h}" || { echo "nwg-drawer has no ${f}"; return 1; }; done; }
 check drawer_flags_ok
