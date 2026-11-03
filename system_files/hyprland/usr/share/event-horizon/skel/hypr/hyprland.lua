@@ -29,6 +29,8 @@ hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Classic")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("QT_QPA_PLATFORM", "wayland")
+-- Qt apps take their look from qt6ct (~/.config/qt6ct/qt6ct.conf).
+hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 hl.env("GDK_BACKEND", "wayland,x11")
 hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
 

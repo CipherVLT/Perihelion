@@ -119,6 +119,10 @@ adwaita-icon-theme
 #, DejaVu Sans Mono (terminal)
 bibata-cursor-theme
 dejavu-sans-mono-fonts
+# Qt apps' look (icons, colors, fonts): qt6ct, picked up through
+# QT_QPA_PLATFORMTHEME=qt6ct in each compositor's config
+qt6ct
+dejavu-lgc-sans-fonts
 hicolor-icon-theme
 google-noto-sans-fonts
 google-noto-sans-mono-fonts

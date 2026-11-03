@@ -108,6 +108,9 @@ check rpm -q fastfetch lm_sensors nethogs
 # Look: Numix-Circle icons, Bibata cursor 24 px, DejaVu Sans Mono 11 pt
 check test -f /usr/share/icons/Numix-Circle/index.theme
 check test -f /usr/share/icons/Numix/index.theme
+check rpm -q qt6ct dejavu-lgc-sans-fonts
+check grep -qx 'icon_theme=Numix-Circle' /home/tester/.config/qt6ct/qt6ct.conf
+check test -f /usr/share/perihelion/qt6ct/catppuccin-macchiato.conf
 check rpm -q bibata-cursor-theme dejavu-sans-mono-fonts
 check test -d /usr/share/icons/Bibata-Modern-Classic/cursors
 check grep -qx 'font_family DejaVu Sans Mono' /etc/xdg/kitty/kitty.conf

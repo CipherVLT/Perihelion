@@ -147,6 +147,7 @@ grep -qx 'system-db:local' /etc/dconf/profile/user || echo 'system-db:local' >> 
 dconf update
 seed_user_file /usr/share/perihelion/gtk/settings.ini .config/gtk-3.0/settings.ini
 seed_user_file /usr/share/perihelion/gtk/settings.ini .config/gtk-4.0/settings.ini
+seed_user_file /usr/share/perihelion/qt6ct/qt6ct.conf .config/qt6ct/qt6ct.conf
 
 # --- App drawer (nwg-drawer, Super+A) ---------------------------------------------
 [[ -x /usr/bin/nwg-drawer ]] || die "nwg-drawer is missing from the image (scripts/build-nwg-drawer.sh did not run)"

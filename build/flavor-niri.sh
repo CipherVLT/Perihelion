@@ -46,12 +46,17 @@ window-rule {
 // Glass mode: Super+G (perihelion-glass) writes glass.kdl.
 include optional=true "glass.kdl"
 EOF
-# Cursor: Bibata Modern Classic, 24 px (niri passes it on to apps).
+# Cursor: Bibata Modern Classic, 24 px (niri passes it on to apps). Qt apps
+# take their look from qt6ct.
 cat >> "${cfg}" <<'EOF'
 
 cursor {
     xcursor-theme "Bibata-Modern-Classic"
     xcursor-size 24
+}
+
+environment {
+    QT_QPA_PLATFORMTHEME "qt6ct"
 }
 EOF
 [[ $(grep -c '^binds {' "${cfg}") -eq 1 ]] || die "niri config must have exactly one binds block"
