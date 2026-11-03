@@ -26,6 +26,9 @@ glibc-gconv-extra
 nano
 nano-default-editor
 # System info in every new terminal (Veyl OS layout; perihelion-fastfetch.sh)
+# Keeps the clock right over the internet (NTP); without it the clock is
+# only as good as the hardware clock
+chrony
 fastfetch
 # Hardware sensors (sensors, sensors-detect) and per-app network usage, as
 # system monitors like Mission Center expect

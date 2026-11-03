@@ -134,6 +134,15 @@ systemctl enable perihelion-flathub.service
 chmod 0755 /usr/libexec/perihelion-auto-timezone
 /usr/libexec/perihelion-auto-timezone --install || true
 systemctl enable perihelion-auto-timezone.service
+# Internet time (chrony), and a hardware clock in UTC like Fedora's default,
+# so the clock is right from boot. A PC that also boots Windows keeps a
+# local-time hardware clock, which is what Windows expects.
+systemctl enable chronyd.service
+if [[ -d /boot/efi/EFI/Microsoft ]]; then
+    log "common: Windows found; hardware clock stays in local time"
+else
+    printf '0.0 0 0.0\n0\nUTC\n' > /etc/adjtime
+fi
 
 # --- Look: Numix-Circle icons, Bibata cursor, DejaVu Sans Mono --------------------
 # gsettings (GTK 4, portals, Event Horizon) and settings.ini (GTK 3, Event

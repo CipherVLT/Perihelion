@@ -53,6 +53,13 @@ report() {
 
     section "Time"
     timedatectl 2>/dev/null | sed 's/^ *//' || bad "timedatectl failed"
+    if [[ "$(timedatectl show -p NTP --value 2>/dev/null)" != yes ]]; then
+        bad "internet time (NTP) is off: sudo dnf install chrony && sudo systemctl enable --now chronyd"
+    elif [[ "$(timedatectl show -p NTPSynchronized --value 2>/dev/null)" != yes ]]; then
+        printf '  info  clock not synchronized yet (normal for a minute after going online)\n'
+    else
+        ok "clock synchronized over the internet"
+    fi
     case "$(timedatectl show -p Timezone --value 2>/dev/null)" in
         UTC | Etc/UTC) bad "time zone is UTC: sudo timedatectl set-timezone Your/City (list: timedatectl list-timezones)" ;;
     esac

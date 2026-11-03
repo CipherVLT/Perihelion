@@ -143,6 +143,9 @@ check flathub_configured
 check test -f /var/lib/perihelion/flathub-added
 check test -L /etc/systemd/system/multi-user.target.wants/perihelion-flathub.service
 check test -x /usr/libexec/perihelion-auto-timezone
+check rpm -q chrony
+check test -L /etc/systemd/system/multi-user.target.wants/chronyd.service
+check grep -qx UTC /etc/adjtime
 check test -L /etc/systemd/system/multi-user.target.wants/perihelion-auto-timezone.service
 check bash -n /usr/bin/perihelion-doctor
 check test -f /home/tester/.config/fastfetch/config.jsonc

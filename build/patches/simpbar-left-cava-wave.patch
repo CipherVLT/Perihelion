@@ -1,5 +1,5 @@
 diff --git a/simpbar/src/main.zig b/simpbar/src/main.zig
-index 1c6e803..9614af6 100644
+index 1c6e803..6aa3900 100644
 --- a/simpbar/src/main.zig
 +++ b/simpbar/src/main.zig
 @@ -6170,6 +6170,10 @@ fn closeCava() void {
@@ -13,7 +13,18 @@ index 1c6e803..9614af6 100644
      return std.mem.eql(u8, current_config.appearance.bg_mode, BG_MODE_CAVA);
  }
  
-@@ -7866,6 +7870,13 @@ fn drawLeftGroup(
+@@ -7851,7 +7855,9 @@ fn drawLeftGroup(
+                 // module beats one overlapping the middle of the bar).
+                 if (mpris_text.len > 0) {
+                     const toggle_w = MPRIS_CONTROL_GAP + mprisToggleSide(font, mpris_playing);
+-                    const avail = center_start_x - MPRIS_CENTER_CLEARANCE - x0;
++                    // Perihelion: leave room for the cava wave so a long title
++                    // ellipsizes instead of pushing the wave off the bar.
++                    const avail = center_start_x - MPRIS_CENTER_CLEARANCE - x0 - perihelionLeftCavaRoom();
+                     if (textPixelWidth(font, mpris_text) + toggle_w <= avail) {
+                         x0 = drawMprisPill(pixels, buf_width, buf_height, font, y0, x0, mpris_text, mpris_playing, mpris_frac, click_regions);
+                     } else if (avail > toggle_w) {
+@@ -7866,6 +7872,14 @@ fn drawLeftGroup(
                      }
                  }
              },
@@ -21,13 +32,14 @@ index 1c6e803..9614af6 100644
 +                // Perihelion: a mirrored waveform after the track title,
 +                // bounded by the center group like the mpris pill.
 +                if (cava_state.has_data) {
++                    x0 += CAVA_WAVE_SPACER;
 +                    x0 = drawCavaWave(pixels, buf_width, buf_height, x0, center_start_x - MPRIS_CENTER_CLEARANCE);
 +                }
 +            },
              else => {}, // RIGHT-only kind in left: no left-anchored render for it
          }
          any_drawn = true;
-@@ -8886,6 +8897,51 @@ fn drawCavaEqualizer(pixels: [*]u32, buf_width: u32, buf_height: u32, x_end: i64
+@@ -8886,6 +8900,67 @@ fn drawCavaEqualizer(pixels: [*]u32, buf_width: u32, buf_height: u32, x_end: i64
      return x_end - @as(i64, @intCast(cava_state.bar_count)) * (CAVA_BAR_WIDTH + CAVA_BAR_GAP);
  }
  
@@ -37,6 +49,22 @@ index 1c6e803..9614af6 100644
 +const CAVA_WAVE_BAR_W: i64 = 3;
 +const CAVA_WAVE_GAP: i64 = 2;
 +const CAVA_WAVE_PAD: i64 = 5;
++// Extra space between the track title and the wave (on top of MODULE_GAP).
++const CAVA_WAVE_SPACER: i64 = 16;
++
++/// Width the left-group cava wave needs, plus its gaps; 0 when it isn't
++/// placed in the left group or has nothing to draw. The mpris pill in the
++/// same group subtracts this from its room.
++fn perihelionLeftCavaRoom() i64 {
++    if (!cava_state.has_data) return 0;
++    for (current_config.modules.left) |e| {
++        if (e.kind == .cava and e.enabled) {
++            const n: i64 = @as(i64, @intCast(cava_state.bar_count));
++            return n * (CAVA_WAVE_BAR_W + CAVA_WAVE_GAP) - CAVA_WAVE_GAP + MODULE_GAP + CAVA_WAVE_SPACER;
++        }
++    }
++    return 0;
++}
 +
 +/// Draws the waveform starting at `x_start`, returning the pen after it.
 +/// Draws nothing (and keeps the pen) when it would cross `x_limit`.
