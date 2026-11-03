@@ -114,8 +114,9 @@ bubblewrap
 
 # --- Fonts -----------------------------------------------------------------------
 adwaita-icon-theme
-# Look: Numix-Circle icons, Bibata cursor (Terra), DejaVu Sans Mono (terminal)
-numix-icon-theme-circle
+# Look: Bibata cursor (Terra), DejaVu Sans Mono (terminal). Numix-Circle
+# icons come from scripts/fetch-numix.sh (Fedora dropped them).
+#, DejaVu Sans Mono (terminal)
 bibata-cursor-theme
 dejavu-sans-mono-fonts
 hicolor-icon-theme

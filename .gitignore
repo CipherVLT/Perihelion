@@ -3,10 +3,13 @@ out/
 .env
 .env.*
 
-# Built in CI by scripts/build-nwg-drawer.sh
+# Built/fetched in CI by scripts/build-nwg-drawer.sh and scripts/fetch-numix.sh
 system_files/common/usr/bin/nwg-drawer
 system_files/common/usr/share/nwg-drawer/
 system_files/common/usr/share/licenses/nwg-drawer/
+system_files/common/usr/share/icons/Numix/
+system_files/common/usr/share/icons/Numix-Circle/
+system_files/common/usr/share/licenses/numix-icon-theme*/
 
 # Wallpapers are fetched locally (scripts/fetch-wallpapers.sh), never committed
 branding/wallpapers/*

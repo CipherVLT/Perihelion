@@ -167,6 +167,8 @@ jobs:
       - name: Build nwg-drawer
         if: steps.drawer-cache.outputs.cache-hit != 'true'
         run: scripts/build-nwg-drawer.sh
+      - name: Fetch Numix icon themes
+        run: scripts/fetch-numix.sh
       - name: Rehearse the install (packages + %post scripts)
         env:
           PERIHELION_COMMIT: ${{ github.sha }}

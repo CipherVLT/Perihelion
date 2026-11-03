@@ -106,7 +106,9 @@ check rpm -q mesa-dri-drivers.i686 mesa-vulkan-drivers.i686 vulkan-loader.i686
 check rpm -q dconf cracklib-dicts nano
 check rpm -q fastfetch lm_sensors nethogs
 # Look: Numix-Circle icons, Bibata cursor 24 px, DejaVu Sans Mono 11 pt
-check rpm -q numix-icon-theme-circle bibata-cursor-theme dejavu-sans-mono-fonts
+check test -f /usr/share/icons/Numix-Circle/index.theme
+check test -f /usr/share/icons/Numix/index.theme
+check rpm -q bibata-cursor-theme dejavu-sans-mono-fonts
 check test -d /usr/share/icons/Bibata-Modern-Classic/cursors
 check grep -qx 'font_family DejaVu Sans Mono' /etc/xdg/kitty/kitty.conf
 check grep -qx 'font_size 11.0' /etc/xdg/kitty/kitty.conf
@@ -178,6 +180,8 @@ case "${flavor}" in
         check grep -q '"kind": "power"' /home/tester/.config/simpbar/config.json
         check test -f /home/tester/.config/fuzzel/fuzzel.ini
         check grep -q '"keyColor": "1;38;2;238;212;159"' /home/tester/.config/fastfetch/config.jsonc
+        os_pink_ok() { [[ $(grep -c '"keyColor": "1;38;2;245;189;230"' /home/tester/.config/fastfetch/config.jsonc) -eq 4 ]]; }
+        check os_pink_ok
         check grep -q '"1": "38;2;138;173;244", "2": "38;2;238;212;159"' /home/tester/.config/fastfetch/config.jsonc
         check grep -q '"title": "1;38;2;237;135;150", "output": "38;2;138;173;244"' /home/tester/.config/fastfetch/config.jsonc
         check mango -p -c /home/tester/.config/mango/config.conf

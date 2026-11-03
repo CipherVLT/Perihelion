@@ -73,6 +73,10 @@ Built in CI and shipped on the ISO (not stored in this repository):
     Its license and the gotk4 license are installed in
     /usr/share/licenses/nwg-drawer.
 
+  Numix and Numix-Circle icon themes by the Numix Project, GPL-3.0
+    (https://github.com/numixproject), fetched by scripts/fetch-numix.sh at
+    pinned release commits. Licenses in /usr/share/licenses/numix-icon-theme*.
+
 Downloaded at install time, not redistributed in this repository:
   simpbar by jaytheoutpatient (https://github.com/jaytheoutpatient/simpbar)
     The Mango flavor's top bar, built from the commit in build/refs/simpbar.ref.
