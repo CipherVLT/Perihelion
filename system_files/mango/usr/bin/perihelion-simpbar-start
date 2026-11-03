@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Starts simpbar at login once PipeWire/WirePlumber have a default audio
+# output, so the bar's own cava connects to it. Started earlier, that cava
+# can stay unconnected and the visualizer flat. Waits at most 10 seconds.
+for _ in $(seq 1 20); do
+    wpctl inspect @DEFAULT_AUDIO_SINK@ >/dev/null 2>&1 && break
+    sleep 0.5
+done
+exec simpbar "$@"

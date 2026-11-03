@@ -191,6 +191,8 @@ case "${flavor}" in
         check rpm -q gtk4 libadwaita
         check grep -q 'ALT,w,spawn,simpbar-shell overview toggle' /home/tester/.config/mango/config.conf
         check grep -qx 'bind=SUPER,g,spawn,perihelion-glass' /home/tester/.config/mango/config.conf
+        check grep -qx 'exec_once=perihelion-simpbar-start' /home/tester/.config/mango/config.conf
+        check bash -n /usr/bin/perihelion-simpbar-start
         check grep -qx 'source_optional=~/.config/mango/glass.conf' /home/tester/.config/mango/config.conf
         check test -f /usr/share/doc/perihelion/simpbar.md
         check rpm -q cava

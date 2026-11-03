@@ -193,6 +193,25 @@ or pixel-art album covers) sits well with the Macchiato blue/pink accents.
 
 ## Troubleshooting
 
+### cava in the bar stays flat (a dotted line) while music plays
+
+The bar runs its own cava (settings in `~/.config/simpbar/cava.conf`,
+PipeWire input following the default output). A dotted line means that
+cava runs but hears silence. Play something, then:
+
+1. `pkill -x cava`. simpbar starts a fresh one within 5 seconds. If the bar
+   moves now, the first cava started before the audio system was ready.
+   Perihelion starts the bar through `perihelion-simpbar-start`, which waits
+   for the default audio output, to avoid exactly this.
+2. Still flat: `cava -p ~/.config/simpbar/cava.conf` prints the bar's
+   numbers (rows separated by `;`). If they stay at 0 while the music plays,
+   cava can't hear the output with these settings. Try `method = pulse` in
+   the `[input]` section of that file, then `pkill -x cava`.
+
+The full-bar visualizer behind the modules is `"bg_mode": "cava"` with
+`"cava_style": "curve"` (or `"wave"`, `"bars"`) and `"cava_bg_strength": 45`.
+
+
 - Bar back to stock grey after an edit: `simpbar` in a terminal shows the config error.
 - Power button: opens `perihelion-power-menu` (also Super+Shift+Q).
 - `perihelion-doctor` reports whether simpbar is running and which build it is.
