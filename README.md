@@ -52,6 +52,12 @@ Change the icons or cursor in `~/.config/gtk-3.0/settings.ini` and
 `gtk-4.0/settings.ini` (plus `gsettings set org.gnome.desktop.interface ...`),
 and the font in `~/.config/kitty/kitty.conf`.
 
+**Glass.** kitty is see-through by default (Ctrl+Shift+A then M / L for
+more or less). Super+G makes other windows glass too. On Mango it applies to
+windows opened after you press it, because Mango can't change an open
+window's opacity. The Honkers Railway Launcher is always glass; add your
+own apps with a window rule (examples in each compositor's config).
+
 ## Mango: first login
 
 Pick **Mango** on the login screen. Super is the Windows key.
@@ -71,6 +77,7 @@ Pick **Mango** on the login screen. Super is the Windows key.
 | Super+Shift+W | Wallpaper picker (images in `~/Pictures/Wallpapers`) |
 | Super+O / Alt+W | Overview (Mango's own / simpbar-shell's with live previews) |
 | Super+Shift+Q | Power menu (also the power button on the bar) |
+| Super+G | Glass mode: see-through windows (Hyprland: the focused window; Niri: every window; Mango: windows you open next) |
 | Super+H | **Every keybind, searchable** |
 | Super+Shift+E | Log out |
 

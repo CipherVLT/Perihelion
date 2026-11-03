@@ -124,6 +124,34 @@ bind(key("Q"), hl.dsp.window.close(), "Close window")
 bind(key("W"), hl.dsp.window.float({ action = "toggle" }), "Toggle floating")
 bind(key("F"), hl.dsp.window.fullscreen(), "Toggle fullscreen")
 
+-- Glass (Super+G): the focused window turns see-through, the wallpaper
+-- blurred behind it; press again for solid. kitty is already glass on its
+-- own (see /etc/xdg/kitty/kitty.conf).
+local glass = {}
+local function setGlass(on)
+    local override = on and 1 or 0
+    hl.dispatch(hl.dsp.window.set_prop({ prop = "opacity_override", value = override }))
+    hl.dispatch(hl.dsp.window.set_prop({ prop = "opacity", value = on and 0.85 or 1.0 }))
+    hl.dispatch(hl.dsp.window.set_prop({ prop = "opacity_inactive_override", value = override }))
+    hl.dispatch(hl.dsp.window.set_prop({ prop = "opacity_inactive", value = on and 0.80 or 1.0 }))
+end
+local function toggleGlass()
+    local w = hl.get_active_window()
+    if not w then return end
+    local id = tostring(w.address or w.pid)
+    local on = not glass[id]
+    local ok, err = pcall(setGlass, on)
+    if ok then
+        glass[id] = on or nil
+    else
+        hl.notification.create({ text = "Glass: " .. tostring(err), timeout = 4000 })
+    end
+end
+bind(key("G"), toggleGlass, "Glass (see-through) window")
+
+-- Always-glass apps. Add your own the same way (class from: hyprctl clients).
+hl.window_rule({ match = { class = "^moe\\.launcher\\.the-honkers-railway-launcher$" }, opacity = 0.85 })
+
 -- 3. Navigation and layout
 bind(key("TAB"), hl.dsp.focus({ workspace = "m+1" }), "Next workspace on monitor")
 bind(key("SHIFT + TAB"), hl.dsp.focus({ workspace = "m-1" }), "Previous workspace on monitor")

@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Glass mode (Super+G): windows turn see-through, with the wallpaper blurred
+# behind them. Press again to turn it off.
+#   Niri:     every open window at once.
+#   Mango:    windows you open after switching (Mango sets a window's
+#             opacity when it opens and can't change it afterwards).
+#   Hyprland: Super+G is handled in ~/.config/hypr/hyprland.lua instead and
+#             toggles just the focused window.
+# kitty (it draws its own glass background) and Steam games are left solid.
+# Apps that are always glass: window rules in the compositor's config.
+set -euo pipefail
+
+config=${XDG_CONFIG_HOME:-$HOME/.config}
+
+notify() {
+    if command -v notify-send >/dev/null; then
+        notify-send -a "Glass mode" -t 2500 "$@" || true
+    fi
+}
+
+if [[ -n "${NIRI_SOCKET:-}" ]]; then
+    file="${config}/niri/glass.kdl"
+    mkdir -p "${file%/*}"
+    if [[ -f "${file}" ]] && grep -q '^ *opacity' "${file}"; then
+        : > "${file}"
+        notify "Glass mode off"
+    else
+        cat > "${file}" <<'EOF'
+// Written by perihelion-glass (Super+G); niri reloads it at once.
+window-rule {
+    exclude app-id="^kitty$"
+    exclude app-id=r#"^steam_app_"#
+    exclude app-id="^gamescope$"
+    opacity 0.85
+}
+EOF
+        notify "Glass mode on"
+    fi
+elif [[ -n "${MANGO_INSTANCE_SIGNATURE:-}" ]] || pgrep -x mango >/dev/null; then
+    file="${config}/mango/glass.conf"
+    mkdir -p "${file%/*}"
+    if [[ -f "${file}" ]] && grep -q '^focused_opacity' "${file}"; then
+        : > "${file}"
+        mmsg dispatch reload_config
+        notify "Glass mode off" "Windows you open from now on are solid."
+    else
+        printf '%s\n' "# Written by perihelion-glass (Super+G)." \
+            "focused_opacity=0.85" "unfocused_opacity=0.75" > "${file}"
+        mmsg dispatch reload_config
+        notify "Glass mode on" "Applies to windows you open from now on."
+    fi
+elif [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+    echo "On Hyprland, Super+G is set in ~/.config/hypr/hyprland.lua." >&2
+    exit 1
+else
+    echo "perihelion-glass: no Niri or Mango session found" >&2
+    exit 1
+fi

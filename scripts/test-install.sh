@@ -123,7 +123,7 @@ check dconf_ok
 check grep -qx 'background              #24273A' /etc/xdg/kitty/kitty.conf
 check grep -qx 'color4  #8AADF4' /etc/xdg/kitty/kitty.conf
 # Shared helpers (every flavor)
-for helper in perihelion-power-menu perihelion-wallpaper-picker perihelion-drawer perihelion-keys; do
+for helper in perihelion-power-menu perihelion-wallpaper-picker perihelion-drawer perihelion-keys perihelion-glass; do
     check test -x "/usr/bin/${helper}"
 done
 check rpm -q playerctl gtk-layer-shell
@@ -174,6 +174,8 @@ case "${flavor}" in
         check test -f /home/tester/.config/simpbar/matugen.json
         check grep -qx weather /home/tester/.config/simpbar/widgets-disabled
         check grep -q 'ALT,w,spawn,simpbar-shell overview toggle' /home/tester/.config/mango/config.conf
+        check grep -qx 'bind=SUPER,g,spawn,perihelion-glass' /home/tester/.config/mango/config.conf
+        check grep -qx 'source_optional=~/.config/mango/glass.conf' /home/tester/.config/mango/config.conf
         check test -f /usr/share/doc/perihelion/simpbar.md
         check rpm -q cava
         check grep -q '"position": "bottom"' /home/tester/.config/simpbar/config.json
@@ -192,6 +194,7 @@ case "${flavor}" in
         check test -x /usr/bin/horizon
         check test -f /usr/share/wayland-sessions/event-horizon.desktop
         check grep -q 'bind(key("A"), hl.dsp.exec_cmd("perihelion-drawer"), "App drawer")' /usr/share/event-horizon/skel/hypr/hyprland.lua
+        check grep -q 'bind(key("G"), toggleGlass, ' /usr/share/event-horizon/skel/hypr/hyprland.lua
         check grep -q 'bind(key("O"), hl.dsp.exec_cmd("eh-ipc overview-toggle"), "Overview")' /usr/share/event-horizon/skel/hypr/hyprland.lua
         check test -x /usr/bin/horizon-wallpaper
         check test -x /usr/bin/horizon-clipstack-pick
@@ -205,6 +208,8 @@ case "${flavor}" in
         check grep -q 'Mod+Shift+W hotkey-overlay-title="Wallpaper picker"' /home/tester/.config/niri/config.kdl
         has_one_binds_block() { [[ $(grep -c '^binds {' /home/tester/.config/niri/config.kdl) -eq 1 ]]; }
         check has_one_binds_block
+        check grep -q 'Mod+G hotkey-overlay-title="Glass mode' /home/tester/.config/niri/config.kdl
+        check grep -q '^include optional=true "glass.kdl"$' /home/tester/.config/niri/config.kdl
         check grep -q 'xcursor-theme "Bibata-Modern-Classic"' /home/tester/.config/niri/config.kdl
         check test -f /etc/xdg/xdg-desktop-portal/niri-portals.conf
         ;;

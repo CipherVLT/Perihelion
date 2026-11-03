@@ -33,6 +33,19 @@ sed -e 's/^spawn-at-startup "waybar"$/spawn-at-startup "horizon"/' "${default_cf
 grep -q '^spawn-at-startup "horizon"$' "${cfg}" || die "could not start Event Horizon from niri's config"
 grep -q '^binds {' "${cfg}" && die "could not remove niri's default binds block"
 cat /usr/share/perihelion/niri/binds.kdl >> "${cfg}"
+# Always-glass apps, then glass mode (Super+G writes glass.kdl).
+cat >> "${cfg}" <<'EOF'
+
+// Always-glass apps (see-through). Add your own the same way
+// (app ids: niri msg windows).
+window-rule {
+    match app-id=r#"^moe\.launcher\.the-honkers-railway-launcher$"#
+    opacity 0.85
+}
+
+// Glass mode: Super+G (perihelion-glass) writes glass.kdl.
+include optional=true "glass.kdl"
+EOF
 # Cursor: Bibata Modern Classic, 24 px (niri passes it on to apps).
 cat >> "${cfg}" <<'EOF'
 

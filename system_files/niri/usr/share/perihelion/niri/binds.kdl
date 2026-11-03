@@ -19,6 +19,7 @@ binds {
     Mod+Shift+W hotkey-overlay-title="Wallpaper picker" { spawn "perihelion-wallpaper-picker"; }
     Mod+V hotkey-overlay-title="Clipboard history" { spawn "horizon-clipstack-pick"; }
     Mod+O repeat=false hotkey-overlay-title="Overview" { toggle-overview; }
+    Mod+G hotkey-overlay-title="Glass mode (see-through windows)" { spawn "perihelion-glass"; }
     Mod+Shift+D hotkey-overlay-title="Restart Event Horizon" { spawn-sh "pkill -x horizon; sleep 0.5; horizon"; }
 
     // --- Windows -----------------------------------------------------------

@@ -21,7 +21,7 @@ grep -qx 'install_weak_deps=False' /etc/dnf/dnf.conf
 log "common: system files"
 apply_system_files common
 chmod 0755 /usr/bin/perihelion-os-age /usr/bin/strata /usr/bin/perihelion-doctor \
-    /usr/bin/perihelion-power-menu /usr/bin/perihelion-wallpaper-picker /usr/bin/perihelion-drawer /usr/bin/perihelion-keys /usr/libexec/perihelion-trash /usr/libexec/perihelion-strata-theme
+    /usr/bin/perihelion-power-menu /usr/bin/perihelion-wallpaper-picker /usr/bin/perihelion-drawer /usr/bin/perihelion-keys /usr/bin/perihelion-glass /usr/libexec/perihelion-trash /usr/libexec/perihelion-strata-theme
 
 # --- Wallpapers -----------------------------------------------------------------
 # Present only if scripts/fetch-wallpapers.sh ran before the ISO was built
