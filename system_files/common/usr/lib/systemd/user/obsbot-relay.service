@@ -1,0 +1,33 @@
+[Unit]
+Description=OBSBOT Meet 2 relay to /dev/video10 (drops corrupt MJPEG frames)
+# Runs only while the camera is plugged in: started when its device appears
+# (WantedBy below), stopped when it goes away. The device unit exists because
+# /usr/lib/udev/rules.d/70-obsbot-relay.rules tags the camera for systemd.
+BindsTo=dev-v4l-by\x2did-usb\x2dRemo_Tech_Co.__Ltd._OBSBOT_Meet_2\x2dvideo\x2dindex0.device
+After=dev-v4l-by\x2did-usb\x2dRemo_Tech_Co.__Ltd._OBSBOT_Meet_2\x2dvideo\x2dindex0.device
+ConditionPathExists=/dev/v4l/by-id/usb-Remo_Tech_Co.__Ltd._OBSBOT_Meet_2-video-index0
+# At most 5 starts in 2 minutes, then give up until the next plug-in
+# (or systemctl --user reset-failed). Never loops forever.
+StartLimitIntervalSec=120
+StartLimitBurst=5
+
+[Service]
+# Advertise 30 fps instead of v4l2loopback's 1000 fps default (OBS otherwise
+# polls every 5 ms and floods its log with "select timed out"). Must run before
+# ffmpeg attaches: exclusive_caps hides the output side once a writer is open.
+ExecStartPre=-/usr/libexec/perihelion-v4l2-set-fps /dev/video10 30
+# Low latency: no input buffering, low_delay decode, short thread queue,
+# pass frames through as they arrive (no CFR dup/drop). -loglevel error:
+# warning floods the journal with "Non-monotonic DTS" (harmless with
+# passthrough); real failures (open/demux errors) are error level.
+ExecStart=/usr/bin/ffmpeg -nostdin -hide_banner -loglevel error \
+    -fflags nobuffer -flags low_delay -thread_queue_size 4 \
+    -f v4l2 -input_format mjpeg -video_size 1920x1080 -framerate 30 \
+    -i /dev/v4l/by-id/usb-Remo_Tech_Co.__Ltd._OBSBOT_Meet_2-video-index0 \
+    -fps_mode passthrough -filter_threads 2 \
+    -pix_fmt yuyv422 -f v4l2 /dev/video10
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=dev-v4l-by\x2did-usb\x2dRemo_Tech_Co.__Ltd._OBSBOT_Meet_2\x2dvideo\x2dindex0.device

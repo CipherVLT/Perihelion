@@ -10,7 +10,7 @@ A minimal Fedora for gamers and creators, in three tiling flavors:
 
 Every flavor starts from Fedora's `@core` and adds only what a desktop needs
 to work: network, Bluetooth, firewall, PipeWire audio, Mesa/Vulkan, a login
-screen, kitty, Firefox, Strata, Steam and gamescope. No office suite, no
+screen, kitty, Firefox, Strata, Steam, gamescope and the OBSBOT camera relay. No office suite, no
 GNOME or KDE app collection.
 
 **Only listed packages.** The kickstart installs with `--exclude-weakdeps`,
@@ -35,6 +35,37 @@ on real hardware yet. Mango is the first flavor to test.
 - Fedora's defaults kept: SELinux enforcing, firewalld on
 
 NVIDIA ISOs are planned for later and are not built yet.
+
+## OBSBOT camera
+
+Every flavor relays an OBSBOT Meet 2 into a loopback camera for OBS,
+dropping corrupt MJPEG frames on the way (the same setup as Veyl OS).
+
+- **Plug the camera in** and `obsbot-relay.service` (a user service) starts
+  by itself; **unplug it** and the service stops. Without the camera nothing runs.
+- **In OBS:** add a **Video Capture Device (V4L2)** source and pick
+  **OBSBOT Clean** (`/dev/video10`), not the camera (the relay holds it).
+- **Before a stream:** `systemctl --user status obsbot-relay` should say
+  `active (running)`. If not: `journalctl --user -u obsbot-relay -b`.
+
+| Piece | Where |
+|---|---|
+| Camera | `/dev/v4l/by-id/usb-Remo_Tech_Co.__Ltd._OBSBOT_Meet_2-video-index0` (MJPEG 1920x1080 @ 30 fps) |
+| Loopback options | `/etc/modprobe.d/98-v4l2loopback.conf`: `video_nr=10 card_label="OBSBOT Clean" exclusive_caps=1` (replaces Terra's file of the same name) |
+| Module | Terra's `akmod-v4l2loopback`, built during install and after each kernel update; loaded at boot by `v4l2loopback-akmod-modules` |
+| udev rule | `/usr/lib/udev/rules.d/70-obsbot-relay.rules` (gives the camera a systemd device unit) |
+| Service | `/usr/lib/systemd/user/obsbot-relay.service`, enabled for every user by `/usr/lib/systemd/user-preset/80-perihelion-obsbot.preset` |
+| ffmpeg | Fedora's `ffmpeg-free` (has the MJPEG decoder and v4l2 input/output) |
+
+**Secure Boot:** the module is signed with a key made during install, which
+the firmware doesn't know yet. With Secure Boot on, enroll it once:
+`sudo mokutil --import /etc/pki/akmods/certs/public_key.der`, pick a
+password, reboot and choose **Enroll MOK**. Until then `/dev/video10` is missing
+(`modprobe v4l2loopback` says "Key was rejected by service").
+
+**Size:** building the module needs `kernel-devel`, gcc, make and rpm-build
+(about 400 MB). To leave the relay out of a flavor, remove `obsbot` from the
+`# PACKAGES:` line in its `kickstart/flavors/*.ks`.
 
 ## Time zone
 

@@ -1,0 +1,23 @@
+#!/usr/bin/python3 -I
+"""Set the frame rate a v4l2loopback device advertises (VIDIOC_S_PARM on the output side).
+
+Usage: perihelion-v4l2-set-fps /dev/videoN FPS (from Veyl OS's v4l2-set-fps)
+"""
+import fcntl
+import os
+import struct
+import sys
+
+VIDIOC_S_PARM = 0xC0CC5616  # _IOWR('V', 22, struct v4l2_streamparm), 204 bytes
+V4L2_BUF_TYPE_VIDEO_OUTPUT = 2
+
+dev, fps = sys.argv[1], int(sys.argv[2])
+# type, then v4l2_outputparm: capability, outputmode, timeperframe{num,den}, extendedmode, writebuffers
+buf = bytearray(struct.pack("=IIIIIII", V4L2_BUF_TYPE_VIDEO_OUTPUT, 0, 0, 1, fps, 0, 0).ljust(204, b"\0"))
+fd = os.open(dev, os.O_RDWR)
+try:
+    fcntl.ioctl(fd, VIDIOC_S_PARM, buf)
+finally:
+    os.close(fd)
+num, den = struct.unpack_from("=II", buf, 12)
+print(f"{dev}: timeperframe now {num}/{den} ({den / num:.2f} fps)")
