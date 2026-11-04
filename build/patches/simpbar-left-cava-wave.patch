@@ -73,7 +73,7 @@ index 1c6e803..48e7024 100644
 +const WAVE_YELLOW: u32 = 0xFFEED49F;
 +
 +/// Mixes two 0xAARRGGBB colors; `t` runs 0 (all `a`) to 256 (all `b`).
-+fn lerpColor(a: u32, b: u32, t: u32) u32 {
++fn waveLerp(a: u32, b: u32, t: u32) u32 {
 +    var out: u32 = 0xFF000000;
 +    var i: u32 = 0;
 +    while (i < 3) : (i += 1) {
@@ -90,8 +90,8 @@ index 1c6e803..48e7024 100644
 +fn waveColor(dy: i64, half_max: i64) u32 {
 +    const d: i64 = if (dy < 0) -dy else dy;
 +    const t: i64 = @divTrunc(@min(d, half_max) * 512, @max(half_max, 1));
-+    if (t <= 256) return lerpColor(WAVE_BLUE, WAVE_PINK, @intCast(t));
-+    return lerpColor(WAVE_PINK, WAVE_YELLOW, @intCast(@min(t - 256, 256)));
++    if (t <= 256) return waveLerp(WAVE_BLUE, WAVE_PINK, @intCast(t));
++    return waveLerp(WAVE_PINK, WAVE_YELLOW, @intCast(@min(t - 256, 256)));
 +}
 +
 +/// Draws the waveform starting at `x_start`, returning the pen after it.
