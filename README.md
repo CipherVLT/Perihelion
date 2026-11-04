@@ -92,6 +92,7 @@ Pick **Mango** on the login screen. Super is the Windows key.
 | Super+O / Alt+W | Overview (Mango's own / simpbar-shell's with live previews) |
 | Super+Shift+Q | Power menu (also the power button on the bar) |
 | Ctrl+drag / Alt+right-click | Move / remove a desktop widget (Mango; add them in Simpbar Config) |
+| Super+Shift+G | Blur strength (Mango): normal, strong, soft, off |
 | Super+G | Glass mode: see-through windows (Hyprland: the focused window; Niri: every window; Mango: windows you open next) |
 | Super+H | **Every keybind, searchable** |
 | Super+Shift+E | Log out |
