@@ -204,9 +204,10 @@ cava runs but hears silence. Play something, then:
    Perihelion starts the bar through `perihelion-simpbar-start`, which waits
    for the default audio output, to avoid exactly this.
 2. Still flat: `cava -p ~/.config/simpbar/cava.conf` prints the bar's
-   numbers (rows separated by `;`). If they stay at 0 while the music plays,
-   cava can't hear the output with these settings. Try `method = pulse` in
-   the `[input]` section of that file, then `pkill -x cava`.
+   numbers (rows separated by `;`). "cava was built without 'pipewire' input
+   support" means the file asks for PipeWire, which Fedora's cava doesn't
+   have: set `method = pulse` in its `[input]` section (Perihelion's own
+   copy already does), then `pkill -x cava`.
 
 The full-bar visualizer behind the modules is `"bg_mode": "cava"` with
 `"cava_style": "curve"` (or `"wave"`, `"bars"`) and `"cava_bg_strength": 45`.

@@ -52,6 +52,8 @@ sed -i "s|@FONT_PATH@|${font}|" "${share}/simpbar/shell.json"
 grep -q "\"font_path\": \"${font}\"" "${share}/simpbar/shell.json" || die "could not set simpbar-shell's font_path"
 seed_user_file "${share}/simpbar/shell.json" .config/simpbar/shell.json
 seed_user_file "${share}/simpbar/matugen.json" .config/simpbar/matugen.json
+# Fedora's cava has no PipeWire input; this one reads PulseAudio instead.
+seed_user_file "${share}/simpbar/cava.conf" .config/simpbar/cava.conf
 seed_user_file "${share}/simpbar/widgets-disabled" .config/simpbar/widgets-disabled
 install -Dm644 "${PERIHELION_SRC}/docs/simpbar.md" /usr/share/doc/perihelion/simpbar.md
 seed_user_file "${share}/fuzzel/fuzzel.ini" .config/fuzzel/fuzzel.ini

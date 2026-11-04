@@ -193,6 +193,10 @@ case "${flavor}" in
         check grep -qx 'bind=SUPER,g,spawn,perihelion-glass' /home/tester/.config/mango/config.conf
         check grep -qx 'exec_once=perihelion-simpbar-start' /home/tester/.config/mango/config.conf
         check bash -n /usr/bin/perihelion-simpbar-start
+        check grep -qx 'method = pulse' /home/tester/.config/simpbar/cava.conf
+        # The input the bar's cava.conf asks for must be one Fedora's cava has
+        cava_pulse_ok() { ! timeout 5 cava -p /home/tester/.config/simpbar/cava.conf 2>&1 </dev/null | head -c 2000 | grep -q "built without 'pulse'"; }
+        check cava_pulse_ok
         check grep -qx 'source_optional=~/.config/mango/glass.conf' /home/tester/.config/mango/config.conf
         check test -f /usr/share/doc/perihelion/simpbar.md
         check rpm -q cava
