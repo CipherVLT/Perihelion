@@ -30,6 +30,8 @@ nano-default-editor
 # only as good as the hardware clock
 chrony
 fastfetch
+# Terminal audio visualizer (Catppuccin gradient config seeded)
+cava
 # Hardware sensors (sensors, sensors-detect) and per-app network usage, as
 # system monitors like Mission Center expect
 lm_sensors
@@ -125,6 +127,8 @@ dejavu-sans-mono-fonts
 # Qt apps' look (icons, colors, fonts): qt6ct, picked up through
 # QT_QPA_PLATFORMTHEME=qt6ct in each compositor's config
 qt6ct
+# Image viewer (screenshots, wallpapers): the default for images
+imv
 dejavu-lgc-sans-fonts
 hicolor-icon-theme
 google-noto-sans-fonts

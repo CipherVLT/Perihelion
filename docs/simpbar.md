@@ -124,6 +124,12 @@ Colors are `"#RRGGBB"`. Perihelion uses Catppuccin Macchiato
 
 ### cava (audio visualizer)
 
+In the left group (next to the track title), cava is a sound wave in a
+Catppuccin gradient: blue at the middle, pink, then yellow at the peaks
+(Perihelion's patch; `cava_color` colors the right-group equalizer and the
+background mode). The terminal `cava` uses the same three colors, in
+`~/.config/cava/config`.
+
 | Key | Values | Perihelion |
 |---|---|---|
 | `cava_color` | color | `#F5BDE6` (pink) |

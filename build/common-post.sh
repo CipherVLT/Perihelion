@@ -96,7 +96,12 @@ done
         application/pdf; do
         echo "${mime}=${firefox_desktop};"
     done
+    # Images (screenshots, wallpapers) open in imv.
+    for mime in image/png image/jpeg image/webp image/gif image/bmp image/tiff image/avif; do
+        echo "${mime}=imv.desktop;"
+    done
 } > /etc/xdg/mimeapps.list
+[[ -f /usr/share/applications/imv.desktop ]] || die "imv.desktop not found (image viewer)"
 
 # Firefox: Open/Save dialogs through xdg-desktop-portal (Strata).
 ff_done=0
@@ -164,6 +169,8 @@ dconf update
 seed_user_file /usr/share/perihelion/gtk/settings.ini .config/gtk-3.0/settings.ini
 seed_user_file /usr/share/perihelion/gtk/settings.ini .config/gtk-4.0/settings.ini
 seed_user_file /usr/share/perihelion/qt6ct/qt6ct.conf .config/qt6ct/qt6ct.conf
+# Terminal cava: Catppuccin gradient, PulseAudio input
+seed_user_file /usr/share/perihelion/cava/config .config/cava/config
 
 # --- App drawer (nwg-drawer, Super+A) ---------------------------------------------
 [[ -x /usr/bin/nwg-drawer ]] || die "nwg-drawer is missing from the image (scripts/build-nwg-drawer.sh did not run)"

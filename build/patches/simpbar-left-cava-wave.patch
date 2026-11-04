@@ -1,5 +1,5 @@
 diff --git a/simpbar/src/main.zig b/simpbar/src/main.zig
-index 1c6e803..6aa3900 100644
+index 1c6e803..48e7024 100644
 --- a/simpbar/src/main.zig
 +++ b/simpbar/src/main.zig
 @@ -6170,6 +6170,10 @@ fn closeCava() void {
@@ -39,7 +39,7 @@ index 1c6e803..6aa3900 100644
              else => {}, // RIGHT-only kind in left: no left-anchored render for it
          }
          any_drawn = true;
-@@ -8886,6 +8900,67 @@ fn drawCavaEqualizer(pixels: [*]u32, buf_width: u32, buf_height: u32, x_end: i64
+@@ -8886,6 +8900,94 @@ fn drawCavaEqualizer(pixels: [*]u32, buf_width: u32, buf_height: u32, x_end: i64
      return x_end - @as(i64, @intCast(cava_state.bar_count)) * (CAVA_BAR_WIDTH + CAVA_BAR_GAP);
  }
  
@@ -66,6 +66,34 @@ index 1c6e803..6aa3900 100644
 +    return 0;
 +}
 +
++// The wave's gradient (Catppuccin Macchiato): blue at the middle line, pink
++// halfway out, yellow at the peaks, so loud moments light up.
++const WAVE_BLUE: u32 = 0xFF8AADF4;
++const WAVE_PINK: u32 = 0xFFF5BDE6;
++const WAVE_YELLOW: u32 = 0xFFEED49F;
++
++/// Mixes two 0xAARRGGBB colors; `t` runs 0 (all `a`) to 256 (all `b`).
++fn lerpColor(a: u32, b: u32, t: u32) u32 {
++    var out: u32 = 0xFF000000;
++    var i: u32 = 0;
++    while (i < 3) : (i += 1) {
++        const shift: u5 = @intCast(i * 8);
++        const ca: u32 = (a >> shift) & 0xFF;
++        const cb: u32 = (b >> shift) & 0xFF;
++        const c: u32 = (ca * (256 - t) + cb * t) >> 8;
++        out |= (c & 0xFF) << shift;
++    }
++    return out;
++}
++
++/// The wave color `dy` pixels from the middle line, out of `half_max`.
++fn waveColor(dy: i64, half_max: i64) u32 {
++    const d: i64 = if (dy < 0) -dy else dy;
++    const t: i64 = @divTrunc(@min(d, half_max) * 512, @max(half_max, 1));
++    if (t <= 256) return lerpColor(WAVE_BLUE, WAVE_PINK, @intCast(t));
++    return lerpColor(WAVE_PINK, WAVE_YELLOW, @intCast(@min(t - 256, 256)));
++}
++
 +/// Draws the waveform starting at `x_start`, returning the pen after it.
 +/// Draws nothing (and keeps the pen) when it would cross `x_limit`.
 +fn drawCavaWave(pixels: [*]u32, buf_width: u32, buf_height: u32, x_start: i64, x_limit: i64) i64 {
@@ -81,7 +109,6 @@ index 1c6e803..6aa3900 100644
 +    if (n == 0) return x_start;
 +    const width: i64 = n * step - CAVA_WAVE_GAP;
 +    if (x_start + width > x_limit) return x_start;
-+    const color = current_config.appearance.cava_color;
 +    const bw: i64 = @as(i64, @intCast(buf_width));
 +    const bh: i64 = @as(i64, @intCast(buf_height));
 +
@@ -97,7 +124,7 @@ index 1c6e803..6aa3900 100644
 +            var py: i64 = mid - h;
 +            while (py <= mid + h) : (py += 1) {
 +                if (py < 0 or py >= bh) continue;
-+                pixels[@as(usize, @intCast(py)) * buf_width + @as(usize, @intCast(px))] = color;
++                pixels[@as(usize, @intCast(py)) * buf_width + @as(usize, @intCast(px))] = waveColor(py - mid, half_max);
 +            }
 +        }
 +    }
