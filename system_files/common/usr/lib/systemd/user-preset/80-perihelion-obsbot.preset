@@ -1,0 +1,2 @@
+# The OBSBOT relay starts whenever the camera is plugged in (and only then).
+enable obsbot-relay.service

@@ -1,0 +1,5 @@
+# OBSBOT Meet 2: make its video nodes visible to systemd as device units, so
+# obsbot-relay.service (a user unit, WantedBy/BindsTo the camera's
+# /dev/v4l/by-id device) starts on plug-in and stops on unplug.
+# After 60-persistent-v4l.rules, which sets ID_SERIAL.
+SUBSYSTEM=="video4linux", ENV{ID_SERIAL}=="Remo_Tech_Co.__Ltd._OBSBOT_Meet_2", TAG+="systemd"

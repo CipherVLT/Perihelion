@@ -1,0 +1,19 @@
+# OBSBOT Meet 2 stream relay, in every flavor: ffmpeg copies the camera into
+# a v4l2loopback device (/dev/video10, "OBSBOT Clean") for OBS, dropping
+# corrupt MJPEG frames. See "OBSBOT camera" in README.md.
+#
+# v4l2loopback isn't in Fedora's kernel. Terra's akmod builds it in %post
+# (build/common-post.sh) and again after each kernel update. akmods needs
+# kernel-devel matching the kernel, gcc, make and rpm-build (all pulled in
+# as hard dependencies, ~400 MB). Drop "obsbot" from a flavor's PACKAGES
+# line to leave all of this out.
+akmod-v4l2loopback
+# v4l2loopback-ctl, and v4l2loopback-kmod-common for the akmod
+v4l2loopback
+# /usr/lib/modules-load.d/v4l2loopback.conf: load the module at boot
+v4l2loopback-akmod-modules
+# Fedora's ffmpeg is enough: its MJPEG decoder, v4l2 input and output and
+# rawvideo are all enabled (no RPM Fusion needed)
+ffmpeg-free
+# perihelion-v4l2-set-fps (the loopback's advertised frame rate)
+python3

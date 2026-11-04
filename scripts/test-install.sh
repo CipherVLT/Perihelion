@@ -153,6 +153,19 @@ check test -L /etc/systemd/system/multi-user.target.wants/chronyd.service
 check grep -qx UTC /etc/adjtime
 check test -L /etc/systemd/system/multi-user.target.wants/perihelion-auto-timezone.service
 check bash -n /usr/bin/perihelion-doctor
+# OBSBOT relay: module built for the kernel, its config, ffmpeg, the unit
+v4l2loopback_built() { find /usr/lib/modules -name 'v4l2loopback.ko*' | grep -q .; }
+check v4l2loopback_built
+check test -f /usr/lib/modules-load.d/v4l2loopback.conf
+one_loopback_options() { [[ "$(modprobe --showconfig | grep '^options v4l2loopback ')" == 'options v4l2loopback video_nr=10 card_label="OBSBOT Clean" exclusive_caps=1' ]]; }
+check one_loopback_options
+ffmpeg_relay_ok() { ffmpeg -hide_banner -decoders 2>/dev/null | grep -qE '^ V[.A-Z]{5} mjpeg ' && ffmpeg -hide_banner -encoders 2>/dev/null | grep -qE '^ V[.A-Z]{5} rawvideo ' && ffmpeg -hide_banner -devices 2>/dev/null | grep -qE '^ DE v4l2 '; }
+check ffmpeg_relay_ok
+check test -x /usr/libexec/perihelion-v4l2-set-fps
+check test -f /usr/lib/udev/rules.d/70-obsbot-relay.rules
+check test -L '/etc/systemd/user/dev-v4l-by\x2did-usb\x2dRemo_Tech_Co.__Ltd._OBSBOT_Meet_2\x2dvideo\x2dindex0.device.wants/obsbot-relay.service'
+check test -L /etc/systemd/system/multi-user.target.wants/akmods.service
+check test -f /etc/pki/akmods/certs/public_key.der
 check test -f /home/tester/.config/fastfetch/config.jsonc
 fastfetch_config_ok() { fastfetch --config /home/tester/.config/fastfetch/config.jsonc --pipe >/dev/null 2>/tmp/ff.err && ! grep -qi error /tmp/ff.err; }
 check fastfetch_config_ok

@@ -204,6 +204,35 @@ for tool in steam gamescope; do
     command -v "${tool}" >/dev/null || die "missing ${tool}"
 done
 
+# --- OBSBOT camera relay (/dev/video10) --------------------------------------------
+# packages/obsbot.txt. v4l2loopback isn't in Fedora's kernel: build Terra's
+# akmod for the installed kernel now, so /dev/video10 exists at first boot;
+# akmods.service rebuilds it after kernel updates. The user unit
+# (obsbot-relay.service) starts on camera plug-in and stops on unplug.
+if rpm -q akmod-v4l2loopback >/dev/null 2>&1; then
+    log "common: OBSBOT relay (v4l2loopback akmod)"
+    chmod 0755 /usr/libexec/perihelion-v4l2-set-fps
+    # The kernel the installer put in; the install rehearsal (a container,
+    # no kernel) builds against the newest kernel-devel instead.
+    if rpm -q kernel-core >/dev/null 2>&1; then
+        kver=$(rpm -q --qf '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-core | sort -V | tail -n1)
+    else
+        kver=$(rpm -q --qf '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-devel | sort -V | tail -n1)
+    fi
+    rpm -q --whatprovides "kernel-devel-uname-r = ${kver}" >/dev/null || die "no kernel-devel for ${kver}"
+    # Module signing key (for Secure Boot it still has to be enrolled:
+    # README "OBSBOT camera").
+    [[ -f /etc/pki/akmods/certs/public_key.der ]] || kmodgenca -a
+    akmods --force --kernels "${kver}" --akmod v4l2loopback || true
+    if [[ -z "$(find "/usr/lib/modules/${kver}" -name 'v4l2loopback.ko*' -print -quit 2>/dev/null)" ]]; then
+        tail -n 40 /var/cache/akmods/v4l2loopback/*.log 2>/dev/null || true
+        die "v4l2loopback did not build for ${kver}"
+    fi
+    log "common: v4l2loopback built for ${kver}"
+    systemctl enable akmods.service
+    systemctl --global preset obsbot-relay.service
+fi
+
 # --- Identity -------------------------------------------------------------------------
 {
     echo "PERIHELION_FLAVOR=${PERIHELION_FLAVOR:?}"
