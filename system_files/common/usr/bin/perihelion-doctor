@@ -46,6 +46,38 @@ report() {
         fi
     fi
 
+    if command -v simpbar >/dev/null; then
+        section "simpbar"
+        sb="${XDG_CONFIG_HOME:-${HOME}/.config}/simpbar"
+        for proc in simpbar simpbar-shell cava; do
+            if pgrep -x "${proc}" >/dev/null; then ok "${proc} running"; else bad "${proc} not running"; fi
+        done
+        if [[ -f "${sb}/cava.conf" ]]; then
+            printf '  info  cava input: %s\n' "$(grep -E '^ *method' "${sb}/cava.conf" | head -n 1 | tr -s ' ')"
+            cava_err=$(timeout 3 cava -p "${sb}/cava.conf" 2>&1 </dev/null | grep -aiE 'error|without|fail' | head -n 3)
+            if [[ -n "${cava_err}" ]]; then bad "the bar's cava: ${cava_err}"; else ok "the bar's cava starts with ${sb}/cava.conf"; fi
+        else
+            bad "no ${sb}/cava.conf (simpbar writes one that needs PipeWire input)"
+        fi
+        for f in config.json shell.json; do
+            if [[ -f "${sb}/${f}" ]]; then
+                if python3 -c "import json,sys; json.load(open(sys.argv[1]))" "${sb}/${f}" 2>/dev/null; then ok "${f} is valid JSON"
+                elif command -v python3 >/dev/null; then bad "${f} is not valid JSON (simpbar falls back to its defaults)"; fi
+            fi
+        done
+        printf '  info  widgets switched off: %s\n' "$(tr '\n' ' ' < "${sb}/widgets-disabled" 2>/dev/null)"
+        logs="${SIMPBAR_LOG_DIR:-${HOME}/.config/simpbar-config/logs}"
+        for prog in simpbar simpbar-shell; do
+            for kind in crash error warning; do
+                log="${logs}/${prog}/${kind}.log"
+                if [[ -s "${log}" ]]; then
+                    printf '  --- %s %s.log (last 8) ---\n' "${prog}" "${kind}"
+                    tail -n 8 "${log}" | sed 's/^/        /'
+                fi
+            done
+        done
+    fi
+
     section "Running"
     for proc in mango Hyprland niri simpbar swaybg pipewire wireplumber xdg-desktop-portal; do
         if pgrep -x "${proc}" >/dev/null; then ok "${proc}"; fi
