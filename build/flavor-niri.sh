@@ -43,6 +43,15 @@ window-rule {
     opacity 0.85
 }
 
+// Floating terminal (Super+Shift+Return): half the screen, bottom-right.
+window-rule {
+    match app-id="^perihelion-float$"
+    open-floating true
+    default-column-width { proportion 0.5; }
+    default-window-height { proportion 0.55; }
+    default-floating-position x=12 y=12 relative-to="bottom-right"
+}
+
 // Glass mode: Super+G (perihelion-glass) writes glass.kdl.
 include optional=true "glass.kdl"
 EOF

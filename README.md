@@ -87,6 +87,7 @@ Pick **Mango** on the login screen. Super is the Windows key.
 | Super+Shift+Ctrl+arrows | Swap windows |
 | Super+1-9 / Super+Shift+1-9 | Go to / move window to workspace |
 | Super+W / Super+F | Floating / fullscreen |
+| Super+Shift+Return | Floating terminal, half-size in the bottom-right corner (for showcases) |
 | Super+A | App drawer (grid of every app) |
 | Super+Shift+W | Wallpaper picker (images in `~/Pictures/Wallpapers`) |
 | Super+O / Alt+W | Overview (Mango's own / simpbar-shell's with live previews) |

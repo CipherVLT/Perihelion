@@ -105,6 +105,7 @@ end
 
 -- 1. Applications
 bind(key("RETURN"), hl.dsp.exec_cmd("kitty"), "Terminal")
+bind(key("SHIFT + RETURN"), hl.dsp.exec_cmd("kitty --class perihelion-float"), "Floating terminal (showcase)")
 bind(key("E"), hl.dsp.exec_cmd("strata"), "File manager")
 bind(key("B"), hl.dsp.exec_cmd("firefox"), "Browser")
 bind(key("D"), hl.dsp.exec_cmd("fuzzel"), "App launcher")
@@ -150,6 +151,15 @@ local function toggleGlass()
     end
 end
 bind(key("G"), toggleGlass, "Glass (see-through) window")
+
+-- Floating terminal (Super+Shift+Return): half the screen, bottom-right
+-- corner, for desktop showcases. Drag it with Super+left mouse.
+hl.window_rule({
+    match = { class = "^perihelion-float$" },
+    float = true,
+    size = { "monitor_w*0.5", "monitor_h*0.55" },
+    move = { "monitor_w-window_w-12", "monitor_h-window_h-12" },
+})
 
 -- Always-glass apps. Add your own the same way (class from: hyprctl clients).
 hl.window_rule({ match = { class = "^moe\\.launcher\\.the-honkers-railway-launcher$" }, opacity = 0.85 })

@@ -4,6 +4,7 @@
 binds {
     // --- Applications ----------------------------------------------------
     Mod+Return hotkey-overlay-title="Terminal: kitty" { spawn "kitty"; }
+    Mod+Shift+Return hotkey-overlay-title="Floating terminal (showcase)" { spawn "kitty" "--class" "perihelion-float"; }
     Mod+E hotkey-overlay-title="File manager: Strata" { spawn "strata"; }
     Mod+B hotkey-overlay-title="Browser: Firefox" { spawn "firefox"; }
     Mod+D hotkey-overlay-title="App launcher: fuzzel" { spawn "fuzzel"; }
