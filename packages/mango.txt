@@ -18,6 +18,9 @@ pulseaudio-utils
 libadwaita
 # perihelion-weather (Open-Meteo JSON for the weather widget)
 jq
+# simpbar's app drawer, and python3 for its wallpaper engine's downloads
+quickshell
+python3
 # Password prompts (Steam, pkexec); started from the Mango config
 mate-polkit
 # Screenshots: slurp picks a region, grim captures, wl-copy copies

@@ -10,7 +10,7 @@ command -v mango >/dev/null || die "mango binary missing"
 
 apply_system_files mango
 rm -f /.gitkeep
-chmod 0755 /usr/bin/perihelion-wallpaper /usr/bin/perihelion-screenshot /usr/bin/appdrawer /usr/bin/perihelion-simpbar-start /usr/bin/perihelion-blur /usr/bin/perihelion-weather
+chmod 0755 /usr/bin/perihelion-wallpaper /usr/bin/perihelion-screenshot /usr/bin/perihelion-simpbar-start /usr/bin/perihelion-blur /usr/bin/perihelion-weather
 
 # Top bar: simpbar, built from source.
 bash "${PERIHELION_SRC}/build/install-simpbar.sh"
@@ -55,6 +55,14 @@ seed_user_file "${share}/simpbar/matugen.json" .config/simpbar/matugen.json
 # Fedora's cava has no PipeWire input; this one reads PulseAudio instead.
 seed_user_file "${share}/simpbar/cava.conf" .config/simpbar/cava.conf
 seed_user_file "${share}/simpbar/widgets-disabled" .config/simpbar/widgets-disabled
+# simpbar's app drawer (Super+A): its QML, empty favourites, and the folders
+# its wallpaper picker lists (Perihelion's ~/Pictures/Wallpapers first).
+for qml in "${share}"/quickshell/appdrawer/*.qml; do
+    seed_user_file "${qml}" ".config/quickshell/appdrawer/$(basename "${qml}")"
+done
+printf '{ "ids": [] }\n' > "${share}/quickshell/appdrawer/favourites.json"
+seed_user_file "${share}/quickshell/appdrawer/favourites.json" .config/quickshell/appdrawer/favourites.json
+seed_user_file "${share}/simpbar/wallpaper-dirs" .config/simpbar/wallpaper-dirs
 install -Dm644 "${PERIHELION_SRC}/docs/simpbar.md" /usr/share/doc/perihelion/simpbar.md
 seed_user_file "${share}/fuzzel/fuzzel.ini" .config/fuzzel/fuzzel.ini
 

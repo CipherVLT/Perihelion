@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-# Perihelion's stand-in for simpbar's app drawer, which Perihelion does not
-# ship (it is part of simpbar's Quickshell desktop). simpbar calls it for its
-# power button ("appdrawer power"); anything else opens the app drawer.
-case "${1:-}" in
-    power) exec perihelion-power-menu ;;
-    *) exec perihelion-drawer ;;
-esac

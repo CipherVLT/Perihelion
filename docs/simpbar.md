@@ -144,6 +144,29 @@ simpbar's small equalizer. Move the `{ "kind": "cava" }` entry to switch.
 For the visualizer filling the whole bar behind the modules, try
 `"bg_mode": "cava"` with `"cava_style": "curve"` and `"cava_bg_strength": 45`.
 
+## App drawer and wallpapers (Super+A)
+
+simpbar's own drawer (Quickshell), the same one in simpbar's screenshots:
+
+- **Apps:** search and launch; right-click to pin favourites.
+- **Wallpapers** (Super+Shift+W): a grid of previews from
+  `~/Pictures/Wallpapers` (folders listed in
+  `~/.config/simpbar/wallpaper-dirs`). Enter or click applies one.
+  - **Bing:** today's Bing wallpaper.
+  - **Lucky:** a random one from Wallhaven.
+  - **Random:** a random one of yours.
+  - **Wallhaven:** search tab.
+  Downloads are saved to the first folder.
+- **Power** (Super+Shift+Q, or the bar's power button): lock, suspend, log
+  out, restart, power off.
+
+The pick is remembered and restored at login. From a terminal, the same
+engine: `simpbar-wallpaper set ~/Pictures/Wallpapers/image.png`,
+`simpbar-wallpaper random`, `simpbar-wallpaper bing`.
+
+Colors come from `~/.config/simpbar/matugen.json` (Catppuccin Macchiato).
+Perihelion leaves matugen out, so a new wallpaper doesn't recolor the theme.
+
 ## Desktop widgets (simpbar-shell)
 
 Eight widgets can sit on the wallpaper: clock, weather, media (now playing),
