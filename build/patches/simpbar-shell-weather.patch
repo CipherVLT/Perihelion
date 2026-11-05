@@ -1,0 +1,78 @@
+diff --git a/simpbar-shell/src/widgets.zig b/simpbar-shell/src/widgets.zig
+index 044cda2..9a4053c 100644
+--- a/simpbar-shell/src/widgets.zig
++++ b/simpbar-shell/src/widgets.zig
+@@ -718,18 +718,9 @@ fn drawWeatherFxCard(c: Canvas, r: Rect, wttr: u32, nf: u32, frame: u32, tint: u
+                 }
+             }
+         },
+-        .clear => {
+-            const sy = y0 + @mod(fi * 2, h + 8) - 4;
+-            var yy = sy - 1;
+-            while (yy <= sy + 1) : (yy += 1) {
+-                const d: f32 = @floatFromInt(@abs(yy - sy));
+-                const a: u8 = @intFromFloat(30.0 * (1.0 - d / 3.0));
+-                var xx = x0;
+-                while (xx < x0 + w) : (xx += 1) {
+-                    putCardFx(c, r, xx, yy, 0xFFE9A8, a);
+-                }
+-            }
+-        },
++        // Perihelion: no sweeping highlight line on clear skies (it read as a
++        // flickering grey line across the card); the sun glow stays.
++        .clear => {},
+         .cloud => {
+             var i: i64 = 0;
+             while (i < 4) : (i += 1) {
+@@ -1020,6 +1011,13 @@ pub const ClockWidget = struct {
+ // |-separated fields, so the card can show condition + details and not just
+ // a number. The bar keeps format=1 (it only ever draws icon + temp).
+ const WEATHER_URL = "https://wttr.in/?format=%c|%t|%h|%w";
++// Perihelion: wttr.in guesses the place from the internet address, which a VPN
++// or ISP routing can put in another city. A city or ZIP code on the first line
++// of ~/.config/simpbar/weather-location pins it. Sunrise, sunset and local time
++// (%S|%s|%T) come along so clear nights show a moon instead of the sun.
++const WEATHER_CMD =
++    "loc=$(head -n 1 \"$HOME/.config/simpbar/weather-location\" 2>/dev/null | tr -d '\\r' | sed 's/^ *//; s/ *$//; s/ /+/g'); " ++
++    "exec curl -s \"https://wttr.in/${loc}?format=%c|%t|%h|%w|%S|%s|%T\"";
+ 
+ pub const WeatherWidget = struct {
+     icon_buf: [8]u8 = undefined,
+@@ -1049,8 +1047,8 @@ pub const WeatherWidget = struct {
+ 
+     pub fn refresh(self: *WeatherWidget) void {
+         if (self.fetch.busy()) return;
+-        var argv = [_:null]?[*:0]const u8{ "env", "curl", "-s", WEATHER_URL, null };
+-        self.fetch.start("/usr/bin/env", &argv);
++        var argv = [_:null]?[*:0]const u8{ "/bin/sh", "-c", WEATHER_CMD, null };
++        self.fetch.start("/bin/sh", &argv);
+     }
+ 
+     /// Call when the fetch pipe is readable. Returns true when the fetch
+@@ -1067,7 +1065,7 @@ pub const WeatherWidget = struct {
+         // Four |-separated fields (see WEATHER_URL): emoji, temp, humidity,
+         // wind. Any field may be missing on a weird response — parse resolve
+         // what's there and leave the rest blank rather than failing.
+-        var fields: [4][]const u8 = .{ "", "", "", "" };
++        var fields: [7][]const u8 = .{ "", "", "", "", "", "", "" };
+         var fi: usize = 0;
+         var it = std.mem.splitScalar(u8, trimmed, '|');
+         while (it.next()) |f| {
+@@ -1102,6 +1100,17 @@ pub const WeatherWidget = struct {
+         } else {
+             self.icon_color = 0;
+         }
++        // Perihelion: after sunset (or before sunrise) a clear sky is a moon,
++        // not a glowing sun. "HH:MM" strings compare correctly as text.
++        if (cp == 0x2600 and fields[4].len >= 5 and fields[5].len >= 5 and fields[6].len >= 5) {
++            const now = fields[6][0..5];
++            if (std.mem.order(u8, now, fields[4][0..5]) == .lt or std.mem.order(u8, now, fields[5][0..5]) != .lt) {
++                self.wttr_cp = 0x1F319; // crescent moon: no sun glow, no sun fx
++                self.icon_cp = 0xE32B; // nf-weather-night_clear
++                self.icon_len = utf8Encode(0xE32B, &self.icon_buf);
++                self.icon_color = 0xFFB7BDF8; // Catppuccin lavender
++            }
++        }
+         const cl = wttrConditionFor(cp);
+         @memcpy(self.cond_buf[0..cl.len], cl);
+         self.cond_len = cl.len;
