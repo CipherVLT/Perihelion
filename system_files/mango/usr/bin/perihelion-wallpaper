@@ -25,26 +25,11 @@ case "${1:-}" in
         printf 'color %s\n' "$2" > "${state}"
         ;;
     "")
-        # A wallpaper picked in simpbar's app drawer (simpbar-wallpaper) wins
-        # when it's newer than Perihelion's own choice.
-        sb="${XDG_CONFIG_HOME:-${HOME}/.config}/simpbar/wallpaper"
-        if [[ -f "${sb}" ]] && { [[ ! -f "${state}" ]] || [[ "${sb}" -nt "${state}" ]]; } &&
-            command -v simpbar-restore-wallpaper >/dev/null; then
-            img=$(sed -n 's/^path=//p' "${sb}" | head -n 1)
-            img=${img/#\~/${HOME}}
-            if [[ -n "${img}" && -f "${img}" ]]; then
-                exec simpbar-restore-wallpaper
-            fi
-        fi
         ;;
     *)
         image=$(realpath -e -- "$1") || { echo "perihelion-wallpaper: no such file: $1" >&2; exit 1; }
         mkdir -p "$(dirname "${state}")"
         printf 'image %s\n' "${image}" > "${state}"
-        # Keep simpbar's app drawer in step (it marks the current wallpaper).
-        if command -v simpbar-wallpaper >/dev/null; then
-            exec simpbar-wallpaper set "${image}"
-        fi
         ;;
 esac
 

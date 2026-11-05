@@ -81,19 +81,6 @@ install -Dm644 "${src}/assets/icons/simpbar-config.svg" /usr/share/icons/hicolor
     "${zig_dir}/zig" build -Doptimize=ReleaseFast "-Dcpu=${ZIG_CPU}"
 )
 install -Dm755 "${src}/simpbar-shell/zig-out/bin/simpbar-shell" /usr/bin/simpbar-shell
-
-# simpbar's app drawer (Quickshell): apps, wallpapers with previews (local,
-# Bing, Wallhaven), Bluetooth and the power menu; `appdrawer power` is also
-# the bar's power button. Quickshell loads configs only from
-# ~/.config/quickshell/<name>, so the QML is kept here and seeded per user.
-install -Dm755 "${src}/appdrawer" /usr/bin/appdrawer
-install -Dm644 "${src}/appdrawer.desktop" /usr/share/applications/appdrawer.desktop
-install -d /usr/share/perihelion/quickshell/appdrawer
-install -m644 "${src}"/quickshell/appdrawer/*.qml /usr/share/perihelion/quickshell/appdrawer/
-# The wallpaper engine the drawer drives (swaybg; matugen recoloring is left
-# out so Perihelion's Catppuccin theme stays) and its login restore.
-install -Dm755 "${src}/simpbar-wallpaper" /usr/bin/simpbar-wallpaper
-install -Dm755 "${src}/simpbar-restore-wallpaper" /usr/bin/simpbar-restore-wallpaper
 install -d /usr/share/perihelion
 printf '%s\n' "${SIMPBAR_REF}" > /usr/share/perihelion/simpbar.ref
 rm -rf "${work}"

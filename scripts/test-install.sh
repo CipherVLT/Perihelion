@@ -203,17 +203,6 @@ case "${flavor}" in
         check grep -qx 'exec_once=perihelion-simpbar-start' /home/tester/.config/mango/config.conf
         check bash -n /usr/bin/perihelion-simpbar-start
         check bash -n /usr/bin/perihelion-weather
-        # simpbar's app drawer (Quickshell) and wallpaper engine
-        check rpm -q quickshell python3
-        check grep -q 'quickshell' /usr/bin/appdrawer
-        check test -x /usr/bin/simpbar-wallpaper
-        check test -x /usr/bin/simpbar-restore-wallpaper
-        check test -f /home/tester/.config/quickshell/appdrawer/shell.qml
-        check test -f /home/tester/.config/quickshell/appdrawer/favourites.json
-        check grep -q 'swaylock' /home/tester/.config/quickshell/appdrawer/Drawer.qml
-        check grep -q '"popup_bg_color": "#1E2030"' /home/tester/.config/simpbar/matugen.json
-        check grep -qx 'exec_once=appdrawer start' /home/tester/.config/mango/config.conf
-        check grep -qx '\~/Pictures/Wallpapers' /home/tester/.config/simpbar/wallpaper-dirs
         # Live weather (Open-Meteo); reported, not fatal, so an outage can't block a build
         mkdir -p /tmp/wtest/.config/simpbar && echo "DeSoto, TX" > /tmp/wtest/.config/simpbar/weather-location
         if w=$(HOME=/tmp/wtest perihelion-weather 2>&1) && [[ $(tr -cd '|' <<<"${w}" | wc -c) -eq 6 ]]; then

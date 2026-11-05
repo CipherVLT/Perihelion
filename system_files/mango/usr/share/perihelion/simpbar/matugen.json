@@ -3,9 +3,5 @@
   "text_color": "#CAD3F5",
   "border_color": "#8AADF4",
   "hover_color": "#363A4F",
-  "holiday_color": "#F5BDE6",
-  "popup_bg_color": "#1E2030",
-  "popup_hover_color": "#363A4F",
-  "popup_separator_color": "#494D64",
-  "popup_disabled_color": "#6E738D"
+  "holiday_color": "#F5BDE6"
 }
