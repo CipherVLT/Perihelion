@@ -52,6 +52,14 @@ window-rule {
     default-floating-position x=12 y=12 relative-to="bottom-right"
 }
 
+// Wallpaper picker (Super+Shift+W): floating.
+window-rule {
+    match app-id=r#"^io\.github\.perihelion\.Wallpapers$"#
+    open-floating true
+    default-column-width { proportion 0.75; }
+    default-window-height { proportion 0.72; }
+}
+
 // Glass mode: Super+G (perihelion-glass) writes glass.kdl.
 include optional=true "glass.kdl"
 EOF

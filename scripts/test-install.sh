@@ -132,7 +132,12 @@ check dconf_ok
 check grep -qx 'background              #24273A' /etc/xdg/kitty/kitty.conf
 check grep -qx 'color4  #8AADF4' /etc/xdg/kitty/kitty.conf
 # Shared helpers (every flavor)
-for helper in perihelion-power-menu perihelion-wallpaper-picker perihelion-drawer perihelion-keys perihelion-glass; do
+# perihelion-wallpapers' imports work (no display needed for this)
+wallpapers_imports_ok() { python3 -c 'import gi; gi.require_version("Gtk", "4.0"); gi.require_version("GdkPixbuf", "2.0"); from gi.repository import Gtk, GdkPixbuf'; }
+check wallpapers_imports_ok
+wallpapers_parses() { python3 -c 'import ast, sys; ast.parse(open(sys.argv[1]).read())' /usr/bin/perihelion-wallpapers; }
+check wallpapers_parses
+for helper in perihelion-power-menu perihelion-wallpaper-picker perihelion-drawer perihelion-keys perihelion-glass perihelion-wallpapers; do
     check test -x "/usr/bin/${helper}"
 done
 check rpm -q playerctl gtk-layer-shell

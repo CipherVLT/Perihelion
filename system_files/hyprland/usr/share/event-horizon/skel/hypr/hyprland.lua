@@ -161,6 +161,14 @@ hl.window_rule({
     move = { "monitor_w-window_w-12", "monitor_h-window_h-12" },
 })
 
+-- Wallpaper picker (Super+Shift+W): floating, centered.
+hl.window_rule({
+    match = { class = "^io\\.github\\.perihelion\\.Wallpapers$" },
+    float = true,
+    size = { "monitor_w*0.75", "monitor_h*0.72" },
+    center = true,
+})
+
 -- Always-glass apps. Add your own the same way (class from: hyprctl clients).
 hl.window_rule({ match = { class = "^moe\\.launcher\\.the-honkers-railway-launcher$" }, opacity = 0.85 })
 

@@ -89,7 +89,7 @@ Pick **Mango** on the login screen. Super is the Windows key.
 | Super+W / Super+F | Floating / fullscreen |
 | Super+Shift+Return | Floating terminal, half-size in the bottom-right corner (for showcases) |
 | Super+A | App drawer (grid of every app) |
-| Super+Shift+W | Wallpaper picker (images in `~/Pictures/Wallpapers`) |
+| Super+Shift+W | Wallpaper picker: previews of `~/Pictures/Wallpapers`, search, Random, Bing (today's image), Open folder |
 | Super+O / Alt+W | Overview (Mango's own / simpbar-shell's with live previews) |
 | Super+Shift+Q | Power menu (also the power button on the bar) |
 | Ctrl+drag / Alt+right-click | Move / remove a desktop widget (Mango; add them in Simpbar Config) |

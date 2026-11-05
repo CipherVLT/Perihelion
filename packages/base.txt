@@ -109,6 +109,9 @@ playerctl
 # Strata (the file manager) comes from its release via build/install-strata.sh;
 # these are the libraries it links against. gvfs provides the Trash (trash:///).
 gtk4
+# perihelion-wallpapers (the Super+Shift+W preview grid): Python + GTK 4
+python3
+python3-gobject
 gtksourceview5
 poppler-glib
 graphene
