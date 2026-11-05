@@ -55,7 +55,8 @@ git -C "${work}" init -q simpbar
 git -C "${src}" remote add origin "${SIMPBAR_REPO}"
 retry git -C "${src}" fetch -q --depth 1 origin "${SIMPBAR_REF}"
 git -C "${src}" checkout -q --detach FETCH_HEAD
-# Perihelion's patches: cava as a sound wave beside mpris, Alt + right-click
+# Perihelion's patches: cava as a sound wave beside mpris, a scrolling track
+# title, icon themes with 48/48@2x size dirs (Numix-Circle), Alt + right-click
 # removes a desktop widget, Simpbar Config shows only its Bar pages.
 for patch in "${PERIHELION_SRC}"/build/patches/simpbar-*.patch; do
     git -C "${src}" apply "${patch}" || die "simpbar patch does not apply: ${patch##*/}"
