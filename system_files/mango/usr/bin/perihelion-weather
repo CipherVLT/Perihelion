@@ -9,6 +9,9 @@
 #   32.59,-96.86          latitude,longitude
 #   (empty or missing)    guessed from the internet address (Fedora's geoip)
 # °F and mph in the US, °C and km/h elsewhere.
+#
+#   perihelion-weather --open   open the forecast page for that place (clicking
+#                               the widget): weather.gov in the US, Windy elsewhere
 set -uo pipefail
 
 config="${XDG_CONFIG_HOME:-${HOME}/.config}/simpbar"
@@ -56,6 +59,13 @@ if [[ ! -s "${place}" ]]; then
 fi
 read -r lat lon cc < "${place}" || { rm -f "${place}"; exit 1; }
 [[ -n "${lat:-}" && -n "${lon:-}" ]] || { rm -f "${place}"; exit 1; }
+
+if [[ "${1:-}" == --open ]]; then
+    if [[ "${cc}" == US ]]; then
+        exec xdg-open "https://forecast.weather.gov/MapClick.php?lat=${lat}&lon=${lon}"
+    fi
+    exec xdg-open "https://www.windy.com/${lat}/${lon}?${lat},${lon},10"
+fi
 
 if [[ "${cc}" == US ]]; then
     units=(-d temperature_unit=fahrenheit -d wind_speed_unit=mph); t_unit="°F"; w_unit=mph
