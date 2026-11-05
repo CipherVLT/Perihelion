@@ -14,8 +14,9 @@ export PERIHELION_SRC=/var/tmp/perihelion
 export PERIHELION_FLAVOR=@FLAVOR@
 bash "$PERIHELION_SRC/build/common-post.sh"
 bash "$PERIHELION_SRC/build/flavor-@FLAVOR@.sh"
-# Last: correct SELinux labels on everything %post wrote (see build/lib.sh).
-bash -c 'source "$PERIHELION_SRC/build/lib.sh" && relabel_system'
+# Icon caches after everything that installs icons, then SELinux labels on
+# everything %post wrote (see build/lib.sh).
+bash -c 'source "$PERIHELION_SRC/build/lib.sh" && refresh_icon_caches && relabel_system'
 rm -rf "$PERIHELION_SRC"
 dnf5 clean all
 %end

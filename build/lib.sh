@@ -20,6 +20,19 @@ apply_system_files() {
 
 # Give everything Perihelion wrote its correct SELinux label. Runs last in
 # %post; also schedules a full relabel on first boot as a safety net.
+# GTK finds icons through each theme's icon-theme.cache and trusts it: an
+# icon added after the cache was built (Strata, Simpbar Config, Event Horizon
+# install theirs into hicolor) shows as a "?" until the cache is rebuilt.
+refresh_icon_caches() {
+    command -v gtk-update-icon-cache >/dev/null 2>&1 || return 0
+    local theme
+    for theme in /usr/share/icons/*/; do
+        [[ -f "${theme}index.theme" ]] || continue
+        gtk-update-icon-cache -qf "${theme}" 2>/dev/null || true
+    done
+    log "icons: caches rebuilt"
+}
+
 relabel_system() {
     if command -v restorecon >/dev/null 2>&1; then
         log "selinux: restoring labels"

@@ -72,6 +72,7 @@ fi
 export PERIHELION_SRC=/var/tmp/perihelion PERIHELION_FLAVOR="${flavor}"
 bash "${PERIHELION_SRC}/build/common-post.sh"
 bash "${PERIHELION_SRC}/build/flavor-${flavor}.sh"
+bash -c "source ${PERIHELION_SRC}/build/lib.sh && refresh_icon_caches"
 bash -c 'source "${PERIHELION_SRC}/build/lib.sh" && relabel_system'
 echo "::endgroup::"
 
@@ -148,6 +149,8 @@ check flathub_configured
 check test -f /var/lib/perihelion/flathub-added
 check test -L /etc/systemd/system/multi-user.target.wants/perihelion-flathub.service
 check test -x /usr/libexec/perihelion-auto-timezone
+# GTK sees Perihelion-installed icons only through the rebuilt hicolor cache
+check grep -aq 'io.github.lgse.Strata' /usr/share/icons/hicolor/icon-theme.cache
 check rpm -q chrony
 check test -L /etc/systemd/system/multi-user.target.wants/chronyd.service
 check grep -qx UTC /etc/adjtime
@@ -193,6 +196,7 @@ case "${flavor}" in
         check test -x /usr/bin/simpbar-config
         check ldd /usr/bin/simpbar-config
         check test -f /usr/share/applications/simpbar-config.desktop
+        check grep -aq 'simpbar-config' /usr/share/icons/hicolor/icon-theme.cache
         check rpm -q gtk4 libadwaita
         check grep -q 'ALT,w,spawn,simpbar-shell overview toggle' /home/tester/.config/mango/config.conf
         check grep -qx 'bind=SUPER,g,spawn,perihelion-glass' /home/tester/.config/mango/config.conf
