@@ -78,7 +78,7 @@ echo "::endgroup::"
 
 echo "::group::Weak dependencies left out (review: anything essential belongs in packages/)"
 # Every "Recommends" of an installed package that nothing installed provides.
-rpm -qa --qf '[%{NAME}\t%{RECOMMENDNAME}\n]' | sort -u | while IFS=$'\t' read -r pkg cap; do
+rpm -qa --qf '[%{=NAME}\t%{RECOMMENDNAME}\n]' | sort -u | while IFS=$'\t' read -r pkg cap; do
     [[ -n "${cap}" && "${cap}" != "(none)" ]] || continue
     case "${cap}" in \(*) continue ;; esac   # rich dependencies: skip
     rpm -q --whatprovides "${cap}" >/dev/null 2>&1 || printf '  %-40s recommended by %s\n' "${cap}" "${pkg}"
