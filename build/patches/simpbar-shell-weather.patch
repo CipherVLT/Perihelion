@@ -24,7 +24,7 @@ index 044cda2..9a4053c 100644
          .cloud => {
              var i: i64 = 0;
              while (i < 4) : (i += 1) {
-@@ -1020,6 +1011,13 @@ pub const ClockWidget = struct {
+@@ -1020,6 +1011,15 @@ pub const ClockWidget = struct {
  // |-separated fields, so the card can show condition + details and not just
  // a number. The bar keeps format=1 (it only ever draws icon + temp).
  const WEATHER_URL = "https://wttr.in/?format=%c|%t|%h|%w";
@@ -32,7 +32,9 @@ index 044cda2..9a4053c 100644
 +// or ISP routing can put in another city. A city or ZIP code on the first line
 +// of ~/.config/simpbar/weather-location pins it. Sunrise, sunset and local time
 +// (%S|%s|%T) come along so clear nights show a moon instead of the sun.
++// A perihelion-weather on PATH (Open-Meteo, more accurate) is used when present.
 +const WEATHER_CMD =
++    "if command -v perihelion-weather >/dev/null 2>&1; then exec perihelion-weather; fi; " ++
 +    "loc=$(head -n 1 \"$HOME/.config/simpbar/weather-location\" 2>/dev/null | tr -d '\\r' | sed 's/^ *//; s/ *$//; s/ /+/g'); " ++
 +    "exec curl -s \"https://wttr.in/${loc}?format=%c|%t|%h|%w|%S|%s|%T\"";
  

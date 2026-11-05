@@ -16,6 +16,8 @@ librsvg2
 pulseaudio-utils
 # Simpbar Config (GTK 4 + libadwaita)
 libadwaita
+# perihelion-weather (Open-Meteo JSON for the weather widget)
+jq
 # Password prompts (Steam, pkexec); started from the Mango config
 mate-polkit
 # Screenshots: slurp picks a region, grim captures, wl-copy copies

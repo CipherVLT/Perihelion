@@ -10,7 +10,7 @@ command -v mango >/dev/null || die "mango binary missing"
 
 apply_system_files mango
 rm -f /.gitkeep
-chmod 0755 /usr/bin/perihelion-wallpaper /usr/bin/perihelion-screenshot /usr/bin/appdrawer /usr/bin/perihelion-simpbar-start /usr/bin/perihelion-blur
+chmod 0755 /usr/bin/perihelion-wallpaper /usr/bin/perihelion-screenshot /usr/bin/appdrawer /usr/bin/perihelion-simpbar-start /usr/bin/perihelion-blur /usr/bin/perihelion-weather
 
 # Top bar: simpbar, built from source.
 bash "${PERIHELION_SRC}/build/install-simpbar.sh"

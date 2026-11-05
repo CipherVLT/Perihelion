@@ -202,6 +202,14 @@ case "${flavor}" in
         check grep -qx 'bind=SUPER,g,spawn,perihelion-glass' /home/tester/.config/mango/config.conf
         check grep -qx 'exec_once=perihelion-simpbar-start' /home/tester/.config/mango/config.conf
         check bash -n /usr/bin/perihelion-simpbar-start
+        check bash -n /usr/bin/perihelion-weather
+        # Live weather (Open-Meteo); reported, not fatal, so an outage can't block a build
+        mkdir -p /tmp/wtest/.config/simpbar && echo "DeSoto, TX" > /tmp/wtest/.config/simpbar/weather-location
+        if w=$(HOME=/tmp/wtest perihelion-weather 2>&1) && [[ $(tr -cd '|' <<<"${w}" | wc -c) -eq 6 ]]; then
+            echo "  ok    perihelion-weather: ${w}"
+        else
+            echo "  WARN  perihelion-weather: ${w}"
+        fi
         check grep -qx 'bind=SUPER+SHIFT,g,spawn,perihelion-blur' /home/tester/.config/mango/config.conf
         check grep -q 'app_id:^perihelion-float\$' /home/tester/.config/mango/config.conf
         check grep -qx 'method = pulse' /home/tester/.config/simpbar/cava.conf

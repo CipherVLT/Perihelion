@@ -171,11 +171,14 @@ same file.
 
 What some of them need:
 
-- **Weather** comes from wttr.in, which guesses your city from your internet
-  address (a VPN can put you in another city). To pin it, put your city or
-  ZIP code on the first line of `~/.config/simpbar/weather-location`, for
-  example `echo "DeSoto, TX" > ~/.config/simpbar/weather-location`, then
-  restart the widgets. After sunset a clear sky shows a moon.
+- **Weather** comes from Open-Meteo (`perihelion-weather`; free, no key,
+  NOAA's models in the US). Set your place on the first line of
+  `~/.config/simpbar/weather-location`: `City, ST` (US), `City, FR` (other
+  countries) or `latitude,longitude`, for example
+  `echo "DeSoto, TX" > ~/.config/simpbar/weather-location`. Without it, the
+  place is guessed from your internet address (a VPN can put you elsewhere).
+  Run `perihelion-weather` to see what the widget gets; the widget refetches
+  every 20 minutes, or restart it. After sunset a clear sky shows a moon.
 - **Desktop icons** shows the `.desktop` files in `~/Desktop`. In Steam,
   *Manage → Add desktop shortcut* puts a game there.
 - **Sticky note:** click it and type; it saves to `~/.config/simpbar/notes/`.
