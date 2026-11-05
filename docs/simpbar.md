@@ -107,7 +107,7 @@ Colors are `"#RRGGBB"`. Perihelion uses Catppuccin Macchiato
 |---|---|---|
 | `position` | `"top"`, `"bottom"` | `"bottom"` |
 | `bar_mode` | `"taskbar"` (full width), `"dock"` | `"taskbar"` |
-| `bar_height` | pixels | `28` |
+| `bar_height` | pixels | `32` |
 | `bg_opacity_percent` | 0–100 | `90` |
 | `corner_radius_px` | pixels | `0` |
 | `border_top_px`, `border_bottom_px`, `border_left_px`, `border_right_px` | pixels | top `2` (the edge facing your windows) |

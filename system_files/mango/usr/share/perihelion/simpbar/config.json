@@ -17,7 +17,7 @@
     "bg_mode": "none",
     "position": "bottom",
     "bar_mode": "taskbar",
-    "bar_height": 28,
+    "bar_height": 32,
     "border_top_px": 2,
     "border_bottom_px": 0,
     "border_left_px": 0,
