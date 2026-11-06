@@ -31,3 +31,7 @@ wev
 # Material You colors from the wallpaper (Terra): perihelion-theme's second
 # style, picked in Simpbar Config (Catppuccin is the default)
 matugen
+# Terminal extras themed with the wallpaper (perihelion-theme): system
+# monitor, and the falling-code screensaver (Perihelion's cmatrix wrapper)
+btop
+cmatrix

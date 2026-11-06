@@ -220,6 +220,9 @@ It writes:
 | Strata | `~/.config/strata/themes/tokyo-night.toml` |
 | window borders (Mango) | `~/.config/mango/colors.conf` |
 | fastfetch: the Fedora logo, labels and values | `~/.config/fastfetch/config.jsonc` |
+| terminal cava's gradient | `~/.config/cava/config` |
+| btop | `~/.config/btop/themes/perihelion.theme` |
+| cmatrix (nearest terminal color) | `~/.config/perihelion/cmatrix-color` |
 
 In Simpbar Config → Appearance → Theming:
 
@@ -232,7 +235,7 @@ In Simpbar Config → Appearance → Theming:
   pink and yellow.
 - **Matugen color scheme** (Material You): tonal spot, vibrant, ...
 
-To keep your own drawer CSS, fuzzel colors, Strata theme or fastfetch colors, delete the
+To keep your own drawer CSS, fuzzel colors, Strata theme, fastfetch or cava colors, delete the
 `perihelion-theme` line in that file: it is never rewritten after that.
 `perihelion-theme --dry-run` prints what it would pick, without writing.
 

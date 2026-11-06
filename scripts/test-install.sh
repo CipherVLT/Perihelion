@@ -241,6 +241,13 @@ case "${flavor}" in
                 grep -q '^// perihelion-theme' /tmp/ttest/.config/fastfetch/config.jsonc
         }
         check material_ok
+        check grep -q '^theme\[main_bg\]="#' /tmp/ttest/.config/btop/themes/perihelion.theme
+        check grep -qx 'color_theme = "perihelion"' /home/tester/.config/btop/btop.conf
+        check grep -q "^; perihelion-theme" /tmp/ttest/.config/cava/config
+        check grep -qxE 'red|yellow|green|cyan|blue|magenta|white' /tmp/ttest/.config/perihelion/cmatrix-color
+        check bash -n /usr/local/bin/cmatrix
+        check test -x /usr/bin/cmatrix
+        check command -v btop
         check grep -qx 'bind=SUPER+SHIFT,g,spawn,perihelion-blur' /home/tester/.config/mango/config.conf
         check grep -q 'app_id:^perihelion-float\$' /home/tester/.config/mango/config.conf
         check grep -qx 'method = pulse' /home/tester/.config/simpbar/cava.conf
@@ -257,7 +264,7 @@ case "${flavor}" in
         os_pink_ok() { [[ $(grep -c '"keyColor": "1;38;2;245;189;230"' /home/tester/.config/fastfetch/config.jsonc) -eq 4 ]]; }
         check os_pink_ok
         check grep -q '"1": "38;2;138;173;244", "2": "38;2;238;212;159"' /home/tester/.config/fastfetch/config.jsonc
-        check grep -q '"title": "1;38;2;237;135;150", "output": "38;2;138;173;244"' /home/tester/.config/fastfetch/config.jsonc
+        check grep -q '"title": "1;38;2;138;173;244", "output": "38;2;138;173;244"' /home/tester/.config/fastfetch/config.jsonc
         check mango -p -c /home/tester/.config/mango/config.conf
         check test "$(stat -c %U /home/tester/.config/mango/config.conf)" = tester
         check test -f /etc/xdg/xdg-desktop-portal/mango-portals.conf

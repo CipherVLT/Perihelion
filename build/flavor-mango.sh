@@ -10,7 +10,7 @@ command -v mango >/dev/null || die "mango binary missing"
 
 apply_system_files mango
 rm -f /.gitkeep
-chmod 0755 /usr/bin/perihelion-wallpaper /usr/bin/perihelion-screenshot /usr/bin/appdrawer /usr/bin/perihelion-simpbar-start /usr/bin/perihelion-blur /usr/bin/perihelion-weather
+chmod 0755 /usr/bin/perihelion-wallpaper /usr/bin/perihelion-screenshot /usr/bin/appdrawer /usr/bin/perihelion-simpbar-start /usr/bin/perihelion-blur /usr/bin/perihelion-weather /usr/local/bin/cmatrix
 
 # Top bar: simpbar, built from source.
 bash "${PERIHELION_SRC}/build/install-simpbar.sh"
@@ -57,6 +57,8 @@ seed_user_file "${share}/simpbar/cava.conf" .config/simpbar/cava.conf
 seed_user_file "${share}/simpbar/widgets-disabled" .config/simpbar/widgets-disabled
 install -Dm644 "${PERIHELION_SRC}/docs/simpbar.md" /usr/share/doc/perihelion/simpbar.md
 seed_user_file "${share}/fuzzel/fuzzel.ini" .config/fuzzel/fuzzel.ini
+# btop uses the theme perihelion-theme writes for each wallpaper
+seed_user_file "${share}/btop/btop.conf" .config/btop/btop.conf
 
 test -f /usr/share/wayland-sessions/mango.desktop
 log "mango: done"

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# cmatrix in the wallpaper's color: perihelion-theme saves the terminal color
+# nearest the theme's first accent in ~/.config/perihelion/cmatrix-color.
+# Your own -C wins. The real program is /usr/bin/cmatrix.
+set -euo pipefail
+real=/usr/bin/cmatrix
+for arg in "$@"; do
+    [[ "${arg}" == -C* ]] && exec "${real}" "$@"
+done
+color=$(head -n 1 "${XDG_CONFIG_HOME:-${HOME}/.config}/perihelion/cmatrix-color" 2>/dev/null || true)
+case "${color}" in
+    green | red | blue | white | yellow | cyan | magenta) exec "${real}" -C "${color}" "$@" ;;
+    *) exec "${real}" "$@" ;;
+esac
