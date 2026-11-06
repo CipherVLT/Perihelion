@@ -106,6 +106,16 @@ check rpm -q mesa-dri-drivers.x86_64 mesa-vulkan-drivers.x86_64 vulkan-loader.x8
 check rpm -q mesa-dri-drivers.i686 mesa-vulkan-drivers.i686 vulkan-loader.i686
 check rpm -q dconf cracklib-dicts nano
 check rpm -q fastfetch lm_sensors nethogs
+# Wine 11.21 (Kron4ek, WoW64) and winetricks, every flavor; NTSYNC set up
+check test -x /opt/wine/bin/wine
+check grep -qx 'wine-11.21-staging-amd64-wow64' /opt/wine/PERIHELION_BUILD
+wine_ok() { [[ "$(readlink /usr/local/bin/wine)" == /opt/wine/bin/wine ]] && /usr/local/bin/wine --version | grep -q '^wine-11.21'; }
+check wine_ok
+check bash -n /usr/local/bin/winetricks
+check grep -qx 'WINETRICKS_VERSION=20260125' /usr/local/bin/winetricks
+check grep -qx ntsync /etc/modules-load.d/ntsync.conf
+check grep -q 'KERNEL=="ntsync"' /etc/udev/rules.d/60-ntsync.rules
+check rpm -q zenity cabextract unzip mpv exfatprogs ntfs-3g gvfs-mtp google-noto-sans-cjk-vf-fonts gstreamer1-plugins-good gamemode mangohud
 # Look: Numix-Circle icons, Bibata cursor 24 px, DejaVu Sans Mono 11 pt
 check test -f /usr/share/icons/Numix-Circle/index.theme
 check test -f /usr/share/icons/Numix/index.theme
@@ -248,6 +258,9 @@ case "${flavor}" in
         check bash -n /usr/local/bin/cmatrix
         check test -x /usr/bin/cmatrix
         check command -v btop
+        check test -x /usr/bin/perihelion-lock
+        check grep -qx 'exec_once=swayidle -w timeout 600 perihelion-lock before-sleep perihelion-lock' /home/tester/.config/mango/config.conf
+        check rpm -q mako pavucontrol blueman swayidle
         check grep -qx 'bind=SUPER+SHIFT,g,spawn,perihelion-blur' /home/tester/.config/mango/config.conf
         check grep -q 'app_id:^perihelion-float\$' /home/tester/.config/mango/config.conf
         check grep -qx 'method = pulse' /home/tester/.config/simpbar/cava.conf

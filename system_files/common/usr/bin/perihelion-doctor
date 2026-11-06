@@ -109,6 +109,21 @@ report() {
         printf '  info  automatic time zone not done yet (tries at each boot until online)\n'
     fi
 
+    section "Wine"
+    if [[ -x /opt/wine/bin/wine ]]; then
+        ok "$(/opt/wine/bin/wine --version 2>/dev/null) ($(cat /opt/wine/PERIHELION_BUILD 2>/dev/null))"
+    else
+        bad "/opt/wine is missing (Wine ships with the ISO)"
+    fi
+    command -v winetricks >/dev/null && ok "winetricks $(winetricks --version 2>/dev/null | head -n1)"
+    if [[ ! -e /dev/ntsync ]]; then
+        bad "no /dev/ntsync (Wine falls back to slower sync): sudo modprobe ntsync"
+    elif [[ -r /dev/ntsync && -w /dev/ntsync ]]; then
+        ok "NTSYNC: /dev/ntsync is usable"
+    else
+        bad "/dev/ntsync isn't usable by you ($(stat -c '%A %U:%G' /dev/ntsync)); log out and back in"
+    fi
+
     section "Network"
     nmcli -t -f STATE,CONNECTIVITY general 2>/dev/null || bad "nmcli failed"
 

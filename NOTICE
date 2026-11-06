@@ -97,3 +97,9 @@ Wallpapers (not in this repository)
   This artwork carries no open license; it is free for private, personal
   use. It is never committed here, and ISOs built with it must not be
   published without permission from Kurzgesagt.
+
+  Wine (https://www.winehq.org), LGPL-2.1, as built by Kron4ek
+    (https://github.com/Kron4ek/Wine-Builds), release 11.21,
+    staging-amd64-wow64, in /opt/wine. Fetched by scripts/fetch-wine.sh.
+  winetricks (https://github.com/Winetricks/winetricks), LGPL-2.1, release
+    20260125, in /usr/local/bin/winetricks.

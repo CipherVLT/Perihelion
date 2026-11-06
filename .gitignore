@@ -14,3 +14,7 @@ system_files/common/usr/share/licenses/numix-icon-theme*/
 # Wallpapers are fetched locally (scripts/fetch-wallpapers.sh), never committed
 branding/wallpapers/*
 !branding/wallpapers/README.md
+# Fetched in CI by scripts/fetch-wine.sh
+system_files/common/opt/wine/
+system_files/common/usr/local/bin/
+system_files/common/usr/share/licenses/wine-kron4ek/

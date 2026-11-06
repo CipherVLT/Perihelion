@@ -6,13 +6,8 @@ set -euo pipefail
 lock() {
     # Mango has no shell with a lock screen; Event Horizon (Hyprland, Niri)
     # locks on logind's request.
-    if [[ -n "${MANGO_INSTANCE_SIGNATURE:-}" ]] && command -v swaylock >/dev/null; then
-        # The bar's background color (perihelion-theme keeps it matched to
-        # the wallpaper), Macchiato base if there is none.
-        local bg
-        bg=$(sed -n 's/.*"bg_color": *"#\([0-9A-Fa-f]\{6\}\)".*/\1/p' \
-            "${XDG_CONFIG_HOME:-${HOME}/.config}/simpbar/matugen.json" 2>/dev/null | head -n 1)
-        exec swaylock -f -c "${bg:-24273a}"
+    if [[ -n "${MANGO_INSTANCE_SIGNATURE:-}" ]] && command -v perihelion-lock >/dev/null; then
+        exec perihelion-lock
     fi
     exec loginctl lock-session
 }

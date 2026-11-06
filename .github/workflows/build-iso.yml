@@ -152,7 +152,7 @@ jobs:
       - name: Tools
         run: |
           dnf5 install -y --setopt=install_weak_deps=False \
-            git-core xorriso rsync isomd5sum pykickstart curl gh gnupg2 fedora-gpg-keys
+            git-core xorriso rsync isomd5sum pykickstart curl gh gnupg2 fedora-gpg-keys xz
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Cache nwg-drawer
@@ -169,6 +169,18 @@ jobs:
         run: scripts/build-nwg-drawer.sh
       - name: Fetch Numix icon themes
         run: scripts/fetch-numix.sh
+      - name: Cache Wine and winetricks
+        id: wine-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            system_files/common/opt/wine
+            system_files/common/usr/local/bin
+            system_files/common/usr/share/licenses/wine-kron4ek
+          key: wine-${{ hashFiles('scripts/fetch-wine.sh') }}
+      - name: Fetch Wine and winetricks
+        if: steps.wine-cache.outputs.cache-hit != 'true'
+        run: scripts/fetch-wine.sh
       - name: Rehearse the install (packages + %post scripts)
         env:
           PERIHELION_COMMIT: ${{ github.sha }}

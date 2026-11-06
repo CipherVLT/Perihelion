@@ -140,3 +140,24 @@ google-noto-color-emoji-fonts
 # Terra: repo file + signing keys for the installed system, and icon glyphs
 terra-release
 nerdfontssymbolsonly-nerd-fonts
+# Wine (Kron4ek's 11.21 build, staged into /opt/wine by scripts/fetch-wine.sh)
+# and winetricks: what they load at run time. WoW64, so no 32-bit libraries.
+# zenity is winetricks' window; cabextract/unzip unpack Microsoft's installers;
+# GStreamer plays game videos; ntlm_auth (samba-winbind-clients) for some
+# installers' sign-ins; ocl-icd for OpenCL.
+zenity
+cabextract
+unzip
+gstreamer1-plugins-good
+gstreamer1-plugins-bad-free
+gstreamer1-plugins-ugly-free
+samba-winbind-clients
+ocl-icd
+# Video player
+mpv
+# Drives: exFAT (SD cards, USB sticks), NTFS (Windows disks), phones (MTP)
+exfatprogs
+ntfs-3g
+gvfs-mtp
+# Chinese, Japanese and Korean text (song titles, Steam, games)
+google-noto-sans-cjk-vf-fonts

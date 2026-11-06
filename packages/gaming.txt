@@ -6,3 +6,7 @@ gamescope
 vulkan-loader.i686
 mesa-dri-drivers.i686
 mesa-vulkan-drivers.i686
+# Per-game helpers, off until a game asks: gamemode (gamemoderun %command%)
+# and MangoHud's overlay (mangohud %command%)
+gamemode
+mangohud

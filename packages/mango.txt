@@ -35,3 +35,11 @@ matugen
 # monitor, and the falling-code screensaver (Perihelion's cmatrix wrapper)
 btop
 cmatrix
+# Notifications (Event Horizon has its own on Hyprland and Niri); colored by
+# perihelion-theme, started on demand over D-Bus
+mako
+# Volume mixer and Bluetooth devices (Event Horizon has panels for these)
+pavucontrol
+blueman
+# Lock after 10 idle minutes, and before suspend
+swayidle

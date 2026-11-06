@@ -30,7 +30,9 @@ on real hardware yet. Mango is the first flavor to test.
   folders opened from any app, "Show in folder" / "Open containing folder" in Firefox and
   Steam (`org.freedesktop.FileManager1`), Open/Save dialogs (the XDG FileChooser portal),
   and the Trash (`trash:///`, via gvfs)
-- **Gaming:** Steam and gamescope (plus the 32-bit Mesa/Vulkan drivers Steam needs)
+- **Gaming:** Steam and gamescope (plus the 32-bit Mesa/Vulkan drivers Steam needs),
+  Wine 11.21 (Kron4ek's Staging WoW64 build, NTSYNC on) with winetricks, gamemode
+  and MangoHud
 - **Repos:** Fedora and Terra, plus Flatpak with Flathub already added (`flatpak install flathub <app>`). No RPM Fusion
 - Fedora's defaults kept: SELinux enforcing, firewalld on
 

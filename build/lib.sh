@@ -36,7 +36,7 @@ refresh_icon_caches() {
 relabel_system() {
     if command -v restorecon >/dev/null 2>&1; then
         log "selinux: restoring labels"
-        restorecon -RF /etc /usr /var/lib /var/tmp /home /root 2>&1 | tail -n 5 || true
+        restorecon -RF /etc /usr /opt /var/lib /var/tmp /home /root 2>&1 | tail -n 5 || true
     fi
     if [[ -f /etc/selinux/config ]] && ! grep -q '^SELINUX=disabled' /etc/selinux/config; then
         touch /.autorelabel
