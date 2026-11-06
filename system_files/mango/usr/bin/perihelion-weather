@@ -12,6 +12,9 @@
 #
 #   perihelion-weather --open   open the forecast page for that place (clicking
 #                               the widget): weather.gov in the US, Windy elsewhere
+#   perihelion-weather --bar    one short line for the bar's weather module, in
+#                               wttr.in's format=1 shape: "⛅️ +77°F" (🌙 when clear
+#                               after dark)
 set -uo pipefail
 
 config="${XDG_CONFIG_HOME:-${HOME}/.config}/simpbar"
@@ -78,7 +81,8 @@ json=$(get -G https://api.open-meteo.com/v1/forecast -d "latitude=${lat}" -d "lo
     -d current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m \
     -d daily=sunrise,sunset -d timezone=auto -d forecast_days=1 "${units[@]}") || exit 1
 
-jq -r --arg tu "${t_unit}" --arg wu "${w_unit}" '
+bar=false; [[ "${1:-}" == --bar ]] && bar=true
+jq -r --argjson bar "${bar}" --arg tu "${t_unit}" --arg wu "${w_unit}" '
     def emoji:
         if . == 0 then "☀️"
         elif . == 1 or . == 2 then "⛅️"
@@ -92,7 +96,16 @@ jq -r --arg tu "${t_unit}" --arg wu "${w_unit}" '
     # The arrow points where the wind blows to (it comes from wind_direction).
     def arrow: ["↓","↙","←","↖","↑","↗","→","↘"][((. + 22.5) / 45 | floor) % 8];
     def hhmm: (split("T")[1] // "")[0:5];
+    def hhmm_now: .current.time | hhmm;
     .current as $c
     | ($c.temperature_2m | round) as $t
-    | "\($c.weather_code | emoji)|\(if $t >= 0 then "+" else "" end)\($t)\($tu)|\($c.relative_humidity_2m | round)%|\($c.wind_direction_10m | arrow)\($c.wind_speed_10m | round)\($wu)|\(.daily.sunrise[0] | hhmm)|\(.daily.sunset[0] | hhmm)|\($c.time | hhmm)"
+    | (if $t >= 0 then "+" else "" end) as $sign
+    | if $bar then
+        ((hhmm_now) as $n
+         | ($n < (.daily.sunrise[0] | hhmm) or $n >= (.daily.sunset[0] | hhmm)) as $night
+         | (if $night and ($c.weather_code <= 2) then "🌙" else ($c.weather_code | emoji) end)
+         + " \($sign)\($t)\($tu)")
+      else
+    "\($c.weather_code | emoji)|\(if $t >= 0 then "+" else "" end)\($t)\($tu)|\($c.relative_humidity_2m | round)%|\($c.wind_direction_10m | arrow)\($c.wind_speed_10m | round)\($wu)|\(.daily.sunrise[0] | hhmm)|\(.daily.sunset[0] | hhmm)|\($c.time | hhmm)"
+      end
 ' <<<"${json}"
