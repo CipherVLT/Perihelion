@@ -40,7 +40,7 @@ rm -rf "${assets}"
 install -d "${assets}"
 fetch "https://github.com/Kron4ek/Wine-Builds/releases/download/${WINE_VERSION}/${WINE_BUILD}.tar.xz" \
     "${assets}/${WINE_BUILD}.tar.xz" "${WINE_SHA256}"
-tar -tJf "${assets}/${WINE_BUILD}.tar.xz" | grep -q "^${WINE_BUILD}/bin/wine$" ||
+tar -tJf "${assets}/${WINE_BUILD}.tar.xz" "${WINE_BUILD}/bin/wine" >/dev/null ||
     { echo "no bin/wine in ${WINE_BUILD}" >&2; exit 1; }
 printf '%s  %s\n' "${WINE_SHA256}" "${WINE_BUILD}.tar.xz" > "${assets}/SHA256SUMS"
 echo "Wine ${WINE_BUILD} staged ($(du -h "${assets}/${WINE_BUILD}.tar.xz" | cut -f1) compressed)"
