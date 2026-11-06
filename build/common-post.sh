@@ -212,18 +212,19 @@ ff_cfg=/usr/share/perihelion/fastfetch/config.jsonc
 if [[ "${PERIHELION_FLAVOR}" == mango ]]; then
     # Mango starts Catppuccin Macchiato (https://catppuccin.com/palette/), and
     # perihelion-theme recolors these same values for every wallpaper:
-    # title bold blue #8aadf4, OS-section labels bold pink #f5bde6, the other
-    # labels bold yellow #eed49f, values blue
-    # #8aadf4, separator overlay1 #8087a2. Layout and icons stay Veyl OS's.
-    # Logo: the distro logo's color 1 (Fedora's blue) in #8aadf4 and color 2
-    # (the white "f") in #eed49f.
+    # title bold blue #8aadf4; section headers bold pink #f5bde6 (OS), blue
+    # #8aadf4 (WM), yellow #eed49f (PC and after); values text tinted blue
+    # #c2cef5; separator overlay1 #8087a2. Layout and icons stay Veyl OS's.
+    # Logo: color 1 (Fedora's blue body) a darker shade of blue #5f75a6,
+    # color 2 (the "f") blue #8aadf4.
     sed -i -e 's/"keyColor": "31"/"keyColor": "1;38;2;245;189;230"/' \
-        -e 's/"keyColor": "3[23]"/"keyColor": "1;38;2;238;212;159"/' \
-        -e 's/"padding": { "top": 3 }/"padding": { "top": 3 },\n        "color": { "1": "38;2;138;173;244", "2": "38;2;238;212;159" }/' \
-        -e 's/"separator": " ➜  "/"separator": " ➜  ",\n          "color": { "title": "1;38;2;138;173;244", "output": "38;2;138;173;244", "separator": "38;2;128;135;162" }/' \
+        -e 's/"keyColor": "32"/"keyColor": "1;38;2;138;173;244"/' \
+        -e 's/"keyColor": "33"/"keyColor": "1;38;2;238;212;159"/' \
+        -e 's/"padding": { "top": 3 }/"padding": { "top": 3 },\n        "color": { "1": "38;2;95;117;166", "2": "38;2;138;173;244" }/' \
+        -e 's/"separator": " ➜  "/"separator": " ➜  ",\n          "color": { "title": "1;38;2;138;173;244", "output": "38;2;194;206;245", "separator": "38;2;128;135;162" }/' \
         "${ff_cfg}"
-    grep -q '"output": "38;2;138;173;244"' "${ff_cfg}" || die "could not apply Mango's fastfetch colors"
-    grep -q '"1": "38;2;138;173;244", "2": "38;2;238;212;159"' "${ff_cfg}" || die "could not color Mango's fastfetch logo"
+    grep -q '"output": "38;2;194;206;245"' "${ff_cfg}" || die "could not apply Mango's fastfetch colors"
+    grep -q '"1": "38;2;95;117;166", "2": "38;2;138;173;244"' "${ff_cfg}" || die "could not color Mango's fastfetch logo"
     [[ $(grep -c '"keyColor": "1;38;2;245;189;230"' "${ff_cfg}") -eq 4 ]] || die "Mango's fastfetch OS section is not pink"
     ! grep -qE '"keyColor": "3[123]"' "${ff_cfg}" || die "fastfetch config still has Veyl OS colors"
 fi

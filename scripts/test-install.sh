@@ -250,7 +250,8 @@ case "${flavor}" in
                 grep -q '"matrix_color"' /tmp/ttest/.config/simpbar/matugen.json &&
                 grep -q 'Written by perihelion-theme' /tmp/ttest/.config/nwg-drawer/drawer.css &&
                 grep -q '^# perihelion-theme' /tmp/ttest/.config/fuzzel/fuzzel.ini &&
-                grep -q '^focus_color=0x' /tmp/ttest/.config/mango/colors.conf
+                grep -q '^focus_color=0x' /tmp/ttest/.config/mango/colors.conf &&
+                grep -q '^background ' /tmp/ttest/.config/kitty/perihelion-colors.conf
         }
         check theme_ok
         check command -v matugen
@@ -287,8 +288,11 @@ case "${flavor}" in
         check grep -q '"keyColor": "1;38;2;238;212;159"' /home/tester/.config/fastfetch/config.jsonc
         os_pink_ok() { [[ $(grep -c '"keyColor": "1;38;2;245;189;230"' /home/tester/.config/fastfetch/config.jsonc) -eq 4 ]]; }
         check os_pink_ok
-        check grep -q '"1": "38;2;138;173;244", "2": "38;2;238;212;159"' /home/tester/.config/fastfetch/config.jsonc
-        check grep -q '"title": "1;38;2;138;173;244", "output": "38;2;138;173;244"' /home/tester/.config/fastfetch/config.jsonc
+        check grep -q '"keyColor": "1;38;2;138;173;244"' /home/tester/.config/fastfetch/config.jsonc
+        check grep -q '"1": "38;2;95;117;166", "2": "38;2;138;173;244"' /home/tester/.config/fastfetch/config.jsonc
+        check grep -q '"title": "1;38;2;138;173;244", "output": "38;2;194;206;245"' /home/tester/.config/fastfetch/config.jsonc
+        check grep -qx 'globinclude perihelion-colors.conf' /home/tester/.config/kitty/kitty.conf
+        check grep -qx 'include /etc/xdg/kitty/kitty.conf' /home/tester/.config/kitty/kitty.conf
         check mango -p -c /home/tester/.config/mango/config.conf
         check test "$(stat -c %U /home/tester/.config/mango/config.conf)" = tester
         check test -f /etc/xdg/xdg-desktop-portal/mango-portals.conf

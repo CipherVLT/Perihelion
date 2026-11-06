@@ -219,7 +219,8 @@ It writes:
 | launcher and power menu (fuzzel) | `[colors]` in `~/.config/fuzzel/fuzzel.ini` |
 | Strata | `~/.config/strata/themes/tokyo-night.toml` |
 | window borders (Mango) | `~/.config/mango/colors.conf` |
-| fastfetch: the Fedora logo, labels and values | `~/.config/fastfetch/config.jsonc` |
+| fastfetch: the Fedora logo, section headers and values | `~/.config/fastfetch/config.jsonc` |
+| kitty: background, text, 16 colors | `~/.config/kitty/perihelion-colors.conf` |
 | terminal cava's gradient | `~/.config/cava/config` |
 | btop | `~/.config/btop/themes/perihelion.theme` |
 | cmatrix (nearest terminal color) | `~/.config/perihelion/cmatrix-color` |
@@ -228,12 +229,15 @@ In Simpbar Config → Appearance → Theming:
 
 - **Match the wallpaper** turns all of it on or off (off: the bar uses the
   colors set below it, and nothing else is touched).
-- **Style**: Catppuccin or Material You (matugen).
-- **Flavor** (Catppuccin): Auto (from the wallpaper), Latte, Frappé,
-  Macchiato or Mocha.
-- **Accent colors** (Catppuccin): from the wallpaper, or Perihelion's blue,
-  pink and yellow.
-- **Matugen color scheme** (Material You): tonal spot, vibrant, ...
+- **Style**: a palette, or Material You (matugen).
+- **Palette**: Catppuccin (auto, Latte, Frappé, Macchiato, Mocha), Gruvbox
+  (auto, dark, light), Rosé Pine (auto, main, Moon, Dawn), Nord, Tokyo Night.
+- **Wallpaper tint**: the backgrounds (bar, widgets, terminal, popups, login
+  screen) become a dark shade of the wallpaper's main color, keeping the
+  palette's lightness. Off: the palette's own backgrounds.
+- **Accent colors**: from the wallpaper, or the palette's own.
+- **Matugen color scheme** and **Theme mode** (Material You): tonal spot,
+  vibrant, ...; dark, light or auto.
 
 To keep your own drawer CSS, fuzzel colors, Strata theme, fastfetch or cava colors, delete the
 `perihelion-theme` line in that file: it is never rewritten after that.

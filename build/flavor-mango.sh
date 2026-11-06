@@ -59,6 +59,8 @@ install -Dm644 "${PERIHELION_SRC}/docs/simpbar.md" /usr/share/doc/perihelion/sim
 seed_user_file "${share}/fuzzel/fuzzel.ini" .config/fuzzel/fuzzel.ini
 # btop uses the theme perihelion-theme writes for each wallpaper
 seed_user_file "${share}/btop/btop.conf" .config/btop/btop.conf
+# kitty: the system settings plus colors that follow the wallpaper
+seed_user_file "${share}/kitty/kitty.conf" .config/kitty/kitty.conf
 
 test -f /usr/share/wayland-sessions/mango.desktop
 log "mango: done"
