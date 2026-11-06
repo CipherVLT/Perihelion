@@ -47,9 +47,6 @@
     "center": [
       {
         "kind": "launchers"
-      },
-      {
-        "kind": "clock"
       }
     ],
     "right": [
@@ -70,6 +67,15 @@
       },
       {
         "kind": "layout"
+      },
+      {
+        "kind": "weather"
+      },
+      {
+        "kind": "clock"
+      },
+      {
+        "kind": "cava"
       }
     ]
   },
