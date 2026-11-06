@@ -174,9 +174,8 @@ jobs:
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: |
-            system_files/common/opt/wine
+            assets/wine
             system_files/common/usr/local/bin
-            system_files/common/usr/share/licenses/wine-kron4ek
           key: wine-${{ hashFiles('scripts/fetch-wine.sh') }}
       - name: Fetch Wine and winetricks
         if: steps.wine-cache.outputs.cache-hit != 'true'

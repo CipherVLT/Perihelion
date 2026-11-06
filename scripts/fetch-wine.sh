@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-# Fetch Wine (Kron4ek's builds) and winetricks and stage them into
-# system_files/common, so every ISO ships them.
+# Fetch Wine (Kron4ek's builds) and winetricks, so every ISO ships them.
+# Wine stays the compressed download (assets/wine/, ~1/5 of its 820 MB
+# unpacked: the ISO carries this repo uncompressed); build/common-post.sh
+# checks and unpacks it during the install.
 #
 # Wine: https://github.com/Kron4ek/Wine-Builds (release 11.21), the
 # staging-amd64-wow64 build: Wine Staging's patches, and WoW64, which runs
 # 32-bit Windows programs without any 32-bit Linux libraries, so it doesn't
 # depend on Fedora's shrinking i686 packages. Wine 11 uses NTSYNC by itself
-# when /dev/ntsync is there (see etc/modules-load.d/ntsync.conf). Unpacked to
-# /opt/wine, with every program in /opt/wine/bin linked from /usr/local/bin.
+# when /dev/ntsync is there (see etc/modules-load.d/ntsync.conf). Installed
+# to /opt/wine, with every program in /opt/wine/bin linked from /usr/local/bin.
 # LGPL-2.1.
 #
 # winetricks: https://github.com/Winetricks/winetricks (release 20260125),
@@ -32,26 +34,16 @@ fetch() { # url file sha256
     echo "$3  $2" | sha256sum -c --quiet - || { echo "checksum mismatch: $1" >&2; exit 1; }
 }
 
-# Wine
+# Wine: the release file as is, plus what the installer checks it against
+assets="${repo_dir}/assets/wine"
+rm -rf "${assets}"
+install -d "${assets}"
 fetch "https://github.com/Kron4ek/Wine-Builds/releases/download/${WINE_VERSION}/${WINE_BUILD}.tar.xz" \
-    "${work}/wine.tar.xz" "${WINE_SHA256}"
-rm -rf "${root}/opt/wine"
-install -d "${root}/opt/wine"
-tar -xJf "${work}/wine.tar.xz" -C "${root}/opt/wine" --strip-components=1
-[[ -x "${root}/opt/wine/bin/wine" ]] || { echo "no bin/wine in ${WINE_BUILD}" >&2; exit 1; }
-printf '%s\n' "${WINE_BUILD}" > "${root}/opt/wine/PERIHELION_BUILD"
-
-install -d "${root}/usr/local/bin"
-find "${root}/usr/local/bin" -maxdepth 1 -lname '/opt/wine/bin/*' -delete
-for prog in "${root}"/opt/wine/bin/*; do
-    [[ -f "${prog}" && -x "${prog}" ]] || continue
-    ln -sfn "/opt/wine/bin/$(basename "${prog}")" "${root}/usr/local/bin/$(basename "${prog}")"
-done
-license=$(find "${root}/opt/wine" -maxdepth 3 -iname 'LICENSE*' -type f | head -1)
-if [[ -n "${license}" ]]; then
-    install -Dm644 "${license}" "${root}/usr/share/licenses/wine-kron4ek/LICENSE"
-fi
-echo "Wine ${WINE_BUILD} staged ($(du -sh "${root}/opt/wine" | cut -f1))"
+    "${assets}/${WINE_BUILD}.tar.xz" "${WINE_SHA256}"
+tar -tJf "${assets}/${WINE_BUILD}.tar.xz" | grep -q "^${WINE_BUILD}/bin/wine$" ||
+    { echo "no bin/wine in ${WINE_BUILD}" >&2; exit 1; }
+printf '%s  %s\n' "${WINE_SHA256}" "${WINE_BUILD}.tar.xz" > "${assets}/SHA256SUMS"
+echo "Wine ${WINE_BUILD} staged ($(du -h "${assets}/${WINE_BUILD}.tar.xz" | cut -f1) compressed)"
 
 # winetricks
 fetch "https://raw.githubusercontent.com/Winetricks/winetricks/${WINETRICKS_VERSION}/src/winetricks" \

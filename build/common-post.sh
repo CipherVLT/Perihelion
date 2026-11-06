@@ -23,6 +23,29 @@ apply_system_files common
 chmod 0755 /usr/bin/perihelion-os-age /usr/bin/strata /usr/bin/perihelion-doctor \
     /usr/bin/perihelion-power-menu /usr/bin/perihelion-wallpaper-picker /usr/bin/perihelion-drawer /usr/bin/perihelion-keys /usr/bin/perihelion-glass /usr/bin/perihelion-wallpapers /usr/libexec/perihelion-trash /usr/libexec/perihelion-strata-theme
 
+# --- Wine -----------------------------------------------------------------------
+# Kron4ek's Wine 11.21 build, shipped compressed by scripts/fetch-wine.sh.
+# Checked against its pinned sha256, unpacked to /opt/wine, and every program
+# in it linked from /usr/local/bin (wine, winecfg, wineserver, ...).
+wine_assets="${PERIHELION_SRC}/assets/wine"
+if compgen -G "${wine_assets}/wine-*.tar.xz" >/dev/null; then
+    (cd "${wine_assets}" && sha256sum -c --quiet SHA256SUMS) || die "Wine download doesn't match its checksum"
+    wine_tar=$(compgen -G "${wine_assets}/wine-*.tar.xz" | head -n 1)
+    wine_build=$(basename "${wine_tar}" .tar.xz)
+    rm -rf /opt/wine
+    install -d /opt/wine /usr/local/bin
+    tar -xJf "${wine_tar}" -C /opt/wine --strip-components=1 --no-same-owner
+    [[ -x /opt/wine/bin/wine ]] || die "Wine (${wine_build}) has no bin/wine"
+    printf '%s\n' "${wine_build}" > /opt/wine/PERIHELION_BUILD
+    for prog in /opt/wine/bin/*; do
+        [[ -f "${prog}" && -x "${prog}" ]] && ln -sfn "${prog}" "/usr/local/bin/$(basename "${prog}")"
+    done
+    chmod 0755 /usr/local/bin/winetricks
+    log "common: ${wine_build} in /opt/wine ($(du -sh /opt/wine | cut -f1)), winetricks"
+else
+    log "common: no Wine download in assets/wine (scripts/fetch-wine.sh adds it); skipped"
+fi
+
 # --- Wallpapers -----------------------------------------------------------------
 # Present only if scripts/fetch-wallpapers.sh ran before the ISO was built
 # (they are personal-use artwork and never committed). Without them the login
