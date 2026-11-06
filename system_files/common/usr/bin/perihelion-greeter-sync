@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# Give the login screen (SDDM, Pixie theme) the desktop's wallpaper and colors.
+#
+#   perihelion-greeter-sync --image FILE [--bg '#rrggbb' --text '#rrggbb' --accent '#rrggbb']
+#   perihelion-greeter-sync --color '#rrggbb' [--bg ... --text ... --accent ...]
+#
+# perihelion-theme runs it on every wallpaper change (Mango) with its colors;
+# Perihelion's wallpaper picker runs it with just the image on Hyprland and
+# Niri, and Pixie then picks its accent from the image itself.
+#
+# The greeter runs before anyone logs in, so it can't read home folders: the
+# image and a theme.conf.user go to /usr/local/share/perihelion/greeter
+# (group wheel may write; /usr/share/sddm/themes/pixie/theme.conf.user links
+# there). For someone outside wheel it quietly does nothing.
+set -euo pipefail
+
+dir=/usr/local/share/perihelion/greeter
+image="" color="" bg="" text="" accent=""
+while (( $# )); do
+    case "$1" in
+        --image) image=$2; shift 2 ;;
+        --color) color=$2; shift 2 ;;
+        --bg) bg=$2; shift 2 ;;
+        --text) text=$2; shift 2 ;;
+        --accent) accent=$2; shift 2 ;;
+        *) echo "usage: $0 --image FILE | --color '#rrggbb' [--bg C --text C --accent C]" >&2; exit 2 ;;
+    esac
+done
+hex() { [[ "$1" =~ ^#[0-9A-Fa-f]{6}$ ]]; }
+for c in "${color}" "${bg}" "${text}" "${accent}"; do
+    [[ -z "${c}" ]] || hex "${c}" || { echo "not a #rrggbb color: ${c}" >&2; exit 2; }
+done
+[[ -n "${image}" || -n "${color}" ]] || { echo "need --image or --color" >&2; exit 2; }
+[[ -d "${dir}" && -w "${dir}" ]] || exit 0
+
+background=""
+if [[ -n "${image}" ]]; then
+    [[ -f "${image}" ]] || { echo "no such image: ${image}" >&2; exit 1; }
+    ext="${image##*.}"
+    ext="${ext,,}"
+    case "${ext}" in png | jpg | jpeg | webp | avif | bmp | gif) ;; *) ext=png ;; esac
+    background="${dir}/background.${ext}"
+    # Copy only when the picture changed: wallpapers can be large.
+    if ! cmp -s "${image}" "${background}"; then
+        tmp=$(mktemp "${dir}/.background.XXXXXX")
+        cp -f -- "${image}" "${tmp}"
+        chmod 0644 "${tmp}"
+        mv -f -- "${tmp}" "${background}"
+    fi
+    find "${dir}" -maxdepth 1 -name 'background.*' ! -name "background.${ext}" -delete
+else
+    find "${dir}" -maxdepth 1 -name 'background.*' -delete
+    bg="${bg:-${color}}"
+fi
+
+auto=true
+[[ -n "${accent}" ]] && auto=false
+
+tmp=$(mktemp "${dir}/.theme.conf.user.XXXXXX")
+{
+    echo "# Written by perihelion-greeter-sync: the login screen follows the desktop's"
+    echo "# wallpaper. Pixie reads this after its theme.conf."
+    echo "[General]"
+    echo "background=${background}"
+    [[ -n "${bg}" ]] && echo "backgroundColor=${bg}"
+    [[ -n "${text}" ]] && echo "textColor=${text}"
+    [[ -n "${accent}" ]] && echo "accentColor=${accent}"
+    echo "autoColor=${auto}"
+} > "${tmp}"
+chmod 0644 "${tmp}"
+mv -f -- "${tmp}" "${dir}/theme.conf.user"

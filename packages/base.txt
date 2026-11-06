@@ -161,3 +161,5 @@ ntfs-3g
 gvfs-mtp
 # Chinese, Japanese and Korean text (song titles, Steam, games)
 google-noto-sans-cjk-vf-fonts
+# The login screen shows the desktop's wallpaper: WebP (and TIFF) for Qt
+qt6-qtimageformats

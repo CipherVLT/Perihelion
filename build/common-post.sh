@@ -21,7 +21,7 @@ grep -qx 'install_weak_deps=False' /etc/dnf/dnf.conf
 log "common: system files"
 apply_system_files common
 chmod 0755 /usr/bin/perihelion-os-age /usr/bin/strata /usr/bin/perihelion-doctor \
-    /usr/bin/perihelion-power-menu /usr/bin/perihelion-wallpaper-picker /usr/bin/perihelion-drawer /usr/bin/perihelion-keys /usr/bin/perihelion-glass /usr/bin/perihelion-wallpapers /usr/libexec/perihelion-trash /usr/libexec/perihelion-strata-theme
+    /usr/bin/perihelion-power-menu /usr/bin/perihelion-greeter-sync /usr/bin/perihelion-wallpaper-picker /usr/bin/perihelion-drawer /usr/bin/perihelion-keys /usr/bin/perihelion-glass /usr/bin/perihelion-wallpapers /usr/libexec/perihelion-trash /usr/libexec/perihelion-strata-theme
 
 # --- Wine -----------------------------------------------------------------------
 # Kron4ek's Wine 11.21 build, shipped compressed by scripts/fetch-wine.sh.
@@ -76,6 +76,12 @@ else
     sed -i 's/^background=.*/background=/' "${theme}/theme.conf"
 fi
 chmod -R u=rwX,go=rX "${theme}"
+# The login screen follows the desktop: perihelion-greeter-sync (run on
+# wallpaper changes) writes the wallpaper and colors here. usr_t like the
+# theme, so the greeter may read it; group wheel may write it.
+greeter_dir=/usr/local/share/perihelion/greeter
+install -d -m 2775 -g wheel "${greeter_dir}"
+ln -sfn "${greeter_dir}/theme.conf.user" "${theme}/theme.conf.user"
 install -d /etc/sddm.conf.d
 cat > /etc/sddm.conf.d/10-perihelion.conf <<'EOF'
 [General]

@@ -114,6 +114,17 @@ check wine_ok
 check bash -n /usr/local/bin/winetricks
 check grep -qx 'WINETRICKS_VERSION=20260125' /usr/local/bin/winetricks
 check grep -qx ntsync /etc/modules-load.d/ntsync.conf
+# The login screen follows the desktop (perihelion-greeter-sync)
+greeter_ok() {
+    local d=/usr/local/share/perihelion/greeter
+    [[ "$(stat -c '%a %G' "${d}")" == "2775 wheel" ]] &&
+        [[ "$(readlink /usr/share/sddm/themes/pixie/theme.conf.user)" == "${d}/theme.conf.user" ]] &&
+        grep -qx 'ConfigFile=theme.conf' /usr/share/sddm/themes/pixie/metadata.desktop &&
+        perihelion-greeter-sync --color '#24273a' --bg '#24273a' --text '#cad3f5' --accent '#8aadf4' &&
+        grep -qx 'accentColor=#8aadf4' "${d}/theme.conf.user" && rm -f "${d}"/theme.conf.user "${d}"/background.*
+}
+check greeter_ok
+check grep -qx 'backgroundColor=#24273A' /usr/share/sddm/themes/pixie/theme.conf
 check grep -q 'KERNEL=="ntsync"' /etc/udev/rules.d/60-ntsync.rules
 check rpm -q zenity cabextract unzip mpv exfatprogs ntfs-3g gvfs-mtp google-noto-sans-cjk-vf-fonts gstreamer1-plugins-good gamemode mangohud
 # Look: Numix-Circle icons, Bibata cursor 24 px, DejaVu Sans Mono 11 pt

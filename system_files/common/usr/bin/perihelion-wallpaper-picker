@@ -9,6 +9,9 @@ set -euo pipefail
 
 apply() {
     if command -v horizon-wallpaper >/dev/null && pgrep -x horizon >/dev/null; then
+        # The login screen gets the picture too (Mango's perihelion-theme does
+        # this itself, with its colors).
+        perihelion-greeter-sync --image "$1" >/dev/null 2>&1 || true
         exec horizon-wallpaper --set "$1"
     fi
     exec perihelion-wallpaper "$1"
