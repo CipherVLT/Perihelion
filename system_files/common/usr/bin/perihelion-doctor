@@ -20,7 +20,7 @@ report() {
     rpm -q mangowm hyprland niri swaybg fuzzel kitty firefox steam gamescope \
         sddm pipewire wireplumber 2>/dev/null | grep -v 'is not installed'
     command -v strata >/dev/null && ok "strata $(strata --version 2>/dev/null | head -n1)"
-    [[ -f /usr/share/perihelion/simpbar.ref ]] && ok "simpbar $(cut -c1-7 /usr/share/perihelion/simpbar.ref) (built from source)"
+    [[ -f /usr/share/perihelion/simpbar.ref ]] && ok "Perihelion Shell $(cut -c1-7 /usr/share/perihelion/simpbar.ref) (built from source)"
 
     if command -v mango >/dev/null; then
         section "Mango config"
@@ -68,6 +68,10 @@ report() {
         printf '  info  widgets switched off: %s\n' "$(tr '\n' ' ' < "${sb}/widgets-disabled" 2>/dev/null)"
         if command -v perihelion-weather >/dev/null; then
             printf '  info  weather now: %s\n' "$(perihelion-weather 2>&1 | head -n 1)"
+        fi
+        if command -v perihelion-theme >/dev/null; then
+            printf '  info  colors: %s\n' "$(perihelion-theme --dry-run 2>/dev/null |
+                sed -n 's/^  "flavor": "\(.*\)",$/Catppuccin \1, matched to the wallpaper (settings: ~\/.config\/simpbar\/theme)/p')"
         fi
         printf '  info  weather location: %s\n' "$(head -n 1 "${sb}/weather-location" 2>/dev/null || echo 'guessed from your internet address (set it in ~/.config/simpbar/weather-location)')"
         logs="${SIMPBAR_LOG_DIR:-${HOME}/.config/simpbar-config/logs}"

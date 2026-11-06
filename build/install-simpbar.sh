@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-# Build and install simpbar, the top bar of the Mango flavor.
+# Build and install Perihelion Shell, the bar and desktop of the Mango flavor.
 #
-# simpbar by jaytheoutpatient: https://github.com/jaytheoutpatient/simpbar
-# A native Zig/Wayland status bar for Hyprland and MangoWM. Only the bar
-# (/usr/bin/simpbar) and simpbar-shell (/usr/bin/simpbar-shell: desktop
-# widgets and window overview, also native Zig) are installed; its
-# Welcome/Config apps, Quickshell app drawer and Arch installer are not.
+# Perihelion Shell (https://github.com/CipherVLT/perihelion-shell) is
+# Perihelion's fork of simpbar by jaytheoutpatient
+# (https://github.com/jaytheoutpatient/simpbar), with his blessing: a native
+# Zig/Wayland bar for MangoWM and Hyprland. Installed: the bar
+# (/usr/bin/simpbar), simpbar-shell (desktop widgets and window overview),
+# Simpbar Config, and perihelion-theme (Catppuccin colors matched to the
+# wallpaper). Not installed: simpbar's Welcome app, Quickshell app drawer and
+# Arch installer. Perihelion's changes are commits in the fork.
 #
 # Built from the commit pinned in build/refs/simpbar.ref with Zig 0.16.0
 # (the release tarball from ziglang.org, verified against the Zig Software
@@ -14,7 +17,7 @@ set -euo pipefail
 # shellcheck source=build/lib.sh
 source "${PERIHELION_SRC}/build/lib.sh"
 
-SIMPBAR_REPO=https://github.com/jaytheoutpatient/simpbar.git
+SIMPBAR_REPO=https://github.com/CipherVLT/perihelion-shell.git
 SIMPBAR_REF=$(tr -d '[:space:]' < "${PERIHELION_SRC}/build/refs/simpbar.ref")
 ZIG_VERSION=0.16.0
 ZIG_PUBKEY='RWSGOq2NVecA2UPNdBUZykf1CCb147pkmdtYxgb3Ti+JO/wCYvhbAb/U'
@@ -22,7 +25,7 @@ ZIG_PUBKEY='RWSGOq2NVecA2UPNdBUZykf1CCb147pkmdtYxgb3Ti+JO/wCYvhbAb/U'
 # build machine.
 ZIG_CPU=x86_64_v2
 
-log "simpbar: building ${SIMPBAR_REF:0:7}"
+log "perihelion-shell: building ${SIMPBAR_REF:0:7}"
 rpm -qa --qf '%{NAME}\n' | sort -u > /tmp/simpbar-before.txt
 
 # The bar links wayland-client, freetype2 and gdk-pixbuf. `zig build` also
@@ -55,13 +58,6 @@ git -C "${work}" init -q simpbar
 git -C "${src}" remote add origin "${SIMPBAR_REPO}"
 retry git -C "${src}" fetch -q --depth 1 origin "${SIMPBAR_REF}"
 git -C "${src}" checkout -q --detach FETCH_HEAD
-# Perihelion's patches: cava as a sound wave beside mpris, a scrolling track
-# title, icon themes with 48/48@2x size dirs (Numix-Circle), Alt + right-click
-# removes a desktop widget, Simpbar Config shows only its Bar pages.
-for patch in "${PERIHELION_SRC}"/build/patches/simpbar-*.patch; do
-    git -C "${src}" apply "${patch}" || die "simpbar patch does not apply: ${patch##*/}"
-done
-
 # The bar lives in the simpbar/ subfolder; its Wayland dependency is vendored
 # in simpbar/zig-pkg, so the build needs no further downloads.
 (
@@ -70,7 +66,7 @@ done
 )
 install -Dm755 "${src}/simpbar/zig-out/bin/simpbar" /usr/bin/simpbar
 # Simpbar Config (GTK): the bar's look and modules, and a switch for each
-# desktop widget. Perihelion's patch shows only its Bar pages.
+# desktop widget. Perihelion Shell shows only its Bar pages.
 install -Dm755 "${src}/simpbar/zig-out/bin/simpbar-config" /usr/bin/simpbar-config
 install -Dm644 "${src}/simpbar-config.desktop" /usr/share/applications/simpbar-config.desktop
 install -Dm644 "${src}/assets/icons/simpbar-config.svg" /usr/share/icons/hicolor/scalable/apps/simpbar-config.svg
@@ -81,6 +77,11 @@ install -Dm644 "${src}/assets/icons/simpbar-config.svg" /usr/share/icons/hicolor
     "${zig_dir}/zig" build -Doptimize=ReleaseFast "-Dcpu=${ZIG_CPU}"
 )
 install -Dm755 "${src}/simpbar-shell/zig-out/bin/simpbar-shell" /usr/bin/simpbar-shell
+# Catppuccin theming: runs on every wallpaper change (perihelion-wallpaper)
+# and from Simpbar Config. simpbar-matugen is the name simpbar itself calls.
+install -Dm755 "${src}/perihelion-theme" /usr/bin/perihelion-theme
+printf '#!/bin/sh\n# simpbar calls this after a wallpaper change; Perihelion themes with Catppuccin.\nexec perihelion-theme --force "$@"\n' > /usr/bin/simpbar-matugen
+chmod 755 /usr/bin/simpbar-matugen
 install -d /usr/share/perihelion
 printf '%s\n' "${SIMPBAR_REF}" > /usr/share/perihelion/simpbar.ref
 rm -rf "${work}"

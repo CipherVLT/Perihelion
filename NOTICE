@@ -78,9 +78,11 @@ Built in CI and shipped on the ISO (not stored in this repository):
     pinned release commits. Licenses in /usr/share/licenses/numix-icon-theme*.
 
 Downloaded at install time, not redistributed in this repository:
-  simpbar by jaytheoutpatient (https://github.com/jaytheoutpatient/simpbar)
-    The Mango flavor's top bar, built from the commit in build/refs/simpbar.ref.
-    The repository has no license file yet (see README).
+  Perihelion Shell (https://github.com/CipherVLT/perihelion-shell), a fork of
+    simpbar by jaytheoutpatient (https://github.com/jaytheoutpatient/simpbar)
+    made with his blessing. The Mango flavor's bar and desktop, built from the
+    commit in build/refs/simpbar.ref. simpbar has no license file yet.
+    Catppuccin palette (https://catppuccin.com), MIT.
   Event Horizon (https://github.com/Event-Horizon-desktop-environment/Event-Horizon), MIT
   Strata (https://github.com/lgse/strata), MIT
   Satty (https://github.com/gabm/Satty), MPL-2.0

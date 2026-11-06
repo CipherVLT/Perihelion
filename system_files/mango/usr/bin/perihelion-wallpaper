@@ -5,7 +5,8 @@
 #   perihelion-wallpaper IMAGE           show IMAGE now and remember it
 #   perihelion-wallpaper --color '#RRGGBB'  plain color instead of an image
 #
-# The choice is saved in ~/.config/perihelion/wallpaper. Without one, the
+# The choice is saved in ~/.config/perihelion/wallpaper, and perihelion-theme
+# recolors the desktop to match it. Without one, the
 # Perihelion default image is used if the ISO shipped one, else a plain
 # Catppuccin Macchiato background.
 set -euo pipefail
@@ -55,4 +56,10 @@ if [[ "${kind}" == image ]]; then
     setsid -f swaybg -m fill -c "${fallback_color}" -i "${value}" >/dev/null 2>&1
 else
     setsid -f swaybg -c "${value}" >/dev/null 2>&1
+fi
+
+# Recolor the bar, widgets, app drawer, launcher, Strata and borders with the
+# Catppuccin colors closest to this wallpaper (quick no-op when unchanged).
+if command -v perihelion-theme >/dev/null; then
+    setsid -f perihelion-theme >/dev/null 2>&1
 fi

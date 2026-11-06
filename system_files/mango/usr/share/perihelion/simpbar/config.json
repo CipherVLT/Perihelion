@@ -30,7 +30,8 @@
     "font_path": "@FONT_PATH@",
     "animations_enabled": true,
     "cava_color": "#F5BDE6",
-    "cava_style": "bars"
+    "cava_style": "bars",
+    "matrix_color": "#EED49F"
   },
   "modules": {
     "left": [

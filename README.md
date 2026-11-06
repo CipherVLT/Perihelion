@@ -101,8 +101,10 @@ Pick **Mango** on the login screen. Super is the Windows key.
 - Gaps 2 px inside / 4 px outside, 2 px Catppuccin Macchiato blue (`0x8aadf4ff`)
   border on the focused window, see-through blurred kitty.
 - Your config: `~/.config/mango/config.conf` (Super+Shift+R reloads it).
-  Bar: [simpbar](https://github.com/jaytheoutpatient/simpbar) by jaytheoutpatient,
-  `~/.config/simpbar/config.json` (Super+Shift+D restarts it). Guide:
+  Bar: [Perihelion Shell](https://github.com/CipherVLT/perihelion-shell), our fork
+  of [simpbar](https://github.com/jaytheoutpatient/simpbar) by jaytheoutpatient,
+  `~/.config/simpbar/config.json` (Super+Shift+D restarts it). Colors follow the
+  wallpaper, in Catppuccin. Guide:
   [docs/simpbar.md](docs/simpbar.md), also at `/usr/share/doc/perihelion/simpbar.md`.
   Launcher: `~/.config/fuzzel/fuzzel.ini`.
 - Wallpaper: `perihelion-wallpaper ~/Pictures/some-image.png` (remembered).
@@ -181,8 +183,11 @@ To read the final kickstart without building: `scripts/render-ks.sh mango`.
 
 ## Credits
 
-The Mango flavor's top bar is [simpbar](https://github.com/jaytheoutpatient/simpbar)
+The Mango flavor's bar and desktop are [Perihelion Shell](https://github.com/CipherVLT/perihelion-shell),
+Perihelion's fork (with his blessing) of [simpbar](https://github.com/jaytheoutpatient/simpbar)
 by **jaytheoutpatient**, a native Zig/Wayland bar for Hyprland and MangoWM.
+The Catppuccin presets come from **Mirrez**'s simpbar-catppuccin-matugen
+package; the palette is [Catppuccin](https://catppuccin.com) (MIT).
 The Super+A app drawer is [nwg-drawer](https://github.com/nwg-piotr/nwg-drawer)
 by **Piotr Miller** (MIT).
 

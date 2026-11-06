@@ -215,6 +215,23 @@ case "${flavor}" in
         else
             echo "  WARN  perihelion-weather: ${w}"
         fi
+        # Catppuccin theming from the wallpaper, run for real in a scratch home
+        # seeded like the tester's (reads images through GdkPixbuf)
+        check test -x /usr/bin/perihelion-theme
+        check test -x /usr/bin/simpbar-matugen
+        check grep -qx 'source_optional=~/.config/mango/colors.conf' /home/tester/.config/mango/config.conf
+        rm -rf /tmp/ttest && mkdir -p /tmp/ttest && cp -a /home/tester/.config /tmp/ttest/
+        theme_ok() {
+            local img=/usr/share/icons/hicolor/scalable/apps/simpbar-config.svg
+            [[ -f /usr/share/backgrounds/perihelion/default.png ]] && img=/usr/share/backgrounds/perihelion/default.png
+            HOME=/tmp/ttest XDG_CONFIG_HOME=/tmp/ttest/.config XDG_CACHE_HOME=/tmp/ttest/.cache \
+                perihelion-theme --force "${img}" &&
+                grep -q '"matrix_color"' /tmp/ttest/.config/simpbar/matugen.json &&
+                grep -q 'Written by perihelion-theme' /tmp/ttest/.config/nwg-drawer/drawer.css &&
+                grep -q '^# perihelion-theme' /tmp/ttest/.config/fuzzel/fuzzel.ini &&
+                grep -q '^focus_color=0x' /tmp/ttest/.config/mango/colors.conf
+        }
+        check theme_ok
         check grep -qx 'bind=SUPER+SHIFT,g,spawn,perihelion-blur' /home/tester/.config/mango/config.conf
         check grep -q 'app_id:^perihelion-float\$' /home/tester/.config/mango/config.conf
         check grep -qx 'method = pulse' /home/tester/.config/simpbar/cava.conf

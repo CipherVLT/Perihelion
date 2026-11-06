@@ -87,8 +87,9 @@ app by adding a line (mind the commas between entries).
 
 ## Appearance
 
-Colors are `"#RRGGBB"`. Perihelion uses Catppuccin Macchiato
-(<https://catppuccin.com/palette/>):
+Colors follow the wallpaper (see [Colors from the wallpaper](#colors-from-the-wallpaper)).
+With that switched off, colors are `"#RRGGBB"` in `config.json`. Perihelion's
+own are Catppuccin Macchiato (<https://catppuccin.com/palette/>):
 
 | Name | Hex | Used for |
 |---|---|---|
@@ -124,10 +125,10 @@ Colors are `"#RRGGBB"`. Perihelion uses Catppuccin Macchiato
 
 ### cava (audio visualizer)
 
-In the left group (next to the track title), cava is a sound wave in a
-Catppuccin gradient: blue at the middle, pink, then yellow at the peaks
-(Perihelion's patch; `cava_color` colors the right-group equalizer and the
-background mode). The terminal `cava` uses the same three colors, in
+cava is a mirrored sound wave, on either side of the bar or both. Its
+gradient runs `bezel_color` at the middle, `cava_color`, then `matrix_color`
+at the peaks: the three accents picked from the wallpaper (blue, pink and
+yellow by default). The terminal `cava` uses its own colors, in
 `~/.config/cava/config`.
 
 | Key | Values | Perihelion |
@@ -137,9 +138,8 @@ background mode). The terminal `cava` uses the same three colors, in
 | `bg_mode` | `"none"`, `"cava"` (equalizer across the whole bar background), `"matrix"`, `"lava"` | `"none"` |
 | `cava_bg_strength` | 0–100, how strongly `bg_mode: "cava"` tints the bar | `35` |
 
-`cava` in **left** draws a mirrored sound wave (a Perihelion patch to
-simpbar, `build/patches/simpbar-left-cava-wave.patch`); in **right** it is
-simpbar's small equalizer. Move the `{ "kind": "cava" }` entry to switch.
+Simpbar Config lists the Audio Visualizer in both the Left and Right groups,
+so each side has its own switch.
 
 For the visualizer filling the whole bar behind the modules, try
 `"bg_mode": "cava"` with `"cava_style": "curve"` and `"cava_bg_strength": 45`.
@@ -194,14 +194,36 @@ Simpbar Config's Bar pages also change the bar's colors, modules and
 launcher buttons. Perihelion hides its Mango and System pages, which would
 edit files Perihelion doesn't use.
 
-## Wallpaper to match
+## Colors from the wallpaper
 
 ```sh
-perihelion-wallpaper ~/Pictures/your-image.png
+perihelion-wallpaper ~/Pictures/your-image.png   # or Super+Shift+W
 ```
 
-It is remembered across logins. Deep indigo and lavender art (like synthwave
-or pixel-art album covers) sits well with the Macchiato blue/pink accents.
+The wallpaper is remembered across logins, and every change recolors the
+desktop with Catppuccin: `perihelion-theme` picks a flavor from how light the
+picture is (Latte for light ones; Frappé, Macchiato or Mocha for darker ones)
+and the three Catppuccin accents closest to its strongest colors. Every color
+is a real Catppuccin color; the wallpaper only chooses which. It writes:
+
+| What | File |
+|---|---|
+| bar, visualizer wave, desktop widgets | `~/.config/simpbar/matugen.json` |
+| app drawer (Super+A) | `~/.config/nwg-drawer/drawer.css` |
+| launcher and power menu (fuzzel) | `[colors]` in `~/.config/fuzzel/fuzzel.ini` |
+| Strata | `~/.config/strata/themes/tokyo-night.toml` |
+| window borders (Mango) | `~/.config/mango/colors.conf` |
+
+In Simpbar Config → Appearance → Theming:
+
+- **Catppuccin theme** turns all of it on or off (off: the bar uses the
+  colors set below it, and nothing else is touched).
+- **Flavor**: Auto (from the wallpaper), Latte, Frappé, Macchiato or Mocha.
+- **Accent colors**: from the wallpaper, or Perihelion's blue, pink and yellow.
+
+To keep your own drawer CSS, fuzzel colors or Strata theme, delete the
+`perihelion-theme` line in that file: it is never rewritten after that.
+`perihelion-theme --dry-run` prints what it would pick, without writing.
 
 ## Troubleshooting
 
