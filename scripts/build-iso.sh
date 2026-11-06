@@ -52,6 +52,23 @@ pins="${repo_dir}/scripts/fedora-netinst.ref"
 pin_lines=$(grep -v -e '^#' -e '^[[:space:]]*$' "${pins}")
 [[ -n "${pin_lines}" ]] || { err "no ISOs pinned in ${pins}"; exit 1; }
 
+# Fedora's redirector sometimes picks a mirror with a broken (expired) TLS
+# certificate. Try it, then Fedora's own master and kernel.org's mirror. The
+# files' content is checked either way: the ISO against its pinned SHA256 and
+# Fedora's GPG-signed CHECKSUM file.
+fetch_fedora() { # url output [curl options...]
+    local url=$1 out=$2 try
+    shift 2
+    for try in "${url}" \
+        "${url/https:\/\/download.fedoraproject.org\/pub\//https://dl.fedoraproject.org/pub/}" \
+        "${url/https:\/\/download.fedoraproject.org\/pub\//https://mirrors.kernel.org/}"; do
+        curl --fail --location --retry 3 "$@" -o "${out}" "${try}" && return 0
+        printf 'download failed from %s; trying the next source\n' "${try}" >&2
+        rm -f "${out}"
+    done
+    return 1
+}
+
 if (( download )); then
     read -r pin_name pin_sha pin_url pin_checksum <<<"$(tail -n 1 <<<"${pin_lines}")"
     input_iso="${repo_dir}/out/$(basename "${pin_url}")"
@@ -59,7 +76,7 @@ if (( download )); then
         command -v curl >/dev/null || { err "missing required command: curl"; exit 1; }
         mkdir -p "${repo_dir}/out"
         printf 'Downloading Fedora %s netinstall...\n' "${pin_name}"
-        curl --fail --location --retry 3 -C - -o "${input_iso}.part" "${pin_url}"
+        fetch_fedora "${pin_url}" "${input_iso}.part" || { err "could not download ${pin_url}"; exit 1; }
         mv -f "${input_iso}.part" "${input_iso}"
     fi
     # Fedora's GPG-signed CHECKSUM file must list the same SHA256 as the pin.
@@ -69,7 +86,7 @@ if (( download )); then
         key=$(rpm -ql fedora-gpg-keys 2>/dev/null | grep -E "RPM-GPG-KEY-fedora-${release}-(primary|x86_64)\$" | head -n 1)
         if [[ -n "${key}" && -f "${key}" ]] && command -v gpgv >/dev/null && command -v gpg >/dev/null; then
             sums="${repo_dir}/out/$(basename "${pin_checksum}")"
-            curl --fail --location --retry 3 -s -o "${sums}" "${pin_checksum}"
+            fetch_fedora "${pin_checksum}" "${sums}" -s || { err "could not download ${pin_checksum}"; exit 1; }
             gpg --dearmor < "${key}" > "${sums}.key"
             if ! gpgv --keyring "${sums}.key" "${sums}" 2>/dev/null; then
                 err "the GPG signature on $(basename "${sums}") does not check out with ${key}"
