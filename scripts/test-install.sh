@@ -232,6 +232,15 @@ case "${flavor}" in
                 grep -q '^focus_color=0x' /tmp/ttest/.config/mango/colors.conf
         }
         check theme_ok
+        check command -v matugen
+        material_ok() {
+            local img=/usr/share/icons/hicolor/scalable/apps/simpbar-config.svg
+            [[ -f /usr/share/backgrounds/perihelion/default.png ]] && img=/usr/share/backgrounds/perihelion/default.png
+            HOME=/tmp/ttest XDG_CONFIG_HOME=/tmp/ttest/.config XDG_CACHE_HOME=/tmp/ttest/.cache \
+                perihelion-theme --force --style material --color '#8839ef' | grep -q 'Material You' &&
+                grep -q '^// perihelion-theme' /tmp/ttest/.config/fastfetch/config.jsonc
+        }
+        check material_ok
         check grep -qx 'bind=SUPER+SHIFT,g,spawn,perihelion-blur' /home/tester/.config/mango/config.conf
         check grep -q 'app_id:^perihelion-float\$' /home/tester/.config/mango/config.conf
         check grep -qx 'method = pulse' /home/tester/.config/simpbar/cava.conf

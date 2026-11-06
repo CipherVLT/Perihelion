@@ -181,8 +181,9 @@ seed_user_file /usr/share/perihelion/nwg-drawer/drawer.css .config/nwg-drawer/dr
 chmod 0644 /etc/profile.d/perihelion-fastfetch.sh
 ff_cfg=/usr/share/perihelion/fastfetch/config.jsonc
 if [[ "${PERIHELION_FLAVOR}" == mango ]]; then
-    # Mango is themed Catppuccin Macchiato (https://catppuccin.com/palette/):
-    # title red #ed8796, OS-section labels bold pink #f5bde6, the other
+    # Mango starts Catppuccin Macchiato (https://catppuccin.com/palette/), and
+    # perihelion-theme recolors these same values for every wallpaper:
+    # title bold blue #8aadf4, OS-section labels bold pink #f5bde6, the other
     # labels bold yellow #eed49f, values blue
     # #8aadf4, separator overlay1 #8087a2. Layout and icons stay Veyl OS's.
     # Logo: the distro logo's color 1 (Fedora's blue) in #8aadf4 and color 2
@@ -190,7 +191,7 @@ if [[ "${PERIHELION_FLAVOR}" == mango ]]; then
     sed -i -e 's/"keyColor": "31"/"keyColor": "1;38;2;245;189;230"/' \
         -e 's/"keyColor": "3[23]"/"keyColor": "1;38;2;238;212;159"/' \
         -e 's/"padding": { "top": 3 }/"padding": { "top": 3 },\n        "color": { "1": "38;2;138;173;244", "2": "38;2;238;212;159" }/' \
-        -e 's/"separator": " ➜  "/"separator": " ➜  ",\n          "color": { "title": "1;38;2;237;135;150", "output": "38;2;138;173;244", "separator": "38;2;128;135;162" }/' \
+        -e 's/"separator": " ➜  "/"separator": " ➜  ",\n          "color": { "title": "1;38;2;138;173;244", "output": "38;2;138;173;244", "separator": "38;2;128;135;162" }/' \
         "${ff_cfg}"
     grep -q '"output": "38;2;138;173;244"' "${ff_cfg}" || die "could not apply Mango's fastfetch colors"
     grep -q '"1": "38;2;138;173;244", "2": "38;2;238;212;159"' "${ff_cfg}" || die "could not color Mango's fastfetch logo"

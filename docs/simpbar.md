@@ -201,10 +201,16 @@ perihelion-wallpaper ~/Pictures/your-image.png   # or Super+Shift+W
 ```
 
 The wallpaper is remembered across logins, and every change recolors the
-desktop with Catppuccin: `perihelion-theme` picks a flavor from how light the
-picture is (Latte for light ones; Frappé, Macchiato or Mocha for darker ones)
-and the three Catppuccin accents closest to its strongest colors. Every color
-is a real Catppuccin color; the wallpaper only chooses which. It writes:
+desktop to match it. `perihelion-theme` has two styles:
+
+- **Catppuccin** (default): a flavor from how light the picture is (Latte for
+  light ones; Frappé, Macchiato or Mocha for darker ones) and the three
+  Catppuccin accents closest to its strongest colors. Every color is a real
+  Catppuccin color; the wallpaper only chooses which.
+- **Material You**: matugen, simpbar's own engine, makes Material Design
+  colors from the wallpaper (tonal spot, vibrant, expressive, ...).
+
+It writes:
 
 | What | File |
 |---|---|
@@ -213,15 +219,20 @@ is a real Catppuccin color; the wallpaper only chooses which. It writes:
 | launcher and power menu (fuzzel) | `[colors]` in `~/.config/fuzzel/fuzzel.ini` |
 | Strata | `~/.config/strata/themes/tokyo-night.toml` |
 | window borders (Mango) | `~/.config/mango/colors.conf` |
+| fastfetch: the Fedora logo, labels and values | `~/.config/fastfetch/config.jsonc` |
 
 In Simpbar Config → Appearance → Theming:
 
-- **Catppuccin theme** turns all of it on or off (off: the bar uses the
+- **Match the wallpaper** turns all of it on or off (off: the bar uses the
   colors set below it, and nothing else is touched).
-- **Flavor**: Auto (from the wallpaper), Latte, Frappé, Macchiato or Mocha.
-- **Accent colors**: from the wallpaper, or Perihelion's blue, pink and yellow.
+- **Style**: Catppuccin or Material You (matugen).
+- **Flavor** (Catppuccin): Auto (from the wallpaper), Latte, Frappé,
+  Macchiato or Mocha.
+- **Accent colors** (Catppuccin): from the wallpaper, or Perihelion's blue,
+  pink and yellow.
+- **Matugen color scheme** (Material You): tonal spot, vibrant, ...
 
-To keep your own drawer CSS, fuzzel colors or Strata theme, delete the
+To keep your own drawer CSS, fuzzel colors, Strata theme or fastfetch colors, delete the
 `perihelion-theme` line in that file: it is never rewritten after that.
 `perihelion-theme --dry-run` prints what it would pick, without writing.
 

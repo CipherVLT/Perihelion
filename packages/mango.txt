@@ -28,3 +28,6 @@ wl-clipboard
 dbus-tools
 # Shows the name of any key you press (for writing your own binds)
 wev
+# Material You colors from the wallpaper (Terra): perihelion-theme's second
+# style, picked in Simpbar Config (Catppuccin is the default)
+matugen
