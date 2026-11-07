@@ -282,7 +282,7 @@ case "${flavor}" in
         check grep -qx 'source_optional=~/.config/mango/glass.conf' /home/tester/.config/mango/config.conf
         check test -f /usr/share/doc/perihelion/simpbar.md
         check rpm -q cava
-        check grep -q '"position": "bottom"' /home/tester/.config/simpbar/config.json
+        check grep -q '"position": "top"' /home/tester/.config/simpbar/config.json
         check grep -q '"kind": "power"' /home/tester/.config/simpbar/config.json
         check test -f /home/tester/.config/fuzzel/fuzzel.ini
         # fastfetch keeps Veyl OS's terminal-color layout; kitty carries the colors
