@@ -107,7 +107,7 @@ check rpm -q mesa-dri-drivers.i686 mesa-vulkan-drivers.i686 vulkan-loader.i686
 check rpm -q dconf cracklib-dicts nano
 check rpm -q fastfetch lm_sensors nethogs
 check grep -q '"format": "Perihelion Linux {arch}"' /usr/share/perihelion/fastfetch/config.jsonc
-os_name_ok() { fastfetch --config /usr/share/perihelion/fastfetch/config.jsonc --logo none -s os --pipe 2>/dev/null | grep -q 'Perihelion Linux x86_64'; }
+os_name_ok() { fastfetch --config /usr/share/perihelion/fastfetch/config.jsonc --logo none --pipe 2>/dev/null | grep -q 'Perihelion Linux x86_64'; }
 check os_name_ok
 check grep -qx "color-scheme='prefer-dark'" /etc/dconf/db/local.d/00-perihelion
 # Wine 11.21 (Kron4ek, WoW64) and winetricks, every flavor; NTSYNC set up
