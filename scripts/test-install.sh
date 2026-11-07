@@ -260,7 +260,7 @@ case "${flavor}" in
             [[ -f /usr/share/backgrounds/perihelion/default.png ]] && img=/usr/share/backgrounds/perihelion/default.png
             HOME=/tmp/ttest XDG_CONFIG_HOME=/tmp/ttest/.config XDG_CACHE_HOME=/tmp/ttest/.cache \
                 perihelion-theme --force --style material --color '#8839ef' | grep -q 'Material You' &&
-                grep -q '^// perihelion-theme' /tmp/ttest/.config/fastfetch/config.jsonc
+                grep -q '^color3 ' /tmp/ttest/.config/kitty/perihelion-colors.conf
         }
         check material_ok
         check grep -q '^theme\[main_bg\]="#' /tmp/ttest/.config/btop/themes/perihelion.theme
@@ -285,12 +285,10 @@ case "${flavor}" in
         check grep -q '"position": "bottom"' /home/tester/.config/simpbar/config.json
         check grep -q '"kind": "power"' /home/tester/.config/simpbar/config.json
         check test -f /home/tester/.config/fuzzel/fuzzel.ini
-        check grep -q '"keyColor": "1;38;2;238;212;159"' /home/tester/.config/fastfetch/config.jsonc
-        os_pink_ok() { [[ $(grep -c '"keyColor": "1;38;2;237;135;150"' /home/tester/.config/fastfetch/config.jsonc) -eq 4 ]]; }
-        check os_pink_ok
-        check grep -q '"keyColor": "1;38;2;138;173;244"' /home/tester/.config/fastfetch/config.jsonc
-        check grep -q '"1": "38;2;95;117;166", "2": "38;2;138;173;244"' /home/tester/.config/fastfetch/config.jsonc
-        check grep -q '"title": "1;38;2;138;173;244", "output": "38;2;194;206;245"' /home/tester/.config/fastfetch/config.jsonc
+        # fastfetch keeps Veyl OS's terminal-color layout; kitty carries the colors
+        ff_veyl_ok() { cmp -s /usr/share/perihelion/fastfetch/config.jsonc /home/tester/.config/fastfetch/config.jsonc &&
+            ! grep -q '38;2;' /home/tester/.config/fastfetch/config.jsonc; }
+        check ff_veyl_ok
         check grep -qx 'globinclude perihelion-colors.conf' /home/tester/.config/kitty/kitty.conf
         check grep -qx 'include /etc/xdg/kitty/kitty.conf' /home/tester/.config/kitty/kitty.conf
         check mango -p -c /home/tester/.config/mango/config.conf

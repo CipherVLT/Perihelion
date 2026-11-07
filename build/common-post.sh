@@ -209,25 +209,11 @@ seed_user_file /usr/share/perihelion/nwg-drawer/drawer.css .config/nwg-drawer/dr
 # --- fastfetch (Veyl OS layout) --------------------------------------------------
 chmod 0644 /etc/profile.d/perihelion-fastfetch.sh
 ff_cfg=/usr/share/perihelion/fastfetch/config.jsonc
-if [[ "${PERIHELION_FLAVOR}" == mango ]]; then
-    # Mango starts Catppuccin Macchiato (https://catppuccin.com/palette/), and
-    # perihelion-theme recolors these same values for every wallpaper:
-    # title bold blue #8aadf4; section headers bold red #ed8796 (OS), blue
-    # #8aadf4 (WM), yellow #eed49f (PC and after); values text tinted blue
-    # #c2cef5; separator overlay1 #8087a2. Layout and icons stay Veyl OS's.
-    # Logo: color 1 (Fedora's blue body) a darker shade of blue #5f75a6,
-    # color 2 (the "f") blue #8aadf4.
-    sed -i -e 's/"keyColor": "31"/"keyColor": "1;38;2;237;135;150"/' \
-        -e 's/"keyColor": "32"/"keyColor": "1;38;2;138;173;244"/' \
-        -e 's/"keyColor": "33"/"keyColor": "1;38;2;238;212;159"/' \
-        -e 's/"padding": { "top": 3 }/"padding": { "top": 3 },\n        "color": { "1": "38;2;95;117;166", "2": "38;2;138;173;244" }/' \
-        -e 's/"separator": " ➜  "/"separator": " ➜  ",\n          "color": { "title": "1;38;2;138;173;244", "output": "38;2;194;206;245", "separator": "38;2;128;135;162" }/' \
-        "${ff_cfg}"
-    grep -q '"output": "38;2;194;206;245"' "${ff_cfg}" || die "could not apply Mango's fastfetch colors"
-    grep -q '"1": "38;2;95;117;166", "2": "38;2;138;173;244"' "${ff_cfg}" || die "could not color Mango's fastfetch logo"
-    [[ $(grep -c '"keyColor": "1;38;2;237;135;150"' "${ff_cfg}") -eq 4 ]] || die "Mango's fastfetch OS section is not red-pink"
-    ! grep -qE '"keyColor": "3[123]"' "${ff_cfg}" || die "fastfetch config still has Veyl OS colors"
-fi
+# Every flavor keeps Veyl OS's layout as is: the OS section is terminal
+# color 1, WM color 2, PC and after color 3, the Fedora logo colors 4 and 7.
+# On Mango, perihelion-theme writes kitty's palette from the wallpaper (like
+# Event Horizon's matugen template), so fastfetch follows it.
+[[ $(grep -c '"keyColor": "31"' "${ff_cfg}") -eq 4 ]] || die "fastfetch config lost Veyl OS's section colors"
 seed_user_file "${ff_cfg}" .config/fastfetch/config.jsonc
 
 # --- Gaming ------------------------------------------------------------------------
