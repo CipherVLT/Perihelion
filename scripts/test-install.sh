@@ -286,7 +286,7 @@ case "${flavor}" in
         check grep -q '"kind": "power"' /home/tester/.config/simpbar/config.json
         check test -f /home/tester/.config/fuzzel/fuzzel.ini
         check grep -q '"keyColor": "1;38;2;238;212;159"' /home/tester/.config/fastfetch/config.jsonc
-        os_pink_ok() { [[ $(grep -c '"keyColor": "1;38;2;245;189;230"' /home/tester/.config/fastfetch/config.jsonc) -eq 4 ]]; }
+        os_pink_ok() { [[ $(grep -c '"keyColor": "1;38;2;237;135;150"' /home/tester/.config/fastfetch/config.jsonc) -eq 4 ]]; }
         check os_pink_ok
         check grep -q '"keyColor": "1;38;2;138;173;244"' /home/tester/.config/fastfetch/config.jsonc
         check grep -q '"1": "38;2;95;117;166", "2": "38;2;138;173;244"' /home/tester/.config/fastfetch/config.jsonc
