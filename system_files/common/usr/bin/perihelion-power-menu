@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Power menu: Super+Shift+Q (and simpbar's power button on Mango).
+# Power menu: Super+Shift+Q (and Perihelion Bar's power button on Mango).
 # Pick with the mouse or arrow keys + Enter; Esc closes it.
 set -euo pipefail
 

@@ -4,9 +4,10 @@
 # Perihelion Shell (https://github.com/CipherVLT/perihelion-shell) is
 # Perihelion's fork of simpbar by jaytheoutpatient
 # (https://github.com/jaytheoutpatient/simpbar), with his blessing: a native
-# Zig/Wayland bar for MangoWM and Hyprland. Installed: the bar
-# (/usr/bin/simpbar), simpbar-shell (desktop widgets and window overview),
-# Simpbar Config, and perihelion-theme (Catppuccin colors matched to the
+# Zig/Wayland bar for MangoWM and Hyprland. Installed: Perihelion Bar
+# (/usr/bin/perihelion-bar, also the dock), Perihelion Shell
+# (/usr/bin/perihelion-shell: desktop widgets and window overview),
+# Perihelion Settings (/usr/bin/perihelion-settings), and perihelion-theme (Catppuccin colors matched to the
 # wallpaper). Not installed: simpbar's Welcome app, Quickshell app drawer and
 # Arch installer. Perihelion's changes are commits in the fork.
 #
@@ -64,21 +65,21 @@ git -C "${src}" checkout -q --detach FETCH_HEAD
     cd "${src}/simpbar"
     "${zig_dir}/zig" build -Doptimize=ReleaseFast "-Dcpu=${ZIG_CPU}"
 )
-install -Dm755 "${src}/simpbar/zig-out/bin/simpbar" /usr/bin/simpbar
-# Simpbar Config (GTK): the bar's look and modules, and a switch for each
-# desktop widget. Perihelion Shell shows only its Bar pages.
-install -Dm755 "${src}/simpbar/zig-out/bin/simpbar-config" /usr/bin/simpbar-config
-install -Dm644 "${src}/simpbar-config.desktop" /usr/share/applications/simpbar-config.desktop
-install -Dm644 "${src}/assets/icons/simpbar-config.svg" /usr/share/icons/hicolor/scalable/apps/simpbar-config.svg
+install -Dm755 "${src}/simpbar/zig-out/bin/perihelion-bar" /usr/bin/perihelion-bar
+# Perihelion Settings (GTK): the bar's look, modules and colors, and a
+# switch for each desktop widget (only its Bar pages are shown).
+install -Dm755 "${src}/simpbar/zig-out/bin/perihelion-settings" /usr/bin/perihelion-settings
+install -Dm644 "${src}/perihelion-settings.desktop" /usr/share/applications/perihelion-settings.desktop
+install -Dm644 "${src}/assets/icons/perihelion-settings.svg" /usr/share/icons/hicolor/scalable/apps/perihelion-settings.svg
 
-# simpbar-shell (desktop widgets, window overview); shares the bar's font code.
+# Perihelion Shell (desktop widgets, window overview); shares the bar's font code.
 (
     cd "${src}/simpbar-shell"
     "${zig_dir}/zig" build -Doptimize=ReleaseFast "-Dcpu=${ZIG_CPU}"
 )
-install -Dm755 "${src}/simpbar-shell/zig-out/bin/simpbar-shell" /usr/bin/simpbar-shell
+install -Dm755 "${src}/simpbar-shell/zig-out/bin/perihelion-shell" /usr/bin/perihelion-shell
 # Catppuccin theming: runs on every wallpaper change (perihelion-wallpaper)
-# and from Simpbar Config. simpbar-matugen is the name simpbar itself calls.
+# and from Perihelion Settings. simpbar-matugen is the name the bar itself calls.
 install -Dm755 "${src}/perihelion-theme" /usr/bin/perihelion-theme
 printf '#!/bin/sh\n# simpbar calls this after a wallpaper change; Perihelion themes with Catppuccin.\nexec perihelion-theme --force "$@"\n' > /usr/bin/simpbar-matugen
 chmod 755 /usr/bin/simpbar-matugen
@@ -94,7 +95,7 @@ if (( ${#build_only[@]} )); then
 fi
 rm -f /tmp/simpbar-before.txt /tmp/simpbar-after.txt
 
-for bin in /usr/bin/simpbar /usr/bin/simpbar-shell /usr/bin/simpbar-config; do
+for bin in /usr/bin/perihelion-bar /usr/bin/perihelion-shell /usr/bin/perihelion-settings; do
     if ldd "${bin}" | grep -F 'not found'; then
         die "${bin} is missing shared libraries"
     fi

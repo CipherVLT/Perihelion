@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Current weather for simpbar-shell's weather widget, from Open-Meteo
+# Current weather for Perihelion Shell's weather widget, from Open-Meteo
 # (open-meteo.com: free, no API key; NOAA's models for the US). Prints one
 # line in the widget's format:
 #   emoji|temp|humidity|wind|sunrise|sunset|now     e.g. ☀️|+54°F|58%|↓5mph|06:48|17:34|02:15

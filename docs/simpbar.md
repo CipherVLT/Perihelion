@@ -138,7 +138,7 @@ yellow by default). The terminal `cava` uses its own colors, in
 | `bg_mode` | `"none"`, `"cava"` (equalizer across the whole bar background), `"matrix"`, `"lava"` | `"none"` |
 | `cava_bg_strength` | 0–100, how strongly `bg_mode: "cava"` tints the bar | `35` |
 
-Simpbar Config lists the Audio Visualizer in both the Left and Right groups,
+Perihelion Settings lists the Audio Visualizer in both the Left and Right groups,
 so each side has its own switch. Both waves keep the same distance from the
 module beside them (workspaces on the left, the clock on the right).
 
@@ -146,9 +146,9 @@ module beside them (workspaces on the left, the clock on the right).
 
 The pinned apps live in their own dock at the bottom center, not in the bar.
 It is a second copy of the bar started in dock mode (`SIMPBAR_DOCK=1 simpbar`,
-by `perihelion-simpbar-start` at login; Super+Shift+D restarts both). It
+by `perihelion-bar-start` at login; Super+Shift+D restarts both). It
 shows the `launchers` from `~/.config/simpbar/config.json`, the same list
-Simpbar Config edits; the first one runs `appdrawer` and wears the distro's
+Perihelion Settings edits; the first one runs `appdrawer` and wears the distro's
 logo. Windows stop above the dock.
 
 For the visualizer filling the whole bar behind the modules, try
@@ -160,11 +160,11 @@ Eight widgets can sit on the wallpaper: clock, weather, media (now playing),
 system, calendar, watch (analog), sticky note, and desktop icons. Perihelion
 starts with just the calendar and weather, on see-through cards.
 
-- **Add or remove:** open **Simpbar Config** from the app launcher (Super+D)
+- **Add or remove:** open **Perihelion Settings** from the app launcher (Super+D)
   or the app drawer (Super+A). Under *Appearance → Desktop Widgets*, each
   widget has a switch, and the desktop updates right away.
 - **Remove one quickly:** hold **Alt** and right-click it. Turn it back on in
-  Simpbar Config; it comes back where it was.
+  Perihelion Settings; it comes back where it was.
 - **Move:** hold **Ctrl** and drag a card.
 - **Resize:** drag the grip in a card's bottom-right corner.
 - The last widget can't be removed with Alt + right-click: with none left,
@@ -200,7 +200,7 @@ By hand: `~/.config/simpbar/widgets-disabled` lists hidden widgets (ids
 `~/.config/simpbar/shell.json` holds positions in pixels. After editing:
 `pkill -x simpbar-shell; setsid -f simpbar-shell`.
 
-Simpbar Config's Bar pages also change the bar's colors, modules and
+Perihelion Settings's Bar pages also change the bar's colors, modules and
 launcher buttons. Perihelion hides its Mango and System pages, which would
 edit files Perihelion doesn't use.
 
@@ -235,7 +235,7 @@ It writes:
 | btop | `~/.config/btop/themes/perihelion.theme` |
 | cmatrix (nearest terminal color) | `~/.config/perihelion/cmatrix-color` |
 
-In Simpbar Config → Appearance → Theming:
+In Perihelion Settings → Appearance → Theming:
 
 - **Match the wallpaper** turns all of it on or off (off: the bar uses the
   colors set below it, and nothing else is touched).
@@ -263,7 +263,7 @@ cava runs but hears silence. Play something, then:
 
 1. `pkill -x cava`. simpbar starts a fresh one within 5 seconds. If the bar
    moves now, the first cava started before the audio system was ready.
-   Perihelion starts the bar through `perihelion-simpbar-start`, which waits
+   Perihelion starts the bar through `perihelion-bar-start`, which waits
    for the default audio output, to avoid exactly this.
 2. Still flat: `cava -p ~/.config/simpbar/cava.conf` prints the bar's
    numbers (rows separated by `;`). "cava was built without 'pipewire' input

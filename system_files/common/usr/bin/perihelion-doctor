@@ -46,23 +46,27 @@ report() {
         fi
     fi
 
-    if command -v simpbar >/dev/null; then
-        section "simpbar"
+    if command -v perihelion-bar >/dev/null; then
+        section "Perihelion Bar and Shell"
         sb="${XDG_CONFIG_HOME:-${HOME}/.config}/simpbar"
-        for proc in simpbar simpbar-shell cava; do
-            if pgrep -x "${proc}" >/dev/null; then ok "${proc} running"; else bad "${proc} not running"; fi
-        done
+        running_n() { pgrep -fc "^(/usr/bin/)?$1( |\$)" 2>/dev/null || true; }
+        bars=$(running_n perihelion-bar)
+        if (( bars >= 2 )); then ok "perihelion-bar running (bar and dock)"
+        elif (( bars == 1 )); then bad "only one perihelion-bar running (bar or dock missing): Super+Shift+D"
+        else bad "perihelion-bar not running: Super+Shift+D"; fi
+        if (( $(running_n perihelion-shell) > 0 )); then ok "perihelion-shell running"; else bad "perihelion-shell not running"; fi
+        if pgrep -x cava >/dev/null; then ok "cava running"; else bad "cava not running"; fi
         if [[ -f "${sb}/cava.conf" ]]; then
             printf '  info  cava input: %s\n' "$(grep -E '^ *method' "${sb}/cava.conf" | head -n 1 | tr -s ' ')"
             cava_err=$(timeout 3 cava -p "${sb}/cava.conf" 2>&1 </dev/null | grep -aiE 'error|without|fail' | head -n 3)
             if [[ -n "${cava_err}" ]]; then bad "the bar's cava: ${cava_err}"; else ok "the bar's cava starts with ${sb}/cava.conf"; fi
         else
-            bad "no ${sb}/cava.conf (simpbar writes one that needs PipeWire input)"
+            bad "no ${sb}/cava.conf (the bar writes one that needs PipeWire input)"
         fi
         for f in config.json shell.json; do
             if [[ -f "${sb}/${f}" ]]; then
                 if python3 -c "import json,sys; json.load(open(sys.argv[1]))" "${sb}/${f}" 2>/dev/null; then ok "${f} is valid JSON"
-                elif command -v python3 >/dev/null; then bad "${f} is not valid JSON (simpbar falls back to its defaults)"; fi
+                elif command -v python3 >/dev/null; then bad "${f} is not valid JSON (the bar falls back to its defaults)"; fi
             fi
         done
         printf '  info  widgets switched off: %s\n' "$(tr '\n' ' ' < "${sb}/widgets-disabled" 2>/dev/null)"
@@ -75,7 +79,7 @@ report() {
         fi
         printf '  info  weather location: %s\n' "$(head -n 1 "${sb}/weather-location" 2>/dev/null || echo 'guessed from your internet address (set it in ~/.config/simpbar/weather-location)')"
         logs="${SIMPBAR_LOG_DIR:-${HOME}/.config/simpbar-config/logs}"
-        for prog in simpbar simpbar-shell; do
+        for prog in perihelion-bar perihelion-dock perihelion-shell; do
             for kind in crash error warning; do
                 log="${logs}/${prog}/${kind}.log"
                 if [[ -s "${log}" ]]; then
@@ -87,7 +91,7 @@ report() {
     fi
 
     section "Running"
-    for proc in mango Hyprland niri simpbar swaybg pipewire wireplumber xdg-desktop-portal; do
+    for proc in mango Hyprland niri perihelion-bar swaybg pipewire wireplumber xdg-desktop-portal; do
         if pgrep -x "${proc}" >/dev/null; then ok "${proc}"; fi
     done
 

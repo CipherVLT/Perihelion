@@ -106,6 +106,10 @@ check rpm -q mesa-dri-drivers.x86_64 mesa-vulkan-drivers.x86_64 vulkan-loader.x8
 check rpm -q mesa-dri-drivers.i686 mesa-vulkan-drivers.i686 vulkan-loader.i686
 check rpm -q dconf cracklib-dicts nano
 check rpm -q fastfetch lm_sensors nethogs
+check grep -q '"format": "Perihelion Linux {arch}"' /usr/share/perihelion/fastfetch/config.jsonc
+os_name_ok() { fastfetch --config /usr/share/perihelion/fastfetch/config.jsonc --logo none -s os --pipe 2>/dev/null | grep -q 'Perihelion Linux x86_64'; }
+check os_name_ok
+check grep -qx "color-scheme='prefer-dark'" /etc/dconf/db/local.d/00-perihelion
 # Wine 11.21 (Kron4ek, WoW64) and winetricks, every flavor; NTSYNC set up
 check test -x /opt/wine/bin/wine
 check grep -qx 'wine-11.21-staging-amd64-wow64' /opt/wine/PERIHELION_BUILD
@@ -204,30 +208,32 @@ fi
 case "${flavor}" in
     mango)
         check test -f /home/tester/.config/mango/config.conf
-        check test -x /usr/bin/simpbar
+        check test -x /usr/bin/perihelion-bar
         check test -f /home/tester/.config/simpbar/config.json
         check test -f "$(sed -n 's/.*"font_path": "\([^"]*\)".*/\1/p' /home/tester/.config/simpbar/config.json)"
         check grep -q '/JetBrainsMonoNerdFont-Regular.ttf"' /home/tester/.config/simpbar/config.json
-        check ldd /usr/bin/simpbar
+        check ldd /usr/bin/perihelion-bar
         check test -x /usr/bin/perihelion-power-menu
         check test -x /usr/bin/appdrawer
-        check test -x /usr/bin/simpbar-shell
-        check ldd /usr/bin/simpbar-shell
+        check test -x /usr/bin/perihelion-shell
+        check ldd /usr/bin/perihelion-shell
         check test -f /home/tester/.config/simpbar/shell.json
         check test -f /home/tester/.config/simpbar/matugen.json
         # Minimal desktop: only weather and calendar on, see-through cards
         minimal_widgets_ok() { ! grep -qxE 'weather|calendar' /home/tester/.config/simpbar/widgets-disabled && [[ $(grep -c . /home/tester/.config/simpbar/widgets-disabled) -eq 6 ]]; }
         check minimal_widgets_ok
         check grep -q '"card_bg_opacity": 25' /home/tester/.config/simpbar/shell.json
-        check test -x /usr/bin/simpbar-config
-        check ldd /usr/bin/simpbar-config
-        check test -f /usr/share/applications/simpbar-config.desktop
-        check grep -aq 'simpbar-config' /usr/share/icons/hicolor/icon-theme.cache
+        check test -x /usr/bin/perihelion-settings
+        check ldd /usr/bin/perihelion-settings
+        check grep -qx 'Name=Perihelion Settings' /usr/share/applications/perihelion-settings.desktop
+        check grep -aq 'perihelion-settings' /usr/share/icons/hicolor/icon-theme.cache
+        check test ! -e /usr/bin/simpbar
         check rpm -q gtk4 libadwaita
-        check grep -q 'ALT,w,spawn,simpbar-shell overview toggle' /home/tester/.config/mango/config.conf
+        check grep -qx 'bind=ALT,w,spawn,perihelion-shell overview toggle' /home/tester/.config/mango/config.conf
+        check grep -qx 'exec_once=perihelion-shell' /home/tester/.config/mango/config.conf
         check grep -qx 'bind=SUPER,g,spawn,perihelion-glass' /home/tester/.config/mango/config.conf
-        check grep -qx 'exec_once=perihelion-simpbar-start' /home/tester/.config/mango/config.conf
-        check bash -n /usr/bin/perihelion-simpbar-start
+        check grep -qx 'exec_once=perihelion-bar-start' /home/tester/.config/mango/config.conf
+        check bash -n /usr/bin/perihelion-bar-start
         check bash -n /usr/bin/perihelion-weather
         # Live weather (Open-Meteo); reported, not fatal, so an outage can't block a build
         mkdir -p /tmp/wtest/.config/simpbar && echo "DeSoto, TX" > /tmp/wtest/.config/simpbar/weather-location
@@ -243,7 +249,7 @@ case "${flavor}" in
         check grep -qx 'source_optional=~/.config/mango/colors.conf' /home/tester/.config/mango/config.conf
         rm -rf /tmp/ttest && mkdir -p /tmp/ttest && cp -a /home/tester/.config /tmp/ttest/
         theme_ok() {
-            local img=/usr/share/icons/hicolor/scalable/apps/simpbar-config.svg
+            local img=/usr/share/icons/hicolor/scalable/apps/perihelion-settings.svg
             [[ -f /usr/share/backgrounds/perihelion/default.png ]] && img=/usr/share/backgrounds/perihelion/default.png
             HOME=/tmp/ttest XDG_CONFIG_HOME=/tmp/ttest/.config XDG_CACHE_HOME=/tmp/ttest/.cache \
                 perihelion-theme --force "${img}" &&
@@ -256,7 +262,7 @@ case "${flavor}" in
         check theme_ok
         check command -v matugen
         material_ok() {
-            local img=/usr/share/icons/hicolor/scalable/apps/simpbar-config.svg
+            local img=/usr/share/icons/hicolor/scalable/apps/perihelion-settings.svg
             [[ -f /usr/share/backgrounds/perihelion/default.png ]] && img=/usr/share/backgrounds/perihelion/default.png
             HOME=/tmp/ttest XDG_CONFIG_HOME=/tmp/ttest/.config XDG_CACHE_HOME=/tmp/ttest/.cache \
                 perihelion-theme --force --style material --color '#8839ef' | grep -q 'Material You' &&
@@ -293,7 +299,7 @@ case "${flavor}" in
         # Bar on top, pinned apps in their own dock at the bottom (app drawer first)
         dock_ok() {
             python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); a=d["appearance"]; m=d["modules"]; sys.exit(0 if a["position"]=="top" and not m["center"] and d["launchers"][0]["command"]=="appdrawer" else 1)' /home/tester/.config/simpbar/config.json &&
-                grep -q 'SIMPBAR_DOCK=1 setsid -f simpbar' /usr/bin/perihelion-simpbar-start
+                grep -q 'SIMPBAR_DOCK=1 setsid -f perihelion-bar' /usr/bin/perihelion-bar-start
         }
         check dock_ok
         check grep -qx 'include /etc/xdg/kitty/kitty.conf' /home/tester/.config/kitty/kitty.conf

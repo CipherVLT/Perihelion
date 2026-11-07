@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# Starts Perihelion's bar and dock (Super+Shift+D runs it again to restart
+# Starts Perihelion Bar and its dock (Super+Shift+D runs it again to restart
 # both). The bar waits until PipeWire/WirePlumber have a default audio
 # output, so its cava connects to it (started earlier, that cava can stay
 # unconnected and the visualizer flat); at most 10 seconds.
 #
-# The dock is a second copy of the bar in dock mode (SIMPBAR_DOCK=1): the
+# The dock is a second Perihelion Bar in dock mode (SIMPBAR_DOCK=1): the
 # pinned apps from ~/.config/simpbar/config.json, bottom center, with the
 # app drawer (the distro logo) first.
-pkill -x simpbar 2>/dev/null && sleep 0.3
-SIMPBAR_DOCK=1 setsid -f simpbar >/dev/null 2>&1
+pkill -x perihelion-bar 2>/dev/null && sleep 0.3
+SIMPBAR_DOCK=1 setsid -f perihelion-bar >/dev/null 2>&1
 for _ in $(seq 1 20); do
     wpctl inspect @DEFAULT_AUDIO_SINK@ >/dev/null 2>&1 && break
     sleep 0.5
 done
-exec simpbar "$@"
+exec perihelion-bar "$@"
