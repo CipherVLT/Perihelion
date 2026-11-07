@@ -15,7 +15,7 @@
     "bezel_style": "solid",
     "bezel_effect": "solid",
     "bg_mode": "none",
-    "position": "bottom",
+    "position": "top",
     "bar_mode": "taskbar",
     "bar_height": 32,
     "border_top_px": 2,
@@ -45,11 +45,7 @@
         "kind": "cava"
       }
     ],
-    "center": [
-      {
-        "kind": "launchers"
-      }
-    ],
+    "center": [],
     "right": [
       {
         "kind": "power"
@@ -81,6 +77,10 @@
     ]
   },
   "launchers": [
+    {
+      "label": "Apps",
+      "command": "appdrawer"
+    },
     {
       "label": "Browser",
       "command": "firefox"

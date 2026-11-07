@@ -139,7 +139,17 @@ yellow by default). The terminal `cava` uses its own colors, in
 | `cava_bg_strength` | 0–100, how strongly `bg_mode: "cava"` tints the bar | `35` |
 
 Simpbar Config lists the Audio Visualizer in both the Left and Right groups,
-so each side has its own switch.
+so each side has its own switch. Both waves keep the same distance from the
+module beside them (workspaces on the left, the clock on the right).
+
+## The dock
+
+The pinned apps live in their own dock at the bottom center, not in the bar.
+It is a second copy of the bar started in dock mode (`SIMPBAR_DOCK=1 simpbar`,
+by `perihelion-simpbar-start` at login; Super+Shift+D restarts both). It
+shows the `launchers` from `~/.config/simpbar/config.json`, the same list
+Simpbar Config edits; the first one runs `appdrawer` and wears the distro's
+logo. Windows stop above the dock.
 
 For the visualizer filling the whole bar behind the modules, try
 `"bg_mode": "cava"` with `"cava_style": "curve"` and `"cava_bg_strength": 45`.

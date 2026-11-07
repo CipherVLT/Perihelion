@@ -290,6 +290,12 @@ case "${flavor}" in
             ! grep -q '38;2;' /home/tester/.config/fastfetch/config.jsonc; }
         check ff_veyl_ok
         check grep -qx 'globinclude perihelion-colors.conf' /home/tester/.config/kitty/kitty.conf
+        # Bar on top, pinned apps in their own dock at the bottom (app drawer first)
+        dock_ok() {
+            python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); a=d["appearance"]; m=d["modules"]; sys.exit(0 if a["position"]=="top" and not m["center"] and d["launchers"][0]["command"]=="appdrawer" else 1)' /home/tester/.config/simpbar/config.json &&
+                grep -q 'SIMPBAR_DOCK=1 setsid -f simpbar' /usr/bin/perihelion-simpbar-start
+        }
+        check dock_ok
         check grep -qx 'include /etc/xdg/kitty/kitty.conf' /home/tester/.config/kitty/kitty.conf
         check mango -p -c /home/tester/.config/mango/config.conf
         check test "$(stat -c %U /home/tester/.config/mango/config.conf)" = tester
