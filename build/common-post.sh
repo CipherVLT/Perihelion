@@ -166,6 +166,7 @@ systemctl enable perihelion-flathub.service
 # A system left on UTC gets the time zone of where it is (Fedora's geoip, as
 # the installer uses); the boot service retries if the network is down now.
 chmod 0755 /usr/libexec/perihelion-auto-timezone
+chmod 0755 /usr/libexec/perihelion-system-settings  # Perihelion Settings' Boot and Login pages
 /usr/libexec/perihelion-auto-timezone --install || true
 systemctl enable perihelion-auto-timezone.service
 # Internet time (chrony), and a hardware clock in UTC like Fedora's default,

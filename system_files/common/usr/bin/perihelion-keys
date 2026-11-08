@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 # Show every keybind in a searchable list (Super+H).
 #   Mango:    reads the "#: description" line above each bind in
-#             ~/.config/mango/config.conf
+#             ~/.config/mango/cfg/keybinds.conf (older installs: config.conf)
 #   Hyprland: reads each bind's description from `hyprctl binds -j`
 #   Niri:     opens niri's own hotkey overlay
 # Run with --print to list them in a terminal instead.
 set -euo pipefail
 
 mango_list() {
-    local config="${XDG_CONFIG_HOME:-${HOME}/.config}/mango/config.conf"
-    [[ -f "${config}" ]] || config=/usr/share/perihelion/mango/config.conf
+    local dir="${XDG_CONFIG_HOME:-${HOME}/.config}/mango" config
+    config="${dir}/cfg/keybinds.conf"
+    [[ -f "${config}" ]] || config="${dir}/config.conf"
+    [[ -f "${config}" ]] || config=/usr/share/perihelion/mango/cfg/keybinds.conf
     awk '
         /^#: / { desc = substr($0, 4); next }
         /^key_mode=/ { mode = substr($0, 10); next }

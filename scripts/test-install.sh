@@ -212,6 +212,8 @@ fi
 case "${flavor}" in
     mango)
         check test -f /home/tester/.config/mango/config.conf
+        check test -f /home/tester/.config/mango/cfg/keybinds.conf
+        check grep -qx 'source=./cfg/appearance.conf' /home/tester/.config/mango/config.conf
         check test -x /usr/bin/perihelion-bar
         check test -f /home/tester/.config/simpbar/config.json
         check test -f "$(sed -n 's/.*"font_path": "\([^"]*\)".*/\1/p' /home/tester/.config/simpbar/config.json)"
@@ -233,10 +235,10 @@ case "${flavor}" in
         check grep -aq 'perihelion-settings' /usr/share/icons/hicolor/icon-theme.cache
         check test ! -e /usr/bin/simpbar
         check rpm -q gtk4 libadwaita
-        check grep -qx 'bind=ALT,w,spawn,perihelion-shell overview toggle' /home/tester/.config/mango/config.conf
-        check grep -qx 'exec_once=perihelion-shell' /home/tester/.config/mango/config.conf
-        check grep -qx 'bind=SUPER,g,spawn,perihelion-glass' /home/tester/.config/mango/config.conf
-        check grep -qx 'exec_once=perihelion-bar-start' /home/tester/.config/mango/config.conf
+        check grep -rqx 'bind=ALT,w,spawn,perihelion-shell overview toggle' /home/tester/.config/mango/
+        check grep -rqx 'exec_once=perihelion-shell' /home/tester/.config/mango/
+        check grep -rqx 'bind=SUPER,g,spawn,perihelion-glass' /home/tester/.config/mango/
+        check grep -rqx 'exec_once=perihelion-bar-start' /home/tester/.config/mango/
         check bash -n /usr/bin/perihelion-bar-start
         check bash -n /usr/bin/perihelion-weather
         # Live weather (Open-Meteo); reported, not fatal, so an outage can't block a build
@@ -250,7 +252,7 @@ case "${flavor}" in
         # seeded like the tester's (reads images through GdkPixbuf)
         check test -x /usr/bin/perihelion-theme
         check test -x /usr/bin/simpbar-matugen
-        check grep -qx 'source_optional=~/.config/mango/colors.conf' /home/tester/.config/mango/config.conf
+        check grep -rqx 'source_optional=~/.config/mango/colors.conf' /home/tester/.config/mango/
         rm -rf /tmp/ttest && mkdir -p /tmp/ttest && cp -a /home/tester/.config /tmp/ttest/
         theme_ok() {
             local img=/usr/share/icons/hicolor/scalable/apps/perihelion-settings.svg
@@ -281,15 +283,15 @@ case "${flavor}" in
         check test -x /usr/bin/cmatrix
         check command -v btop
         check test -x /usr/bin/perihelion-lock
-        check grep -qx 'exec_once=swayidle -w timeout 600 perihelion-lock before-sleep perihelion-lock' /home/tester/.config/mango/config.conf
+        check grep -rqx 'exec_once=swayidle -w timeout 600 perihelion-lock before-sleep perihelion-lock' /home/tester/.config/mango/
         check rpm -q mako pavucontrol blueman swayidle
-        check grep -qx 'bind=SUPER+SHIFT,g,spawn,perihelion-blur' /home/tester/.config/mango/config.conf
-        check grep -q 'app_id:^perihelion-float\$' /home/tester/.config/mango/config.conf
+        check grep -rqx 'bind=SUPER+SHIFT,g,spawn,perihelion-blur' /home/tester/.config/mango/
+        check grep -rq 'app_id:^perihelion-float\$' /home/tester/.config/mango/
         check grep -qx 'method = pulse' /home/tester/.config/simpbar/cava.conf
         # The input the bar's cava.conf asks for must be one Fedora's cava has
         cava_pulse_ok() { ! timeout 5 cava -p /home/tester/.config/simpbar/cava.conf 2>&1 </dev/null | head -c 2000 | grep -q "built without 'pulse'"; }
         check cava_pulse_ok
-        check grep -qx 'source_optional=~/.config/mango/glass.conf' /home/tester/.config/mango/config.conf
+        check grep -rqx 'source_optional=~/.config/mango/glass.conf' /home/tester/.config/mango/
         check test -f /usr/share/doc/perihelion/simpbar.md
         check rpm -q cava
         check grep -q '"position": "top"' /home/tester/.config/simpbar/config.json
@@ -308,6 +310,8 @@ case "${flavor}" in
         check dock_ok
         check test -x /usr/bin/perihelion-trash
         check test -x /usr/bin/perihelion-dock-pin
+        check test -x /usr/libexec/perihelion-system-settings
+        check bash -n /usr/libexec/perihelion-system-settings
         check test -f /usr/share/icons/hicolor/scalable/apps/perihelion-trash.svg
         check test -f /usr/share/icons/hicolor/scalable/apps/perihelion-trash-full.svg
         check grep -q 'Pin to dock' /usr/bin/nwg-drawer

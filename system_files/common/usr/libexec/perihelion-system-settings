@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+# perihelion-system-settings: the admin half of Perihelion Settings' System
+# pages (Boot and Login). Run through pkexec, one password prompt per Apply.
+#
+#   grub --menu always|auto --timeout 0-30 --quiet on|off
+#   sddm --autologin on|off --numlock on|off --clock24 on|off
+#
+# Only these settings, only these values: anything else is refused.
+set -euo pipefail
+
+die() { echo "perihelion-system-settings: $*" >&2; exit 2; }
+(( EUID == 0 )) || die "run through pkexec"
+
+onoff() { [[ "$1" == on || "$1" == off ]] || die "expected on or off, got '$1'"; }
+
+# Sets KEY="VALUE" in /etc/default/grub (added when missing).
+grub_set() {
+    local key=$1 value=$2 f=/etc/default/grub
+    touch "${f}"
+    if grep -q "^${key}=" "${f}"; then
+        sed -i "s|^${key}=.*|${key}=${value}|" "${f}"
+    else
+        printf '%s=%s\n' "${key}" "${value}" >> "${f}"
+    fi
+}
+
+do_grub() {
+    local menu="" timeout="" quiet=""
+    while (( $# )); do
+        case "$1" in
+            --menu) menu=$2; shift 2 ;;
+            --timeout) timeout=$2; shift 2 ;;
+            --quiet) quiet=$2; shift 2 ;;
+            *) die "unknown option $1" ;;
+        esac
+    done
+    [[ "${menu}" == always || "${menu}" == auto ]] || die "--menu always|auto"
+    if ! [[ "${timeout}" =~ ^[0-9]+$ ]] || (( timeout > 30 )); then die "--timeout 0-30"; fi
+    onoff "${quiet}"
+
+    grub_set GRUB_TIMEOUT "${timeout}"
+    # Fedora hides the menu unless the last boot failed (or Shift/Esc is
+    # held); "always" turns that off.
+    if [[ "${menu}" == always ]]; then
+        grub2-editenv - unset menu_auto_hide
+        grub_set GRUB_TIMEOUT_STYLE menu
+    else
+        grub2-editenv - set menu_auto_hide=1
+        sed -i '/^GRUB_TIMEOUT_STYLE=/d' /etc/default/grub
+    fi
+    # Quiet boot: the graphical splash and no kernel messages.
+    local cmdline
+    cmdline=$(sed -n 's/^GRUB_CMDLINE_LINUX="\(.*\)"$/\1/p' /etc/default/grub)
+    cmdline=$(printf '%s\n' "${cmdline}" | tr ' ' '\n' | grep -vxE 'rhgb|quiet' | tr '\n' ' ' | sed 's/ *$//')
+    if [[ "${quiet}" == on ]]; then
+        cmdline="${cmdline:+${cmdline} }rhgb quiet"
+        grubby --update-kernel=ALL --args="rhgb quiet"
+    else
+        grubby --update-kernel=ALL --remove-args="rhgb quiet"
+    fi
+    grub_set GRUB_CMDLINE_LINUX "\"${cmdline}\""
+    grub2-mkconfig -o /boot/grub2/grub.cfg >/dev/null 2>&1
+}
+
+do_sddm() {
+    local autologin="" numlock="" clock24=""
+    while (( $# )); do
+        case "$1" in
+            --autologin) autologin=$2; shift 2 ;;
+            --numlock) numlock=$2; shift 2 ;;
+            --clock24) clock24=$2; shift 2 ;;
+            *) die "unknown option $1" ;;
+        esac
+    done
+    onoff "${autologin}"; onoff "${numlock}"; onoff "${clock24}"
+    # Autologin is only ever for the person who pressed Apply.
+    local user=""
+    if [[ "${autologin}" == on ]]; then
+        [[ "${PKEXEC_UID:-}" =~ ^[0-9]+$ ]] || die "no PKEXEC_UID"
+        user=$(getent passwd "${PKEXEC_UID}" | cut -d: -f1)
+        [[ -n "${user}" ]] || die "unknown user ${PKEXEC_UID}"
+    fi
+    install -d /etc/sddm.conf.d
+    local f=/etc/sddm.conf.d/20-perihelion-settings.conf tmp
+    tmp=$(mktemp /etc/sddm.conf.d/.perihelion.XXXXXX)
+    {
+        echo "# Written by Perihelion Settings (System > Login)."
+        echo "[General]"
+        echo "Numlock=${numlock}"
+        if [[ -n "${user}" ]]; then
+            echo
+            echo "[Autologin]"
+            echo "User=${user}"
+            echo "Session=mango.desktop"
+        fi
+    } > "${tmp}"
+    chmod 0644 "${tmp}"
+    mv -f "${tmp}" "${f}"
+    # The login screen's clock (Pixie reads theme.conf.user; perihelion-
+    # greeter-sync keeps this line when it rewrites the file).
+    local g=/usr/local/share/perihelion/greeter/theme.conf.user value=false
+    [[ "${clock24}" == on ]] && value=true
+    if [[ -d "$(dirname "${g}")" ]]; then
+        [[ -f "${g}" ]] || printf '[General]\n' > "${g}"
+        if grep -q '^use24HourClock=' "${g}"; then
+            sed -i "s/^use24HourClock=.*/use24HourClock=${value}/" "${g}"
+        else
+            printf 'use24HourClock=%s\n' "${value}" >> "${g}"
+        fi
+        chmod 0644 "${g}"
+    fi
+}
+
+case "${1:-}" in
+    grub) shift; do_grub "$@" ;;
+    sddm) shift; do_sddm "$@" ;;
+    *) die "usage: $0 grub|sddm ..." ;;
+esac

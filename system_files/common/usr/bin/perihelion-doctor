@@ -40,7 +40,7 @@ report() {
                 else
                     bad "missing ${prog} (used in ${cfg})"
                 fi
-            done < <(sed -n -E 's/^(bind[a-z]*|mousebind|axisbind|gesturebind)=[^,]*,[^,]*,spawn,([^ ,]+).*/\2/p; s/^exec_once=([^ ]+).*/\1/p' "${cfg}" | sort -u)
+            done < <(sed -n -E 's/^(bind[a-z]*|mousebind|axisbind|gesturebind)=[^,]*,[^,]*,spawn,([^ ,]+).*/\2/p; s/^exec_once=([^ ]+).*/\1/p' "${cfg}" "$(dirname "${cfg}")"/cfg/*.conf 2>/dev/null | sort -u)
         else
             bad "no ${cfg} (Mango uses its built-in defaults)"
         fi

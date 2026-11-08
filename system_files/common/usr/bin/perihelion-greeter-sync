@@ -56,6 +56,8 @@ fi
 auto=true
 [[ -n "${accent}" ]] && auto=false
 
+# Perihelion Settings' 24-hour clock choice survives the rewrite.
+clock=$(grep -m1 '^use24HourClock=' "${dir}/theme.conf.user" 2>/dev/null || true)
 tmp=$(mktemp "${dir}/.theme.conf.user.XXXXXX")
 {
     echo "# Written by perihelion-greeter-sync: the login screen follows the desktop's"
@@ -65,6 +67,7 @@ tmp=$(mktemp "${dir}/.theme.conf.user.XXXXXX")
     [[ -n "${bg}" ]] && echo "backgroundColor=${bg}"
     [[ -n "${text}" ]] && echo "textColor=${text}"
     [[ -n "${accent}" ]] && echo "accentColor=${accent}"
+    [[ -n "${clock}" ]] && echo "${clock}"
     echo "autoColor=${auto}"
 } > "${tmp}"
 chmod 0644 "${tmp}"

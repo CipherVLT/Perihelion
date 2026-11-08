@@ -29,10 +29,14 @@ fi
 while read -r prog; do
     [[ -n "${prog}" ]] || continue
     command -v "${prog}" >/dev/null 2>&1 || [[ -x "${prog}" ]] || die "Mango config launches ${prog}, which is not installed"
-done < <(sed -n -E 's/^(bind[a-z]*|mousebind|axisbind|gesturebind)=[^,]*,[^,]*,spawn,([^ ,]+).*/\2/p; s/^exec_once=([^ ]+).*/\1/p' "${cfg}" | sort -u)
+done < <(sed -n -E 's/^(bind[a-z]*|mousebind|axisbind|gesturebind)=[^,]*,[^,]*,spawn,([^ ,]+).*/\2/p; s/^exec_once=([^ ]+).*/\1/p' "${cfg}" "${share}"/mango/cfg/*.conf | sort -u)
 
 # Each user gets their own editable copies (existing files are kept).
 seed_user_file "${cfg}" .config/mango/config.conf
+# The parts config.conf pulls in (Perihelion Settings' Mango pages edit them).
+for part in "${share}"/mango/cfg/*.conf; do
+    seed_user_file "${part}" ".config/mango/cfg/$(basename "${part}")"
+done
 # simpbar draws text with one TTF file; point it at the installed
 # JetBrainsMono Nerd Font (simpbar's own default is Arch's path).
 # Regular weight by file name (fontconfig style matching picked ExtraBold).
