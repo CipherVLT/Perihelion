@@ -83,6 +83,16 @@ install -Dm755 "${src}/simpbar-shell/zig-out/bin/perihelion-shell" /usr/bin/peri
 install -Dm755 "${src}/perihelion-theme" /usr/bin/perihelion-theme
 install -Dm755 "${src}/perihelion-trash" /usr/bin/perihelion-trash  # the dock's trash
 install -Dm755 "${src}/perihelion-dock-pin" /usr/bin/perihelion-dock-pin  # the app drawer's "Pin to dock"
+# The app drawer (Quickshell): apps, wallpapers with previews (local, Bing,
+# Wallhaven), Bluetooth and the power menu. `appdrawer` toggles it over IPC
+# (the daemon starts at login); Quickshell reads configs only from
+# ~/.config/quickshell/<name>, so the QML is kept here and seeded per user.
+install -Dm755 "${src}/appdrawer" /usr/bin/appdrawer
+install -d /usr/share/perihelion/quickshell/appdrawer
+install -m644 "${src}"/quickshell/appdrawer/*.qml /usr/share/perihelion/quickshell/appdrawer/
+# Its wallpaper engine (list, Bing, Wallhaven); applying is handed on to
+# perihelion-wallpaper, Perihelion's one wallpaper owner.
+install -Dm755 "${src}/simpbar-wallpaper" /usr/bin/simpbar-wallpaper
 # The dock's trash icon: Numix's grey can when empty, its red one with files
 # (Numix ships in the image, see scripts/fetch-numix.sh); Perihelion's own
 # look-alikes when Numix isn't there.

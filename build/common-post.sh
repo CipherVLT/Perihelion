@@ -202,10 +202,17 @@ seed_user_file /usr/share/perihelion/qt6ct/qt6ct.conf .config/qt6ct/qt6ct.conf
 # Terminal cava: Catppuccin gradient, PulseAudio input
 seed_user_file /usr/share/perihelion/cava/config .config/cava/config
 
-# --- App drawer (nwg-drawer, Super+A) ---------------------------------------------
-[[ -x /usr/bin/nwg-drawer ]] || die "nwg-drawer is missing from the image (scripts/build-nwg-drawer.sh did not run)"
-chmod 0755 /usr/bin/nwg-drawer
-seed_user_file /usr/share/perihelion/nwg-drawer/drawer.css .config/nwg-drawer/drawer.css
+# --- App drawer (Super+A) ------------------------------------------------------------
+# Mango (Perihelion Shell) uses the Quickshell app drawer (build/install-
+# simpbar.sh); Hyprland and Niri keep nwg-drawer.
+if [[ "${PERIHELION_FLAVOR:?}" == mango ]]; then
+    rm -rf /usr/bin/nwg-drawer /usr/share/nwg-drawer /usr/share/licenses/nwg-drawer \
+        /usr/share/perihelion/nwg-drawer /usr/bin/perihelion-drawer
+else
+    [[ -x /usr/bin/nwg-drawer ]] || die "nwg-drawer is missing from the image (scripts/build-nwg-drawer.sh did not run)"
+    chmod 0755 /usr/bin/nwg-drawer
+    seed_user_file /usr/share/perihelion/nwg-drawer/drawer.css .config/nwg-drawer/drawer.css
+fi
 
 # --- fastfetch (Veyl OS layout) --------------------------------------------------
 chmod 0644 /etc/profile.d/perihelion-fastfetch.sh

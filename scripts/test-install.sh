@@ -166,17 +166,21 @@ wallpapers_imports_ok() { python3 -c 'import gi; gi.require_version("Gtk", "4.0"
 check wallpapers_imports_ok
 wallpapers_parses() { python3 -c 'import ast, sys; ast.parse(open(sys.argv[1]).read())' /usr/bin/perihelion-wallpapers; }
 check wallpapers_parses
-for helper in perihelion-power-menu perihelion-wallpaper-picker perihelion-drawer perihelion-keys perihelion-glass perihelion-wallpapers; do
+for helper in perihelion-power-menu perihelion-wallpaper-picker perihelion-keys perihelion-glass perihelion-wallpapers; do
     check test -x "/usr/bin/${helper}"
 done
 check rpm -q playerctl gtk-layer-shell
-check test -x /usr/bin/nwg-drawer
-check test -d /usr/share/nwg-drawer/desktop-directories
-drawer_links_ok() { ! ldd /usr/bin/nwg-drawer | grep -q 'not found'; }
-check drawer_links_ok
-check test -f /home/tester/.config/nwg-drawer/drawer.css
-drawer_flags_ok() { local h; h=$(nwg-drawer -h 2>&1 || true); for f in -term -fm -ovl -c -is -spacing; do grep -q -- "^ *${f}\b" <<<"${h}" || { echo "nwg-drawer has no ${f}"; return 1; }; done; }
-check drawer_flags_ok
+# nwg-drawer is the app drawer on Hyprland and Niri (Mango: Quickshell's, below)
+if [[ "${flavor}" != mango ]]; then
+    check test -x /usr/bin/perihelion-drawer
+    check test -x /usr/bin/nwg-drawer
+    check test -d /usr/share/nwg-drawer/desktop-directories
+    drawer_links_ok() { ! ldd /usr/bin/nwg-drawer | grep -q 'not found'; }
+    check drawer_links_ok
+    check test -f /home/tester/.config/nwg-drawer/drawer.css
+    drawer_flags_ok() { local h; h=$(nwg-drawer -h 2>&1 || true); for f in -term -fm -ovl -c -is -spacing; do grep -q -- "^ *${f}\b" <<<"${h}" || { echo "nwg-drawer has no ${f}"; return 1; }; done; }
+    check drawer_flags_ok
+fi
 check rpm -q flatpak
 flathub_configured() { flatpak remotes --system --columns=name | grep -qx flathub; }
 check flathub_configured
@@ -260,7 +264,7 @@ case "${flavor}" in
             HOME=/tmp/ttest XDG_CONFIG_HOME=/tmp/ttest/.config XDG_CACHE_HOME=/tmp/ttest/.cache \
                 perihelion-theme --force "${img}" &&
                 grep -q '"matrix_color"' /tmp/ttest/.config/simpbar/matugen.json &&
-                grep -q 'Written by perihelion-theme' /tmp/ttest/.config/nwg-drawer/drawer.css &&
+                grep -q '"popup_bg_color"' /tmp/ttest/.config/simpbar/matugen.json &&
                 grep -q '^# perihelion-theme' /tmp/ttest/.config/fuzzel/fuzzel.ini &&
                 grep -q '^focus_color=0x' /tmp/ttest/.config/mango/colors.conf &&
                 grep -q '^background ' /tmp/ttest/.config/kitty/perihelion-colors.conf
@@ -314,7 +318,18 @@ case "${flavor}" in
         check bash -n /usr/libexec/perihelion-system-settings
         check test -f /usr/share/icons/hicolor/scalable/apps/perihelion-trash.svg
         check test -f /usr/share/icons/hicolor/scalable/apps/perihelion-trash-full.svg
-        check grep -q 'Pin to dock' /usr/bin/nwg-drawer
+        # The app drawer is Quickshell's on Mango (nwg-drawer stays on the others)
+        check rpm -q quickshell
+        check grep -q 'quickshell' /usr/bin/appdrawer
+        check test -x /usr/bin/simpbar-wallpaper
+        check test ! -e /usr/bin/nwg-drawer
+        check test -f /home/tester/.config/quickshell/appdrawer/shell.qml
+        check test -f /home/tester/.config/quickshell/appdrawer/SmoothWheel.qml
+        check grep -q 'perihelion-dock-pin' /home/tester/.config/quickshell/appdrawer/Drawer.qml
+        check test -f /home/tester/.config/quickshell/appdrawer/favourites.json
+        check grep -rqx 'exec_once=appdrawer start' /home/tester/.config/mango/
+        check grep -rqx 'bind=SUPER,a,spawn,appdrawer' /home/tester/.config/mango/
+        check grep -qx '\~/Pictures/Wallpapers' /home/tester/.config/simpbar/wallpaper-dirs
         check grep -qx 'include /etc/xdg/kitty/kitty.conf' /home/tester/.config/kitty/kitty.conf
         check mango -p -c /home/tester/.config/mango/config.conf
         check test "$(stat -c %U /home/tester/.config/mango/config.conf)" = tester
