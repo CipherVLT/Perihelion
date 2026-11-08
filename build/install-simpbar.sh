@@ -81,6 +81,7 @@ install -Dm755 "${src}/simpbar-shell/zig-out/bin/perihelion-shell" /usr/bin/peri
 # Catppuccin theming: runs on every wallpaper change (perihelion-wallpaper)
 # and from Perihelion Settings. simpbar-matugen is the name the bar itself calls.
 install -Dm755 "${src}/perihelion-theme" /usr/bin/perihelion-theme
+install -Dm755 "${src}/perihelion-trash" /usr/bin/perihelion-trash  # the dock's recycle bin
 printf '#!/bin/sh\n# simpbar calls this after a wallpaper change; Perihelion themes with Catppuccin.\nexec perihelion-theme --force "$@"\n' > /usr/bin/simpbar-matugen
 chmod 755 /usr/bin/simpbar-matugen
 install -d /usr/share/perihelion
