@@ -96,19 +96,17 @@
     {
       "label": "Steam",
       "command": "steam"
-    },
-    {
-      "label": "Trash",
-      "command": "perihelion-trash",
-      "icon": "user-trash"
     }
   ],
   "dock": {
-    "enabled": true,
+    "enabled": false,
     "icon_size": 40,
-    "corner_radius": 18,
+    "corner_radius": 40,
     "border": true,
     "border_size": 1,
-    "colored_glass": true
+    "colored_glass": true,
+    "trash": true,
+    "window_gap": 0,
+    "shrink": true
   }
 }

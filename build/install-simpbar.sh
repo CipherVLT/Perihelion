@@ -81,7 +81,20 @@ install -Dm755 "${src}/simpbar-shell/zig-out/bin/perihelion-shell" /usr/bin/peri
 # Catppuccin theming: runs on every wallpaper change (perihelion-wallpaper)
 # and from Perihelion Settings. simpbar-matugen is the name the bar itself calls.
 install -Dm755 "${src}/perihelion-theme" /usr/bin/perihelion-theme
-install -Dm755 "${src}/perihelion-trash" /usr/bin/perihelion-trash  # the dock's recycle bin
+install -Dm755 "${src}/perihelion-trash" /usr/bin/perihelion-trash  # the dock's trash
+install -Dm755 "${src}/perihelion-dock-pin" /usr/bin/perihelion-dock-pin  # the app drawer's "Pin to dock"
+# The dock's trash icon: Numix's grey can when empty, its red one with files
+# (Numix ships in the image, see scripts/fetch-numix.sh); Perihelion's own
+# look-alikes when Numix isn't there.
+for v in "" "-full"; do
+    dst=/usr/share/icons/hicolor/scalable/apps/perihelion-trash${v}.svg
+    numix=/usr/share/icons/Numix/48/places/user-trash${v}.svg
+    if [[ -f "${numix}" ]]; then
+        install -Dm644 "${numix}" "${dst}"
+    else
+        install -Dm644 "${src}/assets/icons/perihelion-trash${v}.svg" "${dst}"
+    fi
+done
 printf '#!/bin/sh\n# simpbar calls this after a wallpaper change; Perihelion themes with Catppuccin.\nexec perihelion-theme --force "$@"\n' > /usr/bin/simpbar-matugen
 chmod 755 /usr/bin/simpbar-matugen
 install -d /usr/share/perihelion

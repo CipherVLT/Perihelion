@@ -163,7 +163,7 @@ jobs:
             system_files/common/usr/bin/nwg-drawer
             system_files/common/usr/share/nwg-drawer
             system_files/common/usr/share/licenses/nwg-drawer
-          key: nwg-drawer-fc45-${{ hashFiles('scripts/build-nwg-drawer.sh') }}
+          key: nwg-drawer-fc45-${{ hashFiles('scripts/build-nwg-drawer.sh', 'scripts/nwg-drawer-pin-to-dock.patch') }}
       - name: Build nwg-drawer
         if: steps.drawer-cache.outputs.cache-hit != 'true'
         run: scripts/build-nwg-drawer.sh

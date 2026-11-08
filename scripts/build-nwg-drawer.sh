@@ -26,6 +26,11 @@ git clone -q --depth 1 --branch "${version}" https://github.com/nwg-piotr/nwg-dr
 got=$(git -C "${work}/src" rev-parse HEAD)
 [[ "${got}" == "${commit}" ]] || { echo "nwg-drawer ${version} is ${got}, expected ${commit}" >&2; exit 1; }
 
+# Perihelion: right-click on an app offers "Pin to dock" (runs
+# perihelion-dock-pin) instead of pinning it to the drawer's favorites row.
+git -C "${work}/src" apply "${repo_dir}/scripts/nwg-drawer-pin-to-dock.patch"
+grep -q 'Pin to dock' "${work}/src/uicomponents.go"
+
 # go.sum pins every module; -mod=readonly refuses anything not listed there,
 # and GOTOOLCHAIN=local stops Go from downloading a different compiler.
 (
