@@ -225,7 +225,7 @@ It writes:
 | What | File |
 |---|---|
 | bar, visualizer wave, desktop widgets | `~/.config/simpbar/matugen.json` |
-| app drawer (Super+A) | `~/.config/nwg-drawer/drawer.css` |
+| app drawer (Super+A) | `~/.config/simpbar/matugen.json` (popup colors, read live by the Quickshell drawer) |
 | launcher and power menu (fuzzel) | `[colors]` in `~/.config/fuzzel/fuzzel.ini` |
 | Strata | `~/.config/strata/themes/tokyo-night.toml` |
 | window borders (Mango) | `~/.config/mango/colors.conf` |
