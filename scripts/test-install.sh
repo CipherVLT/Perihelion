@@ -314,6 +314,23 @@ case "${flavor}" in
         check dock_ok
         check test -x /usr/bin/perihelion-trash
         check test -x /usr/bin/perihelion-dock-pin
+        # The dock's on/off decision (taken before it touches Wayland, so it
+        # can run here): on must not leave, off must. A dock that quit at
+        # every start once shipped because nothing ran this.
+        dock_start() {  # $1 = true|false (dock.enabled); prints the dock's log
+            local h=/tmp/docktest
+            rm -rf "${h}"; mkdir -p "${h}/.config/simpbar"
+            python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); d["dock"]["enabled"]=(sys.argv[3]=="true"); d["appearance"]["position"]="top"; json.dump(d,open(sys.argv[2],"w"))' \
+                /usr/share/perihelion/simpbar/config.json "${h}/.config/simpbar/config.json" "$1"
+            env -u WAYLAND_DISPLAY HOME="${h}" XDG_CONFIG_HOME="${h}/.config" XDG_RUNTIME_DIR=/tmp SIMPBAR_DOCK=1 \
+                timeout 5 /usr/bin/perihelion-bar 2>&1 || true
+        }
+        dock_on_ok() { local out; out=$(dock_start true); [[ "${out}" != *"turned off in Perihelion Settings"* ]]; }
+        dock_off_ok() { local out; out=$(dock_start false); [[ "${out}" == *"turned off in Perihelion Settings"* ]]; }
+        check dock_on_ok
+        check dock_off_ok
+        # The bar's power button opens the fuzzel power menu, not the drawer.
+        check grep -q 'perihelion-power-menu' /usr/bin/perihelion-bar
         check test -x /usr/libexec/perihelion-system-settings
         check bash -n /usr/libexec/perihelion-system-settings
         check test -f /usr/share/icons/hicolor/scalable/apps/perihelion-trash.svg
