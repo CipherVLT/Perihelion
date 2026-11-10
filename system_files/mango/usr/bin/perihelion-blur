@@ -17,9 +17,10 @@ esac
 set_opt() { mmsg dispatch "setoption,$1,$2" >/dev/null; }
 case "${next}" in
     off) set_opt blur 0 ;;
-    soft) set_opt blur 1; set_opt blur_params_num_passes 1; set_opt blur_params_radius 4 ;;
-    normal) set_opt blur 1; set_opt blur_params_num_passes 2; set_opt blur_params_radius 7 ;;
-    strong) set_opt blur 1; set_opt blur_params_num_passes 3; set_opt blur_params_radius 12 ;;
+    # More passes, small offsets: smooth at every strength (big offsets warp).
+    soft) set_opt blur 1; set_opt blur_params_num_passes 2; set_opt blur_params_radius 3 ;;
+    normal) set_opt blur 1; set_opt blur_params_num_passes 3; set_opt blur_params_radius 4 ;;
+    strong) set_opt blur 1; set_opt blur_params_num_passes 4; set_opt blur_params_radius 4 ;;
 esac
 echo "${next}" > "${state}"
 if command -v notify-send >/dev/null; then
