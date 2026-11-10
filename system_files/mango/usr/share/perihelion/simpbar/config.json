@@ -110,5 +110,8 @@
     "shrink": true,
     "app_drawer": true,
     "media": true
+  },
+  "bar": {
+    "enabled": true
   }
 }

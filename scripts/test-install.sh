@@ -308,7 +308,7 @@ case "${flavor}" in
         check grep -qx 'globinclude perihelion-colors.conf' /home/tester/.config/kitty/kitty.conf
         # Bar on top, pinned apps in their own dock at the bottom (app drawer first)
         dock_ok() {
-            python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); a=d["appearance"]; m=d["modules"]; sys.exit(0 if a["position"]=="top" and not m["center"] and m["left"][0]["kind"]=="distro" and not any(b["command"] in ("perihelion-trash","appdrawer") for b in d["launchers"]) and not d["dock"]["enabled"] and d["dock"]["trash"] and d["dock"]["app_drawer"] and d["dock"]["media"] else 1)' /home/tester/.config/simpbar/config.json &&
+            python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); a=d["appearance"]; m=d["modules"]; sys.exit(0 if a["position"]=="top" and not m["center"] and m["left"][0]["kind"]=="distro" and not any(b["command"] in ("perihelion-trash","appdrawer") for b in d["launchers"]) and not d["dock"]["enabled"] and d["dock"]["trash"] and d["dock"]["app_drawer"] and d["dock"]["media"] and d["bar"]["enabled"] and not any(e["kind"] in ("launchers","cpu","ram","disk","cpu_temp","pacman") for g in m.values() for e in g) else 1)' /home/tester/.config/simpbar/config.json &&
                 grep -q 'SIMPBAR_DOCK=1 setsid -f perihelion-bar' /usr/bin/perihelion-bar-start
         }
         check dock_ok
