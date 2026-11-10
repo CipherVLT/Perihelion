@@ -36,6 +36,10 @@
   "modules": {
     "left": [
       {
+        "kind": "distro",
+        "enabled": true
+      },
+      {
         "kind": "workspaces"
       },
       {
@@ -78,10 +82,6 @@
   },
   "launchers": [
     {
-      "label": "Apps",
-      "command": "appdrawer"
-    },
-    {
       "label": "Browser",
       "command": "firefox"
     },
@@ -107,6 +107,8 @@
     "colored_glass": true,
     "trash": true,
     "window_gap": 0,
-    "shrink": true
+    "shrink": true,
+    "app_drawer": true,
+    "media": true
   }
 }
