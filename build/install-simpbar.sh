@@ -81,6 +81,13 @@ install -Dm755 "${src}/simpbar-shell/zig-out/bin/perihelion-shell" /usr/bin/peri
 # Catppuccin theming: runs on every wallpaper change (perihelion-wallpaper)
 # and from Perihelion Settings. simpbar-matugen is the name the bar itself calls.
 install -Dm755 "${src}/perihelion-theme" /usr/bin/perihelion-theme
+# Its palettes (Event Horizon's colour themes and more, one JSON file each,
+# with NOTICE.md crediting them); perihelion-theme looks in
+# /usr/share/perihelion/palettes, then ~/.local/share/perihelion/palettes.
+rm -rf /usr/share/perihelion/palettes
+install -d /usr/share/perihelion/palettes
+cp -r "${src}/theme/palettes/." /usr/share/perihelion/palettes/
+find /usr/share/perihelion/palettes -type d -exec chmod 755 {} + -o -type f -exec chmod 644 {} +
 install -Dm755 "${src}/perihelion-trash" /usr/bin/perihelion-trash  # the dock's trash
 install -Dm755 "${src}/perihelion-dock-pin" /usr/bin/perihelion-dock-pin  # the app drawer's "Pin to dock"
 # The app drawer (Quickshell): apps, wallpapers with previews (local, Bing,

@@ -270,6 +270,16 @@ case "${flavor}" in
                 grep -q '^background ' /tmp/ttest/.config/kitty/perihelion-colors.conf
         }
         check theme_ok
+        # Shipped palettes (Event Horizon's themes) are installed and usable
+        check test -f /usr/share/perihelion/palettes/NOTICE.md
+        palettes_ok() {
+            local n
+            n=$(perihelion-theme --list-palettes | wc -l)
+            (( n > 250 )) &&
+                HOME=/tmp/ttest XDG_CONFIG_HOME=/tmp/ttest/.config XDG_CACHE_HOME=/tmp/ttest/.cache \
+                    perihelion-theme --force --palette google/tokyo-night --color '#335577' | grep -q 'Tokyo Night'
+        }
+        check palettes_ok
         # Window glass: frosted GTK 3/4 styles from the same run, imported by
         # the gtk.css stub, corners matching Mango's border_radius
         check grep -q -- '--window-bg-color: rgba(' /tmp/ttest/.config/gtk-4.0/perihelion-glass.css

@@ -197,6 +197,11 @@ Perihelion's fork (with his blessing) of [simpbar](https://github.com/jaytheoutp
 by **jaytheoutpatient**, a native Zig/Wayland bar for Hyprland and MangoWM.
 The Catppuccin presets come from **Mirrez**'s simpbar-catppuccin-matugen
 package; the palette is [Catppuccin](https://catppuccin.com) (MIT).
+The other palettes in Perihelion Settings (about 270, searchable) are
+[Event Horizon](https://github.com/Event-Horizon-desktop-environment)'s colour
+themes (GPL-3.0), imported as they are; credits for each upstream scheme are in
+`/usr/share/perihelion/palettes/NOTICE.md`. Your own palette files go in
+`~/.local/share/perihelion/palettes/`.
 On Mango the Super+A app drawer is Perihelion Shell's Quickshell drawer
 (from simpbar by **jaytheoutpatient**; right-click an app to pin it to the
 dock). Hyprland and Niri use [nwg-drawer](https://github.com/nwg-piotr/nwg-drawer)
