@@ -69,10 +69,17 @@ Qt apps follow qt6ct (Catppuccin Macchiato, Numix-Circle, DejaVu): run
 `qt6ct` to change them.
 
 **Glass.** kitty is see-through by default (Ctrl+Shift+A then M / L for
-more or less). Super+G makes other windows glass too. On Mango it applies to
-windows opened after you press it, because Mango can't change an open
-window's opacity. The Honkers Railway Launcher is always glass; add your
-own apps with a window rule (examples in each compositor's config).
+more or less). On Mango, GTK apps (Files, Settings, dialogs, file pickers)
+are frosted glass by default, Event Horizon style: perihelion-theme makes
+only their backgrounds see-through, tinted with the wallpaper theme, so text
+stays sharp, and Mango blurs the wallpaper behind them (4 soft passes, a
+touch darker and more saturated, cached once per wallpaper). Menus and
+popovers stay nearly solid, since Mango doesn't blur behind popups. Turn it
+off with Super+G or Perihelion Settings > Window glass. A `gtk.css` of your
+own is left alone; put `@import url("perihelion-glass.css");` at its top to
+keep the glass. On Hyprland and Niri, Super+G makes windows see-through.
+The Honkers Railway Launcher is always glass; add your own apps with a
+window rule (examples in each compositor's config).
 
 ## Mango: first login
 
@@ -96,7 +103,7 @@ Pick **Mango** on the login screen. Super is the Windows key.
 | Super+Shift+Q | Power menu (also the power button on the bar) |
 | Ctrl+drag / Alt+right-click | Move / remove a desktop widget (Mango; add them in Perihelion Settings) |
 | Super+Shift+G | Blur strength (Mango): normal, strong, soft, off |
-| Super+G | Glass mode: see-through windows (Hyprland: the focused window; Niri: every window; Mango: windows you open next) |
+| Super+G | Glass mode (Mango: frosted GTK windows on/off; Hyprland: the focused window; Niri: every window) |
 | Super+H | **Every keybind, searchable** |
 | Super+Shift+E | Log out |
 

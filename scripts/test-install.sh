@@ -270,6 +270,15 @@ case "${flavor}" in
                 grep -q '^background ' /tmp/ttest/.config/kitty/perihelion-colors.conf
         }
         check theme_ok
+        # Window glass: frosted GTK 3/4 styles from the same run, imported by
+        # the gtk.css stub, corners matching Mango's border_radius
+        check grep -q -- '--window-bg-color: rgba(' /tmp/ttest/.config/gtk-4.0/perihelion-glass.css
+        check grep -q 'window.background' /tmp/ttest/.config/gtk-3.0/perihelion-glass.css
+        check grep -qx '@import url("perihelion-glass.css");' /tmp/ttest/.config/gtk-4.0/gtk.css
+        check grep -rqx 'border_radius=12' /home/tester/.config/mango/
+        check grep -rqx 'blur_params_num_passes=4' /home/tester/.config/mango/
+        check grep -rqx 'blur_params_contrast=1.15' /home/tester/.config/mango/
+        check grep -q 'perihelion-theme --force --glass' /usr/bin/perihelion-glass
         check command -v matugen
         material_ok() {
             local img=/usr/share/icons/hicolor/scalable/apps/perihelion-settings.svg
