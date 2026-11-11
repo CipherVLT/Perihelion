@@ -274,8 +274,8 @@ case "${flavor}" in
         check test -f /usr/share/perihelion/palettes/NOTICE.md
         palettes_ok() {
             local n
-            n=$(perihelion-theme --list-palettes | wc -l)
-            (( n > 250 )) &&
+            n=$(perihelion-theme --list-palettes --all | wc -l)
+            (( n > 250 )) && ! perihelion-theme --list-palettes --all | grep -qi monokai &&
                 HOME=/tmp/ttest XDG_CONFIG_HOME=/tmp/ttest/.config XDG_CACHE_HOME=/tmp/ttest/.cache \
                     perihelion-theme --force --palette google/tokyo-night --color '#335577' | grep -q 'Tokyo Night'
         }
