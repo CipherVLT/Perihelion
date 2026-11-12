@@ -348,6 +348,23 @@ case "${flavor}" in
         dock_off_ok() { local out; out=$(dock_start false); [[ "${out}" == *"turned off in Perihelion Settings"* ]]; }
         check dock_on_ok
         check dock_off_ok
+        # One dock, ever: with another dock holding dock.lock, a second one
+        # leaves instead of stacking up (three docks once shipped).
+        singleton_ok() {
+            local h=/tmp/locktest out
+            rm -rf "${h}"; mkdir -p "${h}/.config/simpbar"
+            python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); d["dock"]["enabled"]=True; d["appearance"]["position"]="top"; json.dump(d,open(sys.argv[2],"w"))' \
+                /usr/share/perihelion/simpbar/config.json "${h}/.config/simpbar/config.json"
+            ( flock -x 9; sleep 6 ) 9>"${h}/.config/simpbar/dock.lock" &
+            sleep 0.5
+            out=$(env -u WAYLAND_DISPLAY HOME="${h}" XDG_CONFIG_HOME="${h}/.config" XDG_RUNTIME_DIR=/tmp SIMPBAR_DOCK=1 \
+                timeout 8 /usr/bin/perihelion-bar 2>&1 || true)
+            wait
+            [[ "${out}" == *"dock: already running"* ]]
+        }
+        check singleton_ok
+        # The start script never turns the bar into a second dock.
+        check grep -q 'exec env -u SIMPBAR_DOCK perihelion-bar' /usr/bin/perihelion-bar-start
         # The bar's power button opens the fuzzel power menu, not the drawer.
         check grep -q 'perihelion-power-menu' /usr/bin/perihelion-bar
         check test -x /usr/libexec/perihelion-system-settings

@@ -51,7 +51,8 @@ report() {
         sb="${XDG_CONFIG_HOME:-${HOME}/.config}/simpbar"
         running_n() { pgrep -fc "^(/usr/bin/)?$1( |\$)" 2>/dev/null || true; }
         bars=$(running_n perihelion-bar)
-        if (( bars >= 2 )); then ok "perihelion-bar running (bar and dock)"
+        if (( bars > 2 )); then bad "${bars} perihelion-bar copies running (duplicate bar or dock): Super+Shift+D"
+        elif (( bars == 2 )); then ok "perihelion-bar running (bar and dock)"
         elif (( bars == 1 )); then bad "only one perihelion-bar running (bar or dock missing): Super+Shift+D"
         else bad "perihelion-bar not running: Super+Shift+D"; fi
         if (( $(running_n perihelion-shell) > 0 )); then ok "perihelion-shell running"; else bad "perihelion-shell not running"; fi
