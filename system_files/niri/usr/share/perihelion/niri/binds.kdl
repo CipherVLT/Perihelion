@@ -9,7 +9,6 @@ binds {
     Mod+B hotkey-overlay-title="Browser: Firefox" { spawn "firefox"; }
     Mod+D hotkey-overlay-title="App launcher: fuzzel" { spawn "fuzzel"; }
     Mod+A hotkey-overlay-title="App drawer" { spawn "perihelion-drawer"; }
-    Mod+S hotkey-overlay-title="Steam" { spawn "steam"; }
     Mod+L hotkey-overlay-title="Lock screen" { spawn "loginctl" "lock-session"; }
     Mod+Shift+E hotkey-overlay-title="Log out" { quit; }
     Mod+M hotkey-overlay-title="Log out" { quit; }

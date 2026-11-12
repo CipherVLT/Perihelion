@@ -92,10 +92,6 @@
     {
       "label": "Term",
       "command": "kitty"
-    },
-    {
-      "label": "Steam",
-      "command": "steam"
     }
   ],
   "dock": {

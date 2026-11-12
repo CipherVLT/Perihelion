@@ -120,6 +120,24 @@ gstreamer1-plugins-base
 gvfs
 bubblewrap
 
+# --- Building from source ------------------------------------------------------
+# Enough to `git clone` a project and run its ./build.sh, make, CMake or Meson
+# build: git, C and C++ compilers, the common build systems and pkg-config
+# (how builds find libraries). A project's own -devel libraries still come
+# from `sudo dnf install`, as its README lists them.
+git
+gcc
+gcc-c++
+make
+cmake
+meson
+ninja-build
+pkgconf-pkg-config
+autoconf
+automake
+libtool
+patch
+
 # --- Fonts -----------------------------------------------------------------------
 adwaita-icon-theme
 # Look: Bibata cursor (Terra), DejaVu Sans Mono (terminal). Numix-Circle

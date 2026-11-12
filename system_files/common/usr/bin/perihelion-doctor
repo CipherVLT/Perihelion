@@ -17,7 +17,7 @@ report() {
     printf 'session %s (%s)\n' "${XDG_CURRENT_DESKTOP:-none}" "${XDG_SESSION_TYPE:-none}"
 
     section "Key packages"
-    rpm -q mangowm hyprland niri swaybg fuzzel kitty firefox steam gamescope \
+    rpm -q mangowm hyprland niri swaybg fuzzel kitty firefox gamescope git gcc \
         sddm pipewire wireplumber 2>/dev/null | grep -v 'is not installed'
     command -v strata >/dev/null && ok "strata $(strata --version 2>/dev/null | head -n1)"
     [[ -f /usr/share/perihelion/simpbar.ref ]] && ok "Perihelion Shell $(cut -c1-7 /usr/share/perihelion/simpbar.ref) (built from source)"

@@ -1,11 +1,8 @@
-# Gaming, in every flavor: Steam and gamescope only (both from Terra).
-# Steam runs 32-bit games through these i686 graphics drivers; with weak
-# dependencies off they must be listed, or Steam starts without a GPU driver.
-steam
+# Gaming, in every flavor: gamescope (Terra). Steam is not preinstalled:
+# `sudo dnf install steam` (Terra) or Flathub's com.valvesoftware.Steam,
+# either of which brings the 32-bit graphics drivers it needs. Wine is WoW64
+# (packages/base.txt), so nothing here needs 32-bit libraries.
 gamescope
-vulkan-loader.i686
-mesa-dri-drivers.i686
-mesa-vulkan-drivers.i686
 # Per-game helpers, off until a game asks: gamemode (gamemoderun %command%)
 # and MangoHud's overlay (mangohud %command%)
 gamemode

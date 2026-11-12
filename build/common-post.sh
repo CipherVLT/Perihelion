@@ -224,8 +224,8 @@ ff_cfg=/usr/share/perihelion/fastfetch/config.jsonc
 [[ $(grep -c '"keyColor": "31"' "${ff_cfg}") -eq 4 ]] || die "fastfetch config lost Veyl OS's section colors"
 seed_user_file "${ff_cfg}" .config/fastfetch/config.jsonc
 
-# --- Gaming ------------------------------------------------------------------------
-for tool in steam gamescope; do
+# --- Gaming and building from source ----------------------------------------------
+for tool in gamescope git gcc g++ make cmake meson ninja pkg-config; do
     command -v "${tool}" >/dev/null || die "missing ${tool}"
 done
 

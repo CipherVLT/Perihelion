@@ -10,7 +10,8 @@ A minimal Fedora for gamers and creators, in three tiling flavors:
 
 Every flavor starts from Fedora's `@core` and adds only what a desktop needs
 to work: network, Bluetooth, firewall, PipeWire audio, Mesa/Vulkan, a login
-screen, kitty, Firefox, Strata, Steam and gamescope. No office suite, no
+screen, kitty, Firefox, Strata, gamescope and the tools to build software
+from source. No office suite, no
 GNOME or KDE app collection.
 
 **Only listed packages.** The kickstart installs with `--exclude-weakdeps`,
@@ -27,12 +28,15 @@ on real hardware yet. Mango is the first flavor to test.
 - **Login:** SDDM on a Wayland greeter, Pixie theme
 - **Terminal:** kitty. **Browser:** Firefox. **Launcher:** fuzzel
 - **Files:** [Strata](https://github.com/lgse/strata), wired in as the file manager everywhere:
-  folders opened from any app, "Show in folder" / "Open containing folder" in Firefox and
-  Steam (`org.freedesktop.FileManager1`), Open/Save dialogs (the XDG FileChooser portal),
+  folders opened from any app, "Show in folder" / "Open containing folder" in Firefox
+  (`org.freedesktop.FileManager1`), Open/Save dialogs (the XDG FileChooser portal),
   and the Trash (`trash:///`, via gvfs)
-- **Gaming:** Steam and gamescope (plus the 32-bit Mesa/Vulkan drivers Steam needs),
-  Wine 11.21 (Kron4ek's Staging WoW64 build, NTSYNC on) with winetricks, gamemode
-  and MangoHud
+- **Building from source:** git, gcc/g++, make, CMake, Meson/Ninja, pkg-config,
+  autotools and patch, so `git clone` + `./build.sh` (or make/cmake/meson) works on a
+  fresh install. A project's own `-devel` libraries come from `sudo dnf install`
+- **Gaming:** gamescope, Wine 11.21 (Kron4ek's Staging WoW64 build, NTSYNC on) with winetricks, gamemode
+  and MangoHud. Steam isn't preinstalled: `sudo dnf install steam` (Terra) or
+  `flatpak install flathub com.valvesoftware.Steam`
 - **Repos:** Fedora and Terra, plus Flatpak with Flathub already added (`flatpak install flathub <app>`). No RPM Fusion
 - Fedora's defaults kept: SELinux enforcing, firewalld on
 
@@ -54,7 +58,7 @@ Run `perihelion-doctor --save` and share `~/perihelion-doctor.txt`.
 
 All three flavors share your Veyl OS keybind set: Super+Return terminal,
 Super+D launcher, Super+A app drawer, Super+E files, Super+B browser,
-Super+S Steam, Super+O overview, Super+Shift+W wallpaper, Super+Shift+Q
+Super+O overview, Super+Shift+W wallpaper, Super+Shift+Q
 power menu, Super+H every keybind. Hyprland and Niri also have Super+V
 clipboard history and Super+T settings (Event Horizon).
 
@@ -89,7 +93,7 @@ Pick **Mango** on the login screen. Super is the Windows key.
 |---|---|
 | Super+Return | Terminal (kitty) |
 | Super+D | App launcher (fuzzel) |
-| Super+E / Super+B / Super+S | Files (Strata) / Firefox / Steam |
+| Super+E / Super+B | Files (Strata) / Firefox |
 | Super+Q | Close window |
 | Super+arrows | Move focus |
 | Super+Shift+arrows | Resize (or drag the gap between windows, no key held) |
@@ -152,7 +156,7 @@ cat /usr/share/perihelion/release   # PERIHELION_COMMIT=a5f31af
 ```
 
 The recipe (config, keybinds, package lists) is fixed when the ISO is built.
-The packages themselves (Mango, Firefox, Steam, ...) download during
+The packages themselves (Mango, Firefox, gamescope, ...) download during
 installation, so they are always the newest versions in Fedora and Terra.
 
 These builds have no wallpapers (plain login background). Pull requests run

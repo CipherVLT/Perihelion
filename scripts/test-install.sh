@@ -101,9 +101,25 @@ while read -r module; do
 done < <(grep -hE '^[[:space:]]*[a-z]' /etc/pam.d/* | grep -oE 'pam_[a-z0-9_]+\.so' | sort -u)
 has_en_utf8_locale() { locale -a 2>/dev/null | grep -qi '^en_US\.utf8$'; }
 check has_en_utf8_locale
-# 64-bit and 32-bit graphics drivers (Steam needs both)
+# 64-bit graphics drivers; Steam (and its 32-bit drivers) is not preinstalled
 check rpm -q mesa-dri-drivers.x86_64 mesa-vulkan-drivers.x86_64 vulkan-loader.x86_64
-check rpm -q mesa-dri-drivers.i686 mesa-vulkan-drivers.i686 vulkan-loader.i686
+check_absent() { ! rpm -q "$1" >/dev/null 2>&1; }
+check check_absent steam
+# Building from source: clone a repo and compile and link a C and C++ program
+check rpm -q git gcc gcc-c++ make cmake meson ninja-build pkgconf-pkg-config autoconf automake libtool patch
+build_ok() {
+    local d
+    d=$(mktemp -d)
+    printf '#include <stdio.h>\nint main(void){puts("ok");return 0;}\n' > "${d}/t.c"
+    printf '#include <iostream>\nint main(){std::cout<<"ok\\n";}\n' > "${d}/t.cpp"
+    printf 'all:\n\tgcc -o t t.c\n\tg++ -o tpp t.cpp\n' > "${d}/Makefile"
+    git init -q "${d}/repo" && git clone -q "${d}/repo" "${d}/clone" 2>/dev/null &&
+        make -s -C "${d}" && [[ "$("${d}/t")" == ok && "$("${d}/tpp")" == ok ]]
+    local rc=$?
+    rm -rf "${d}"
+    return "${rc}"
+}
+check build_ok
 check rpm -q dconf cracklib-dicts nano
 check rpm -q fastfetch lm_sensors nethogs
 check grep -q '"format": "Perihelion Linux {arch}"' /usr/share/perihelion/fastfetch/config.jsonc
