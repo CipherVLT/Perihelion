@@ -401,18 +401,18 @@ case "${flavor}" in
         check grep -qx '\~/Pictures/Wallpapers' /home/tester/.config/simpbar/wallpaper-dirs
         check grep -qx 'include /etc/xdg/kitty/kitty.conf' /home/tester/.config/kitty/kitty.conf
         check mango -p -c /home/tester/.config/mango/config.conf
-        # Perihelion Settings' Mango pages: every key a row can write is one
-        # this Mango knows (its name is in the binary) and the whole set
-        # parses, so no switch there can break the config.
+        # Perihelion Settings' Mango pages: every key a row can write, with
+        # its default, parses with this Mango (which rejects a key it doesn't
+        # know: the made-up one must fail), so no switch can break the config.
         settings_keys_ok() {
-            local f=/tmp/settings-mango-keys.conf key
-            perihelion-settings --mango-keys > "${f}" || return 1
+            local f=/tmp/settings-mango-keys.conf
+            perihelion-settings --mango-keys > "${f}" 2>/dev/null || return 1
             (( $(wc -l < "${f}") > 150 )) || { echo "only $(wc -l < "${f}") keys"; return 1; }
-            strings -n 3 "$(command -v mango)" | sort -u > /tmp/mango-strings
-            while IFS='=' read -r key _; do
-                grep -qxF -- "${key}" /tmp/mango-strings || { echo "Mango has no option '${key}'"; return 1; }
-            done < "${f}"
-            mango -p -c "${f}"
+            mango -p -c "${f}" || return 1
+            printf 'perihelion_not_a_mango_key=1\n' > /tmp/bogus-mango.conf
+            if mango -p -c /tmp/bogus-mango.conf >/dev/null 2>&1; then
+                echo "mango -p accepted an unknown key: this check proves nothing"; return 1
+            fi
         }
         check settings_keys_ok
         # X11 apps (Vital and other X11-only software): Mango is built with
