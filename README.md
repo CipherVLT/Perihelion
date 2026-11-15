@@ -196,6 +196,17 @@ To read the final kickstart without building: `scripts/render-ks.sh mango`.
 
 ## Credits
 
+Perihelion Settings (Mango flavor) has three sections. **Bar**: appearance,
+modules and shortcuts. **Mango**: the compositor's own settings in Event
+Horizon's order (General, Decoration, Keyboards, Mouse & Touchpad, Binds,
+Layouts, Animations, Misc, Render, Cursor, Group, XWayland, OpenGL, Quirks,
+then Monitors, rules, Autostart and Environment). X11-only apps run through
+XWayland, which Mango always has on; OpenGL holds the NVIDIA switches
+(anti-flicker is explicit sync, plus a software cursor). **System**: Network
+(Wi-Fi status and VPN: connect, disconnect, import a WireGuard `.conf` or
+OpenVPN `.ovpn`, live throughput), Boot and Login.
+`perihelion-settings --page XWayland` opens on a page.
+
 The Mango flavor's bar and desktop are [Perihelion Shell](https://github.com/CipherVLT/perihelion-shell) (GPL-3.0),
 Perihelion's fork (with his blessing) of [simpbar](https://github.com/jaytheoutpatient/simpbar)
 by **jaytheoutpatient**, a native Zig/Wayland bar for Hyprland and MangoWM.

@@ -1,0 +1,37 @@
+#!/bin/sh
+# Perihelion: remembers when each VPN came up, so Perihelion Settings >
+# Network can show "Connected for 2 h 14 min". NetworkManager runs this for
+# every connection change; it keeps one small file per connected VPN in
+# /run/perihelion/vpn/<connection uuid> holding the Unix time it connected
+# (/run is emptied at every boot).
+#
+#   $1  interface      $2  action
+#   CONNECTION_UUID    the connection the action is about
+iface=$1
+action=$2
+uuid=${CONNECTION_UUID:-}
+dir=/run/perihelion/vpn
+
+# A UUID and nothing else ever becomes a file name.
+case "${uuid}" in
+    "" | *[!0-9a-fA-F-]*) exit 0 ;;
+esac
+
+mark() {
+    mkdir -p "${dir}" && chmod 755 /run/perihelion "${dir}"
+    date +%s > "${dir}/${uuid}" && chmod 644 "${dir}/${uuid}"
+}
+
+case "${action}" in
+    vpn-up)
+        # OpenVPN and the other plugin VPNs.
+        mark ;;
+    up)
+        # WireGuard is a device of its own and comes up as a plain "up".
+        if grep -qs '^DEVTYPE=wireguard$' "/sys/class/net/${iface}/uevent"; then
+            mark
+        fi ;;
+    vpn-down | down)
+        rm -f "${dir}/${uuid}" ;;
+esac
+exit 0

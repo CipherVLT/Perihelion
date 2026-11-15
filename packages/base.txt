@@ -47,6 +47,9 @@ NetworkManager-wifi
 NetworkManager-bluetooth
 # Wi-Fi from a terminal (nmtui); Event Horizon's network card opens it too
 NetworkManager-tui
+# OpenVPN profiles (.ovpn) for Perihelion Settings > Network > Add VPN;
+# WireGuard needs nothing extra, NetworkManager has it built in
+NetworkManager-openvpn
 firewalld
 bluez
 

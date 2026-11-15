@@ -401,6 +401,36 @@ case "${flavor}" in
         check grep -qx '\~/Pictures/Wallpapers' /home/tester/.config/simpbar/wallpaper-dirs
         check grep -qx 'include /etc/xdg/kitty/kitty.conf' /home/tester/.config/kitty/kitty.conf
         check mango -p -c /home/tester/.config/mango/config.conf
+        # Perihelion Settings' Mango pages: every key a row can write is one
+        # this Mango knows (its name is in the binary) and the whole set
+        # parses, so no switch there can break the config.
+        settings_keys_ok() {
+            local f=/tmp/settings-mango-keys.conf key
+            perihelion-settings --mango-keys > "${f}" || return 1
+            (( $(wc -l < "${f}") > 150 )) || { echo "only $(wc -l < "${f}") keys"; return 1; }
+            strings -n 3 "$(command -v mango)" | sort -u > /tmp/mango-strings
+            while IFS='=' read -r key _; do
+                grep -qxF -- "${key}" /tmp/mango-strings || { echo "Mango has no option '${key}'"; return 1; }
+            done < "${f}"
+            mango -p -c "${f}"
+        }
+        check settings_keys_ok
+        # X11 apps (Vital and other X11-only software): Mango is built with
+        # XWayland and the X server it starts is installed.
+        check rpm -q xorg-x11-server-Xwayland
+        xwayland_ok() { ldd "$(command -v mango)" > /tmp/mango-ldd && grep -q 'libxcb-icccm' /tmp/mango-ldd; }
+        check xwayland_ok
+        # VPN: OpenVPN import, and the script that records when a VPN came up
+        check rpm -q NetworkManager-openvpn
+        check test -x /usr/lib/NetworkManager/dispatcher.d/90-perihelion-vpn
+        vpn_since_ok() {
+            local u=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
+            CONNECTION_UUID=${u} /usr/lib/NetworkManager/dispatcher.d/90-perihelion-vpn tun0 vpn-up &&
+                [[ $(cat /run/perihelion/vpn/${u}) -gt 1700000000 ]] &&
+                CONNECTION_UUID=${u} /usr/lib/NetworkManager/dispatcher.d/90-perihelion-vpn tun0 vpn-down &&
+                [[ ! -e /run/perihelion/vpn/${u} ]]
+        }
+        check vpn_since_ok
         check test "$(stat -c %U /home/tester/.config/mango/config.conf)" = tester
         check test -f /etc/xdg/xdg-desktop-portal/mango-portals.conf
         ;;
