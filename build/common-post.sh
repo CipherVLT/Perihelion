@@ -204,7 +204,7 @@ seed_user_file /usr/share/perihelion/cava/config .config/cava/config
 
 # --- App drawer (Super+A) ------------------------------------------------------------
 # Mango (Perihelion Shell) uses the Quickshell app drawer (build/install-
-# simpbar.sh); Hyprland and Niri keep nwg-drawer.
+# perihelionbar.sh); Hyprland and Niri keep nwg-drawer.
 if [[ "${PERIHELION_FLAVOR:?}" == mango ]]; then
     rm -rf /usr/bin/nwg-drawer /usr/share/nwg-drawer /usr/share/licenses/nwg-drawer \
         /usr/share/perihelion/nwg-drawer /usr/bin/perihelion-drawer

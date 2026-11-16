@@ -235,25 +235,25 @@ case "${flavor}" in
         check test -f /home/tester/.config/mango/cfg/keybinds.conf
         check grep -qx 'source=./cfg/appearance.conf' /home/tester/.config/mango/config.conf
         check test -x /usr/bin/perihelion-bar
-        check test -f /home/tester/.config/simpbar/config.json
-        check test -f "$(sed -n 's/.*"font_path": "\([^"]*\)".*/\1/p' /home/tester/.config/simpbar/config.json)"
-        check grep -q '/JetBrainsMonoNerdFont-Regular.ttf"' /home/tester/.config/simpbar/config.json
+        check test -f /home/tester/.config/perihelionbar/config.json
+        check test -f "$(sed -n 's/.*"font_path": "\([^"]*\)".*/\1/p' /home/tester/.config/perihelionbar/config.json)"
+        check grep -q '/JetBrainsMonoNerdFont-Regular.ttf"' /home/tester/.config/perihelionbar/config.json
         check ldd /usr/bin/perihelion-bar
         check test -x /usr/bin/perihelion-power-menu
         check test -x /usr/bin/appdrawer
         check test -x /usr/bin/perihelion-shell
         check ldd /usr/bin/perihelion-shell
-        check test -f /home/tester/.config/simpbar/shell.json
-        check test -f /home/tester/.config/simpbar/matugen.json
+        check test -f /home/tester/.config/perihelionbar/shell.json
+        check test -f /home/tester/.config/perihelionbar/matugen.json
         # Minimal desktop: only weather and calendar on, see-through cards
-        minimal_widgets_ok() { ! grep -qxE 'weather|calendar' /home/tester/.config/simpbar/widgets-disabled && [[ $(grep -c . /home/tester/.config/simpbar/widgets-disabled) -eq 6 ]]; }
+        minimal_widgets_ok() { ! grep -qxE 'weather|calendar' /home/tester/.config/perihelionbar/widgets-disabled && [[ $(grep -c . /home/tester/.config/perihelionbar/widgets-disabled) -eq 6 ]]; }
         check minimal_widgets_ok
-        check grep -q '"card_bg_opacity": 25' /home/tester/.config/simpbar/shell.json
+        check grep -q '"card_bg_opacity": 25' /home/tester/.config/perihelionbar/shell.json
         check test -x /usr/bin/perihelion-settings
         check ldd /usr/bin/perihelion-settings
         check grep -qx 'Name=Perihelion Settings' /usr/share/applications/perihelion-settings.desktop
         check grep -aq 'perihelion-settings' /usr/share/icons/hicolor/icon-theme.cache
-        check test ! -e /usr/bin/simpbar
+        check test ! -e /usr/bin/perihelionbar
         check rpm -q gtk4 libadwaita
         check grep -rqx 'bind=ALT,w,spawn,perihelion-shell overview toggle' /home/tester/.config/mango/
         check grep -rqx 'exec_once=perihelion-shell' /home/tester/.config/mango/
@@ -262,7 +262,7 @@ case "${flavor}" in
         check bash -n /usr/bin/perihelion-bar-start
         check bash -n /usr/bin/perihelion-weather
         # Live weather (Open-Meteo); reported, not fatal, so an outage can't block a build
-        mkdir -p /tmp/wtest/.config/simpbar && echo "DeSoto, TX" > /tmp/wtest/.config/simpbar/weather-location
+        mkdir -p /tmp/wtest/.config/perihelionbar && echo "DeSoto, TX" > /tmp/wtest/.config/perihelionbar/weather-location
         if w=$(HOME=/tmp/wtest perihelion-weather 2>&1) && [[ $(tr -cd '|' <<<"${w}" | wc -c) -eq 6 ]]; then
             echo "  ok    perihelion-weather: ${w}"
         else
@@ -271,7 +271,7 @@ case "${flavor}" in
         # Catppuccin theming from the wallpaper, run for real in a scratch home
         # seeded like the tester's (reads images through GdkPixbuf)
         check test -x /usr/bin/perihelion-theme
-        check test -x /usr/bin/simpbar-matugen
+        check test -x /usr/bin/perihelionbar-matugen
         check grep -rqx 'source_optional=~/.config/mango/colors.conf' /home/tester/.config/mango/
         rm -rf /tmp/ttest && mkdir -p /tmp/ttest && cp -a /home/tester/.config /tmp/ttest/
         theme_ok() {
@@ -279,8 +279,8 @@ case "${flavor}" in
             [[ -f /usr/share/backgrounds/perihelion/default.png ]] && img=/usr/share/backgrounds/perihelion/default.png
             HOME=/tmp/ttest XDG_CONFIG_HOME=/tmp/ttest/.config XDG_CACHE_HOME=/tmp/ttest/.cache \
                 perihelion-theme --force "${img}" &&
-                grep -q '"matrix_color"' /tmp/ttest/.config/simpbar/matugen.json &&
-                grep -q '"popup_bg_color"' /tmp/ttest/.config/simpbar/matugen.json &&
+                grep -q '"matrix_color"' /tmp/ttest/.config/perihelionbar/matugen.json &&
+                grep -q '"popup_bg_color"' /tmp/ttest/.config/perihelionbar/matugen.json &&
                 grep -q '^# perihelion-theme' /tmp/ttest/.config/fuzzel/fuzzel.ini &&
                 grep -q '^focus_color=0x' /tmp/ttest/.config/mango/colors.conf &&
                 grep -q '^background ' /tmp/ttest/.config/kitty/perihelion-colors.conf
@@ -326,15 +326,15 @@ case "${flavor}" in
         check rpm -q mako pavucontrol blueman swayidle
         check grep -rqx 'bind=SUPER+SHIFT,g,spawn,perihelion-blur' /home/tester/.config/mango/
         check grep -rq 'app_id:^perihelion-float\$' /home/tester/.config/mango/
-        check grep -qx 'method = pulse' /home/tester/.config/simpbar/cava.conf
+        check grep -qx 'method = pulse' /home/tester/.config/perihelionbar/cava.conf
         # The input the bar's cava.conf asks for must be one Fedora's cava has
-        cava_pulse_ok() { ! timeout 5 cava -p /home/tester/.config/simpbar/cava.conf 2>&1 </dev/null | head -c 2000 | grep -q "built without 'pulse'"; }
+        cava_pulse_ok() { ! timeout 5 cava -p /home/tester/.config/perihelionbar/cava.conf 2>&1 </dev/null | head -c 2000 | grep -q "built without 'pulse'"; }
         check cava_pulse_ok
         check grep -rqx 'source_optional=~/.config/mango/glass.conf' /home/tester/.config/mango/
-        check test -f /usr/share/doc/perihelion/simpbar.md
+        check test -f /usr/share/doc/perihelion/perihelionbar.md
         check rpm -q cava
-        check grep -q '"position": "top"' /home/tester/.config/simpbar/config.json
-        check grep -q '"kind": "power"' /home/tester/.config/simpbar/config.json
+        check grep -q '"position": "top"' /home/tester/.config/perihelionbar/config.json
+        check grep -q '"kind": "power"' /home/tester/.config/perihelionbar/config.json
         check test -f /home/tester/.config/fuzzel/fuzzel.ini
         # fastfetch keeps Veyl OS's terminal-color layout; kitty carries the colors
         ff_veyl_ok() { cmp -s /usr/share/perihelion/fastfetch/config.jsonc /home/tester/.config/fastfetch/config.jsonc &&
@@ -343,8 +343,8 @@ case "${flavor}" in
         check grep -qx 'globinclude perihelion-colors.conf' /home/tester/.config/kitty/kitty.conf
         # Bar on top, pinned apps in their own dock at the bottom (app drawer first)
         dock_ok() {
-            python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); a=d["appearance"]; m=d["modules"]; sys.exit(0 if a["position"]=="top" and not m["center"] and m["left"][0]["kind"]=="distro" and not any(b["command"] in ("perihelion-trash","appdrawer") for b in d["launchers"]) and not d["dock"]["enabled"] and d["dock"]["trash"] and d["dock"]["app_drawer"] and d["dock"]["media"] and d["bar"]["enabled"] and not any(e["kind"] in ("launchers","cpu","ram","disk","cpu_temp","pacman") for g in m.values() for e in g) else 1)' /home/tester/.config/simpbar/config.json &&
-                grep -q 'SIMPBAR_DOCK=1 setsid -f perihelion-bar' /usr/bin/perihelion-bar-start
+            python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); a=d["appearance"]; m=d["modules"]; sys.exit(0 if a["position"]=="top" and not m["center"] and m["left"][0]["kind"]=="distro" and not any(b["command"] in ("perihelion-trash","appdrawer") for b in d["launchers"]) and not d["dock"]["enabled"] and d["dock"]["trash"] and d["dock"]["app_drawer"] and d["dock"]["media"] and d["bar"]["enabled"] and not any(e["kind"] in ("launchers","cpu","ram","disk","cpu_temp","pacman") for g in m.values() for e in g) else 1)' /home/tester/.config/perihelionbar/config.json &&
+                grep -q 'PERIHELIONBAR_DOCK=1 setsid -f perihelion-bar' /usr/bin/perihelion-bar-start
         }
         check dock_ok
         check test -x /usr/bin/perihelion-trash
@@ -354,10 +354,10 @@ case "${flavor}" in
         # every start once shipped because nothing ran this.
         dock_start() {  # $1 = true|false (dock.enabled); prints the dock's log
             local h=/tmp/docktest
-            rm -rf "${h}"; mkdir -p "${h}/.config/simpbar"
+            rm -rf "${h}"; mkdir -p "${h}/.config/perihelionbar"
             python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); d["dock"]["enabled"]=(sys.argv[3]=="true"); d["appearance"]["position"]="top"; json.dump(d,open(sys.argv[2],"w"))' \
-                /usr/share/perihelion/simpbar/config.json "${h}/.config/simpbar/config.json" "$1"
-            env -u WAYLAND_DISPLAY HOME="${h}" XDG_CONFIG_HOME="${h}/.config" XDG_RUNTIME_DIR=/tmp SIMPBAR_DOCK=1 \
+                /usr/share/perihelion/perihelionbar/config.json "${h}/.config/perihelionbar/config.json" "$1"
+            env -u WAYLAND_DISPLAY HOME="${h}" XDG_CONFIG_HOME="${h}/.config" XDG_RUNTIME_DIR=/tmp PERIHELIONBAR_DOCK=1 \
                 timeout 5 /usr/bin/perihelion-bar 2>&1 || true
         }
         dock_on_ok() { local out; out=$(dock_start true); [[ "${out}" != *"turned off in Perihelion Settings"* ]]; }
@@ -368,19 +368,19 @@ case "${flavor}" in
         # leaves instead of stacking up (three docks once shipped).
         singleton_ok() {
             local h=/tmp/locktest out
-            rm -rf "${h}"; mkdir -p "${h}/.config/simpbar"
+            rm -rf "${h}"; mkdir -p "${h}/.config/perihelionbar"
             python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); d["dock"]["enabled"]=True; d["appearance"]["position"]="top"; json.dump(d,open(sys.argv[2],"w"))' \
-                /usr/share/perihelion/simpbar/config.json "${h}/.config/simpbar/config.json"
-            ( flock -x 9; sleep 6 ) 9>"${h}/.config/simpbar/dock.lock" &
+                /usr/share/perihelion/perihelionbar/config.json "${h}/.config/perihelionbar/config.json"
+            ( flock -x 9; sleep 6 ) 9>"${h}/.config/perihelionbar/dock.lock" &
             sleep 0.5
-            out=$(env -u WAYLAND_DISPLAY HOME="${h}" XDG_CONFIG_HOME="${h}/.config" XDG_RUNTIME_DIR=/tmp SIMPBAR_DOCK=1 \
+            out=$(env -u WAYLAND_DISPLAY HOME="${h}" XDG_CONFIG_HOME="${h}/.config" XDG_RUNTIME_DIR=/tmp PERIHELIONBAR_DOCK=1 \
                 timeout 8 /usr/bin/perihelion-bar 2>&1 || true)
             wait
             [[ "${out}" == *"dock: already running"* ]]
         }
         check singleton_ok
         # The start script never turns the bar into a second dock.
-        check grep -q 'exec env -u SIMPBAR_DOCK perihelion-bar' /usr/bin/perihelion-bar-start
+        check grep -q 'exec env -u PERIHELIONBAR_DOCK perihelion-bar' /usr/bin/perihelion-bar-start
         # The bar's power button opens the fuzzel power menu, not the drawer.
         check grep -q 'perihelion-power-menu' /usr/bin/perihelion-bar
         check test -x /usr/libexec/perihelion-system-settings
@@ -390,7 +390,7 @@ case "${flavor}" in
         # The app drawer is Quickshell's on Mango (nwg-drawer stays on the others)
         check rpm -q quickshell
         check grep -q 'quickshell' /usr/bin/appdrawer
-        check test -x /usr/bin/simpbar-wallpaper
+        check test -x /usr/bin/perihelionbar-wallpaper
         check test ! -e /usr/bin/nwg-drawer
         check test -f /home/tester/.config/quickshell/appdrawer/shell.qml
         check test -f /home/tester/.config/quickshell/appdrawer/SmoothWheel.qml
@@ -398,7 +398,7 @@ case "${flavor}" in
         check test -f /home/tester/.config/quickshell/appdrawer/favourites.json
         check grep -rqx 'exec_once=appdrawer start' /home/tester/.config/mango/
         check grep -rqx 'bind=SUPER,a,spawn,appdrawer' /home/tester/.config/mango/
-        check grep -qx '\~/Pictures/Wallpapers' /home/tester/.config/simpbar/wallpaper-dirs
+        check grep -qx '\~/Pictures/Wallpapers' /home/tester/.config/perihelionbar/wallpaper-dirs
         check grep -qx 'include /etc/xdg/kitty/kitty.conf' /home/tester/.config/kitty/kitty.conf
         check mango -p -c /home/tester/.config/mango/config.conf
         # Perihelion Settings' Mango pages: every key a row can write, with

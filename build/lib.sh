@@ -21,7 +21,7 @@ apply_system_files() {
 # Give everything Perihelion wrote its correct SELinux label. Runs last in
 # %post; also schedules a full relabel on first boot as a safety net.
 # GTK finds icons through each theme's icon-theme.cache and trusts it: an
-# icon added after the cache was built (Strata, Simpbar Config, Event Horizon
+# icon added after the cache was built (Strata, Perihelion Bar Config, Event Horizon
 # install theirs into hicolor) shows as a "?" until the cache is rebuilt.
 refresh_icon_caches() {
     command -v gtk-update-icon-cache >/dev/null 2>&1 || return 0

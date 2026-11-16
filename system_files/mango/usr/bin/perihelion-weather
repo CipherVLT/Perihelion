@@ -4,7 +4,7 @@
 # line in the widget's format:
 #   emoji|temp|humidity|wind|sunrise|sunset|now     e.g. ☀️|+54°F|58%|↓5mph|06:48|17:34|02:15
 #
-# Place, first line of ~/.config/simpbar/weather-location:
+# Place, first line of ~/.config/perihelionbar/weather-location:
 #   DeSoto, TX            city, US state     Paris, FR     city, country code
 #   32.59,-96.86          latitude,longitude
 #   (empty or missing)    guessed from the internet address (Fedora's geoip)
@@ -17,7 +17,7 @@
 #                               after dark)
 set -uo pipefail
 
-config="${XDG_CONFIG_HOME:-${HOME}/.config}/simpbar"
+config="${XDG_CONFIG_HOME:-${HOME}/.config}/perihelionbar"
 cache="${XDG_CACHE_HOME:-${HOME}/.cache}/perihelion-weather"
 mkdir -p "${cache}"
 get() { curl -fsS --max-time 10 "$@"; }

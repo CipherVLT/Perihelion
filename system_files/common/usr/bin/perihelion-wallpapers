@@ -49,10 +49,10 @@ WALLS = pictures_dir() / "Wallpapers"
 EXTRA = [Path("/usr/share/backgrounds/perihelion")]
 CACHE = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "perihelion-wallpapers"
 
-MATUGEN = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "simpbar" / "matugen.json"
+MATUGEN = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "perihelionbar" / "matugen.json"
 
 # Catppuccin Macchiato until perihelion-theme has written the wallpaper's
-# colors (~/.config/simpbar/matugen.json, the bar's own palette).
+# colors (~/.config/perihelionbar/matugen.json, the bar's own palette).
 DEFAULT_COLORS = {
     "bg_color": "#24273a", "text_color": "#cad3f5", "border_color": "#8aadf4",
     "hover_color": "#363a4f", "popup_bg_color": "#1e2030", "popup_hover_color": "#494d64",

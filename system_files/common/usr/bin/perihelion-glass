@@ -40,9 +40,9 @@ EOF
 elif [[ -n "${MANGO_INSTANCE_SIGNATURE:-}" ]] || pgrep -x mango >/dev/null; then
     # Window glass: perihelion-theme writes frosted GTK styles (only the
     # backgrounds go see-through; text stays sharp) and asks open GTK apps
-    # to restyle. The setting lives in ~/.config/simpbar/theme (glass=),
+    # to restyle. The setting lives in ~/.config/perihelionbar/theme (glass=),
     # shared with Perihelion Settings > Window glass.
-    theme="${config}/simpbar/theme"
+    theme="${config}/perihelionbar/theme"
     mkdir -p "${theme%/*}"
     touch "${theme}"
     if grep -qx 'glass=off' "${theme}"; then next=on; else next=off; fi

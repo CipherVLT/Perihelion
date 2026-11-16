@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Mango flavor: Veyl OS keybinds, gaps and look translated to Mango, with
-# simpbar, swaybg and fuzzel. No Event Horizon.
+# perihelionbar, swaybg and fuzzel. No Event Horizon.
 set -euo pipefail
 # shellcheck source=build/lib.sh
 source "${PERIHELION_SRC}/build/lib.sh"
@@ -12,8 +12,8 @@ apply_system_files mango
 rm -f /.gitkeep
 chmod 0755 /usr/bin/perihelion-wallpaper /usr/bin/perihelion-screenshot /usr/bin/perihelion-bar-start /usr/bin/perihelion-blur /usr/bin/perihelion-weather /usr/local/bin/cmatrix /usr/bin/perihelion-lock
 
-# Perihelion Bar, Shell and Settings, built from source (our simpbar fork).
-bash "${PERIHELION_SRC}/build/install-simpbar.sh"
+# Perihelion Bar, Shell and Settings, built from source (our perihelionbar fork).
+bash "${PERIHELION_SRC}/build/install-perihelionbar.sh"
 
 share=/usr/share/perihelion
 cfg="${share}/mango/config.conf"
@@ -37,28 +37,28 @@ seed_user_file "${cfg}" .config/mango/config.conf
 for part in "${share}"/mango/cfg/*.conf; do
     seed_user_file "${part}" ".config/mango/cfg/$(basename "${part}")"
 done
-# simpbar draws text with one TTF file; point it at the installed
-# JetBrainsMono Nerd Font (simpbar's own default is Arch's path).
+# perihelionbar draws text with one TTF file; point it at the installed
+# JetBrainsMono Nerd Font (perihelionbar's own default is Arch's path).
 # Regular weight by file name (fontconfig style matching picked ExtraBold).
 font=$(fc-list --format '%{file}\n' | grep -m1 '/JetBrainsMonoNerdFont-Regular\.ttf$' || true)
-[[ -n "${font}" && -f "${font}" ]] || die "JetBrainsMono Nerd Font not found (needed by simpbar)"
-log "mango: simpbar font ${font}"
+[[ -n "${font}" && -f "${font}" ]] || die "JetBrainsMono Nerd Font not found (needed by perihelionbar)"
+log "mango: perihelionbar font ${font}"
 bar_cfg=$(mktemp)
 chmod 644 "${bar_cfg}"
-sed "s|@FONT_PATH@|${font}|" "${share}/simpbar/config.json" > "${bar_cfg}"
-grep -q "\"font_path\": \"${font}\"" "${bar_cfg}" || die "could not set simpbar's font_path"
-install -m644 "${bar_cfg}" "${share}/simpbar/config.json"
+sed "s|@FONT_PATH@|${font}|" "${share}/perihelionbar/config.json" > "${bar_cfg}"
+grep -q "\"font_path\": \"${font}\"" "${bar_cfg}" || die "could not set perihelionbar's font_path"
+install -m644 "${bar_cfg}" "${share}/perihelionbar/config.json"
 rm -f "${bar_cfg}"
-seed_user_file "${share}/simpbar/config.json" .config/simpbar/config.json
-# simpbar-shell: widgets and overview, Macchiato colors (matugen.json is
+seed_user_file "${share}/perihelionbar/config.json" .config/perihelionbar/config.json
+# perihelionbar-shell: widgets and overview, Macchiato colors (matugen.json is
 # what it reads them from), Perihelion apps in the overview dash.
-sed -i "s|@FONT_PATH@|${font}|" "${share}/simpbar/shell.json"
-grep -q "\"font_path\": \"${font}\"" "${share}/simpbar/shell.json" || die "could not set simpbar-shell's font_path"
-seed_user_file "${share}/simpbar/shell.json" .config/simpbar/shell.json
-seed_user_file "${share}/simpbar/matugen.json" .config/simpbar/matugen.json
+sed -i "s|@FONT_PATH@|${font}|" "${share}/perihelionbar/shell.json"
+grep -q "\"font_path\": \"${font}\"" "${share}/perihelionbar/shell.json" || die "could not set perihelionbar-shell's font_path"
+seed_user_file "${share}/perihelionbar/shell.json" .config/perihelionbar/shell.json
+seed_user_file "${share}/perihelionbar/matugen.json" .config/perihelionbar/matugen.json
 # Fedora's cava has no PipeWire input; this one reads PulseAudio instead.
-seed_user_file "${share}/simpbar/cava.conf" .config/simpbar/cava.conf
-seed_user_file "${share}/simpbar/widgets-disabled" .config/simpbar/widgets-disabled
+seed_user_file "${share}/perihelionbar/cava.conf" .config/perihelionbar/cava.conf
+seed_user_file "${share}/perihelionbar/widgets-disabled" .config/perihelionbar/widgets-disabled
 # The app drawer (Quickshell, Super+A): its QML, empty favourites, and the
 # folders its wallpaper tab lists (~/Pictures/Wallpapers).
 for qml in /usr/share/perihelion/quickshell/appdrawer/*.qml; do
@@ -66,8 +66,8 @@ for qml in /usr/share/perihelion/quickshell/appdrawer/*.qml; do
 done
 printf '{ "ids": [] }\n' > /usr/share/perihelion/quickshell/appdrawer/favourites.json
 seed_user_file /usr/share/perihelion/quickshell/appdrawer/favourites.json .config/quickshell/appdrawer/favourites.json
-seed_user_file "${share}/simpbar/wallpaper-dirs" .config/simpbar/wallpaper-dirs
-install -Dm644 "${PERIHELION_SRC}/docs/simpbar.md" /usr/share/doc/perihelion/simpbar.md
+seed_user_file "${share}/perihelionbar/wallpaper-dirs" .config/perihelionbar/wallpaper-dirs
+install -Dm644 "${PERIHELION_SRC}/docs/perihelionbar.md" /usr/share/doc/perihelion/perihelionbar.md
 seed_user_file "${share}/fuzzel/fuzzel.ini" .config/fuzzel/fuzzel.ini
 # btop uses the theme perihelion-theme writes for each wallpaper
 seed_user_file "${share}/btop/btop.conf" .config/btop/btop.conf

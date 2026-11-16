@@ -4,5 +4,5 @@
 # which perihelion-theme keeps matched to the wallpaper.
 set -euo pipefail
 bg=$(sed -n 's/.*"bg_color": *"#\([0-9A-Fa-f]\{6\}\)".*/\1/p' \
-    "${XDG_CONFIG_HOME:-${HOME}/.config}/simpbar/matugen.json" 2>/dev/null | head -n 1)
+    "${XDG_CONFIG_HOME:-${HOME}/.config}/perihelionbar/matugen.json" 2>/dev/null | head -n 1)
 exec swaylock -f -c "${bg:-24273a}" "$@"

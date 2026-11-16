@@ -4,8 +4,8 @@
 # output, so its cava connects to it (started earlier, that cava can stay
 # unconnected and the visualizer flat); at most 10 seconds.
 #
-# The dock is a second Perihelion Bar in dock mode (SIMPBAR_DOCK=1): the
-# pinned apps from ~/.config/simpbar/config.json, bottom center, with the
+# The dock is a second Perihelion Bar in dock mode (PERIHELIONBAR_DOCK=1): the
+# pinned apps from ~/.config/perihelionbar/config.json, bottom center, with the
 # app drawer (the distro logo) first and the trash last. It is off until
 # switched on in Perihelion Settings (Modules > Dock); when off it exits
 # right away. It starts after the wait, with the bar, once the session is
@@ -25,6 +25,6 @@ for _ in $(seq 1 20); do
     wpctl inspect @DEFAULT_AUDIO_SINK@ >/dev/null 2>&1 && break
     sleep 0.5
 done
-SIMPBAR_DOCK=1 setsid -f perihelion-bar >/dev/null 2>&1
-# Explicitly not the dock, even if this script inherited SIMPBAR_DOCK=1.
-exec env -u SIMPBAR_DOCK perihelion-bar "$@"
+PERIHELIONBAR_DOCK=1 setsid -f perihelion-bar >/dev/null 2>&1
+# Explicitly not the dock, even if this script inherited PERIHELIONBAR_DOCK=1.
+exec env -u PERIHELIONBAR_DOCK perihelion-bar "$@"

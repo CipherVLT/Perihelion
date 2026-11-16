@@ -1,23 +1,24 @@
-# Configuring simpbar (Mango flavor)
+# Configuring Perihelion Bar (Mango flavor)
 
-Perihelion's Mango flavor uses [simpbar](https://github.com/jaytheoutpatient/simpbar)
-by **jaytheoutpatient**, a native Zig/Wayland bar. Everything about it lives in
+Perihelion's Mango flavor uses Perihelion Bar, from
+[Perihelion Shell](https://github.com/CipherVLT/perihelion-shell), a native
+Zig/Wayland bar. Everything about it lives in
 one file:
 
 ```
-~/.config/simpbar/config.json
+~/.config/perihelionbar/config.json
 ```
 
-The untouched Perihelion default is `/usr/share/perihelion/simpbar/config.json`.
-To start over: `cp /usr/share/perihelion/simpbar/config.json ~/.config/simpbar/`.
+The untouched Perihelion default is `/usr/share/perihelion/perihelionbar/config.json`.
+To start over: `cp /usr/share/perihelion/perihelionbar/config.json ~/.config/perihelionbar/`.
 
 **Apply changes:** save the file, then press **Super+Shift+D** (restarts the bar),
-or reload it live with `pkill -USR1 -x simpbar`. If the bar suddenly looks
-like simpbar's stock grey bar, the file has a mistake (a missing comma or
-quote, or a color that isn't `#RRGGBB`) and simpbar fell back to its built-in
-defaults: run `simpbar` in a terminal to see which line it complains about.
+or reload it live with `pkill -USR1 -x perihelionbar`. If the bar suddenly looks
+like perihelionbar's stock grey bar, the file has a mistake (a missing comma or
+quote, or a color that isn't `#RRGGBB`) and perihelionbar fell back to its built-in
+defaults: run `perihelionbar` in a terminal to see which line it complains about.
 
-Edit it with `nano ~/.config/simpbar/config.json` (Ctrl+O saves, Ctrl+X quits).
+Edit it with `nano ~/.config/perihelionbar/config.json` (Ctrl+O saves, Ctrl+X quits).
 
 ## Layout
 
@@ -145,16 +146,16 @@ module beside them (workspaces on the left, the clock on the right).
 ## The dock
 
 The pinned apps live in their own dock at the bottom center, not in the bar.
-It is a second copy of the bar started in dock mode (`SIMPBAR_DOCK=1 simpbar`,
+It is a second copy of the bar started in dock mode (`PERIHELIONBAR_DOCK=1 perihelionbar`,
 by `perihelion-bar-start` at login; Super+Shift+D restarts both). It
-shows the `launchers` from `~/.config/simpbar/config.json`, the same list
+shows the `launchers` from `~/.config/perihelionbar/config.json`, the same list
 Perihelion Settings edits; the first one runs `appdrawer` and wears the distro's
 logo. Windows stop above the dock.
 
 For the visualizer filling the whole bar behind the modules, try
 `"bg_mode": "cava"` with `"cava_style": "curve"` and `"cava_bg_strength": 45`.
 
-## Desktop widgets (simpbar-shell)
+## Desktop widgets (perihelionbar-shell)
 
 Eight widgets can sit on the wallpaper: clock, weather, media (now playing),
 system, calendar, watch (analog), sticky note, and desktop icons. Perihelion
@@ -168,11 +169,11 @@ starts with just the calendar and weather, on see-through cards.
 - **Move:** hold **Ctrl** and drag a card.
 - **Resize:** drag the grip in a card's bottom-right corner.
 - The last widget can't be removed with Alt + right-click: with none left,
-  simpbar-shell stops, and the Alt+W overview with it.
+  perihelionbar-shell stops, and the Alt+W overview with it.
 
 **More or less see-through:** `"card_bg_opacity"` in
-`~/.config/simpbar/shell.json`, from 0 (clear) to 100 (solid). Perihelion
-uses 25; simpbar's own default is 55. Restart the widgets after changing it
+`~/.config/perihelionbar/shell.json`, from 0 (clear) to 100 (solid). Perihelion
+uses 25; perihelionbar's own default is 55. Restart the widgets after changing it
 (command below). Super+G doesn't affect the widgets: it changes app windows.
 
 **Holidays on the calendar:** `"holiday_country"` (default `"US"`) and
@@ -183,22 +184,22 @@ What some of them need:
 
 - **Weather** comes from Open-Meteo (`perihelion-weather`; free, no key,
   NOAA's models in the US). Set your place on the first line of
-  `~/.config/simpbar/weather-location`: `City, ST` (US), `City, FR` (other
+  `~/.config/perihelionbar/weather-location`: `City, ST` (US), `City, FR` (other
   countries) or `latitude,longitude`, for example
-  `echo "DeSoto, TX" > ~/.config/simpbar/weather-location`. Without it, the
+  `echo "DeSoto, TX" > ~/.config/perihelionbar/weather-location`. Without it, the
   place is guessed from your internet address (a VPN can put you elsewhere).
   Run `perihelion-weather` to see what the widget gets; the widget refetches
   every 20 minutes, or restart it. After sunset a clear sky shows a moon.
 - **Desktop icons** shows the `.desktop` files in `~/Desktop`. In Steam,
   *Manage → Add desktop shortcut* puts a game there.
-- **Sticky note:** click it and type; it saves to `~/.config/simpbar/notes/`.
-- **Calendar reminders:** `~/.config/simpbar/reminders.txt`, one per line as
+- **Sticky note:** click it and type; it saves to `~/.config/perihelionbar/notes/`.
+- **Calendar reminders:** `~/.config/perihelionbar/reminders.txt`, one per line as
   `2026-11-25 18:00 Dinner`.
 
-By hand: `~/.config/simpbar/widgets-disabled` lists hidden widgets (ids
+By hand: `~/.config/perihelionbar/widgets-disabled` lists hidden widgets (ids
 `clock weather media system calendar watch note1 icons`, one per line), and
-`~/.config/simpbar/shell.json` holds positions in pixels. After editing:
-`pkill -x simpbar-shell; setsid -f simpbar-shell`.
+`~/.config/perihelionbar/shell.json` holds positions in pixels. After editing:
+`pkill -x perihelionbar-shell; setsid -f perihelionbar-shell`.
 
 Perihelion Settings's Bar pages also change the bar's colors, modules and
 launcher buttons. Perihelion hides its Mango and System pages, which would
@@ -217,15 +218,15 @@ desktop to match it. `perihelion-theme` has two styles:
   light ones; Frappé, Macchiato or Mocha for darker ones) and the three
   Catppuccin accents closest to its strongest colors. Every color is a real
   Catppuccin color; the wallpaper only chooses which.
-- **Material You**: matugen, simpbar's own engine, makes Material Design
+- **Material You**: matugen, perihelionbar's own engine, makes Material Design
   colors from the wallpaper (tonal spot, vibrant, expressive, ...).
 
 It writes:
 
 | What | File |
 |---|---|
-| bar, visualizer wave, desktop widgets | `~/.config/simpbar/matugen.json` |
-| app drawer (Super+A) | `~/.config/simpbar/matugen.json` (popup colors, read live by the Quickshell drawer) |
+| bar, visualizer wave, desktop widgets | `~/.config/perihelionbar/matugen.json` |
+| app drawer (Super+A) | `~/.config/perihelionbar/matugen.json` (popup colors, read live by the Quickshell drawer) |
 | launcher and power menu (fuzzel) | `[colors]` in `~/.config/fuzzel/fuzzel.ini` |
 | Strata | `~/.config/strata/themes/tokyo-night.toml` |
 | window borders (Mango) | `~/.config/mango/colors.conf` |
@@ -257,15 +258,15 @@ To keep your own drawer CSS, fuzzel colors, Strata theme, fastfetch or cava colo
 
 ### cava in the bar stays flat (a dotted line) while music plays
 
-The bar runs its own cava (settings in `~/.config/simpbar/cava.conf`,
+The bar runs its own cava (settings in `~/.config/perihelionbar/cava.conf`,
 PipeWire input following the default output). A dotted line means that
 cava runs but hears silence. Play something, then:
 
-1. `pkill -x cava`. simpbar starts a fresh one within 5 seconds. If the bar
+1. `pkill -x cava`. perihelionbar starts a fresh one within 5 seconds. If the bar
    moves now, the first cava started before the audio system was ready.
    Perihelion starts the bar through `perihelion-bar-start`, which waits
    for the default audio output, to avoid exactly this.
-2. Still flat: `cava -p ~/.config/simpbar/cava.conf` prints the bar's
+2. Still flat: `cava -p ~/.config/perihelionbar/cava.conf` prints the bar's
    numbers (rows separated by `;`). "cava was built without 'pipewire' input
    support" means the file asks for PipeWire, which Fedora's cava doesn't
    have: set `method = pulse` in its `[input]` section (Perihelion's own
@@ -275,6 +276,6 @@ The full-bar visualizer behind the modules is `"bg_mode": "cava"` with
 `"cava_style": "curve"` (or `"wave"`, `"bars"`) and `"cava_bg_strength": 45`.
 
 
-- Bar back to stock grey after an edit: `simpbar` in a terminal shows the config error.
+- Bar back to stock grey after an edit: `perihelionbar` in a terminal shows the config error.
 - Power button: opens `perihelion-power-menu` (also Super+Shift+Q).
-- `perihelion-doctor` reports whether simpbar is running and which build it is.
+- `perihelion-doctor` reports whether perihelionbar is running and which build it is.

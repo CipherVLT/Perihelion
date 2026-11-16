@@ -6,7 +6,7 @@ A minimal Fedora for gamers and creators, in three tiling flavors:
 |---|---|---|---|
 | **Hyprland** | Hyprland 0.56+ (COPR `nett00n/hyprland`) | Event Horizon | Lua config from horizon-forge / Veyl OS |
 | **Niri** | niri (Fedora) | Event Horizon | niri's default config, Perihelion apps swapped in |
-| **Mango** | mangowm (Terra) | simpbar + swaybg | Veyl OS keybinds, gaps and look translated to Mango |
+| **Mango** | mangowm (Terra) | perihelionbar + swaybg | Veyl OS keybinds, gaps and look translated to Mango |
 
 Every flavor starts from Fedora's `@core` and adds only what a desktop needs
 to work: network, Bluetooth, firewall, PipeWire audio, Mesa/Vulkan, a login
@@ -103,7 +103,7 @@ Pick **Mango** on the login screen. Super is the Windows key.
 | Super+Shift+Return | Floating terminal, half-size in the bottom-right corner (for showcases) |
 | Super+A | App drawer (grid of every app) |
 | Super+Shift+W | Wallpaper picker: previews of `~/Pictures/Wallpapers`, search, Random, Bing (today's image), Open folder |
-| Super+O / Alt+W | Overview (Mango's own / simpbar-shell's with live previews) |
+| Super+O / Alt+W | Overview (Mango's own / perihelionbar-shell's with live previews) |
 | Super+Shift+Q | Power menu (also the power button on the bar) |
 | Ctrl+drag / Alt+right-click | Move / remove a desktop widget (Mango; add them in Perihelion Settings) |
 | Super+Shift+G | Blur strength (Mango): normal, strong, soft, off |
@@ -114,11 +114,10 @@ Pick **Mango** on the login screen. Super is the Windows key.
 - Gaps 2 px inside / 4 px outside, 2 px Catppuccin Macchiato blue (`0x8aadf4ff`)
   border on the focused window, see-through blurred kitty.
 - Your config: `~/.config/mango/config.conf` (Super+Shift+R reloads it).
-  Bar: [Perihelion Shell](https://github.com/CipherVLT/perihelion-shell), our fork
-  of [simpbar](https://github.com/jaytheoutpatient/simpbar) by jaytheoutpatient,
-  `~/.config/simpbar/config.json` (Super+Shift+D restarts it). Colors follow the
+  Bar: Perihelion Bar, from [Perihelion Shell](https://github.com/CipherVLT/perihelion-shell),
+  `~/.config/perihelionbar/config.json` (Super+Shift+D restarts it). Colors follow the
   wallpaper, in Catppuccin. Guide:
-  [docs/simpbar.md](docs/simpbar.md), also at `/usr/share/doc/perihelion/simpbar.md`.
+  [docs/perihelionbar.md](docs/perihelionbar.md), also at `/usr/share/doc/perihelion/perihelionbar.md`.
   Launcher: `~/.config/fuzzel/fuzzel.ini`.
 - Wallpaper: `perihelion-wallpaper ~/Pictures/some-image.png` (remembered).
 - Something wrong? Run `perihelion-doctor` in a terminal: it checks the
@@ -219,8 +218,7 @@ themes (GPL-3.0), imported as they are; credits for each upstream scheme are in
 no open licence). Your own palette files go in
 `~/.local/share/perihelion/palettes/`.
 On Mango the Super+A app drawer is Perihelion Shell's Quickshell drawer
-(from simpbar by **jaytheoutpatient**; right-click an app to pin it to the
-dock). Hyprland and Niri use [nwg-drawer](https://github.com/nwg-piotr/nwg-drawer)
+(right-click an app to pin it to the dock). Hyprland and Niri use [nwg-drawer](https://github.com/nwg-piotr/nwg-drawer)
 by **Piotr Miller** (MIT).
 
 Built from pieces of [horizon-forge](https://github.com/CipherVLT/horizon-forge)

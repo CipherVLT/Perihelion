@@ -8,13 +8,13 @@ xdg-desktop-portal-wlr
 # Wallpaper, lock screen
 swaybg
 swaylock
-# Top bar: simpbar is built from source by build/install-simpbar.sh; these
+# Top bar: perihelionbar is built from source by build/install-perihelionbar.sh; these
 # are what it uses at runtime (font, SVG tray icons, volume via pactl;
 # nmcli for the network module comes with NetworkManager in base.txt)
 jetbrainsmono-nerd-fonts
 librsvg2
 pulseaudio-utils
-# Simpbar Config (GTK 4 + libadwaita)
+# Perihelion Bar Config (GTK 4 + libadwaita)
 libadwaita
 # perihelion-weather (Open-Meteo JSON for the weather widget)
 jq
@@ -32,7 +32,7 @@ dbus-tools
 # Shows the name of any key you press (for writing your own binds)
 wev
 # Material You colors from the wallpaper (Terra): perihelion-theme's second
-# style, picked in Simpbar Config (Catppuccin is the default)
+# style, picked in Perihelion Bar Config (Catppuccin is the default)
 matugen
 # Terminal extras themed with the wallpaper (perihelion-theme): system
 # monitor, and the falling-code screensaver (Perihelion's cmatrix wrapper)
