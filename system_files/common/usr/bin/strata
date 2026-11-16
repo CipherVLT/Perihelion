@@ -15,6 +15,23 @@ version_of() {
 }
 
 if [[ -n "${HOME:-}" && -w "${HOME}" ]]; then
+    # Perihelion's right-click actions ("Extract here" / "Extract to…" for
+    # .tar.xz and friends). Strata only reads actions from your config
+    # folder, so each one is copied there once. The stamp means one you
+    # delete or edit is never put back or overwritten.
+    actions="${XDG_CONFIG_HOME:-${HOME}/.config}/strata/actions"
+    stamps="${XDG_STATE_HOME:-${HOME}/.local/state}/perihelion/strata-actions"
+    for src in /usr/share/perihelion/strata/actions/*/; do
+        [[ -f "${src}action.toml" ]] || continue
+        id=$(basename "${src}")
+        [[ -e "${stamps}/${id}" ]] && continue
+        if [[ ! -e "${actions}/${id}" ]]; then
+            install -d -m 700 "${actions}" 2>/dev/null \
+                && install -Dm644 "${src}action.toml" "${actions}/${id}/action.toml" 2>/dev/null \
+                || continue
+        fi
+        install -d "${stamps}" 2>/dev/null && : > "${stamps}/${id}"
+    done
     if [[ ! -x "${user}" ]]; then
         install -Dm755 "${system}" "${user}" 2>/dev/null || true
     else

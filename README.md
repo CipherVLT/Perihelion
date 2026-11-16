@@ -31,6 +31,12 @@ on real hardware yet. Mango is the first flavor to test.
   folders opened from any app, "Show in folder" / "Open containing folder" in Firefox
   (`org.freedesktop.FileManager1`), Open/Save dialogs (the XDG FileChooser portal),
   and the Trash (`trash:///`, via gvfs)
+- **Extract any archive from the right-click menu:** Strata unpacks .zip, .7z, .rar,
+  .tar and .tar.gz itself; Perihelion adds "Extract here" and "Extract to…" for
+  .tar.xz, .tar.bz2, .tar.zst (and .xz, .bz2, .zst files) as two Strata actions
+  (Settings → Actions) run by `/usr/libexec/perihelion-extract`. Nothing is overwritten
+- **DAW plugin windows float (Mango):** LYNX SHARE's plugin editors open as floating
+  windows over the DAW instead of being tiled and squashed (`cfg/rules.conf`)
 - **No portabled warning on updates:** `systemd-container` is installed so
   `systemd-portabled.service` exists for systemd-udev's update scriptlet
   (it would otherwise print "Unit systemd-portabled.service not found" on

@@ -1,0 +1,110 @@
+#!/usr/bin/bash
+# Extract an archive Strata has no built-in support for.
+#
+#   perihelion-extract ARCHIVE         unpack next to the archive
+#   perihelion-extract --to ARCHIVE    ask for a folder first
+#
+# Strata itself extracts .zip, .7z, .rar, .tar and .tar.gz. This adds
+# .tar.xz, .tar.bz2, .tar.zst, .tar.lzma (and .txz, .tbz2, .tbz, .tzst), plus
+# single files packed with xz, bzip2, zstd or lzma. It is the program behind
+# the "Extract here" and "Extract to…" entries in Strata's right-click menu
+# (/usr/share/perihelion/strata/actions).
+#
+# Like Strata's own extraction, nothing is ever overwritten: an archive with
+# one top-level entry gives that entry, anything else gives a folder named
+# after the archive, and a taken name becomes "name (2)", "name (3)", ...
+# Members are unpacked into a hidden work folder first, so a failed or
+# cancelled run leaves nothing behind.
+set -euo pipefail
+
+ask=0
+if [[ ${1:-} == --to ]]; then ask=1; shift; fi
+archive=${1:-}
+if [[ -z ${archive} || ! -f ${archive} ]]; then
+    echo "perihelion-extract: not a file: ${archive}" >&2
+    exit 2
+fi
+archive=$(realpath -- "${archive}")
+name=${archive##*/}
+dest=${archive%/*}
+[[ -n ${dest} ]] || dest=/
+
+if (( ask )); then
+    # Cancel in the folder dialog is not an error.
+    dest=$(zenity --file-selection --directory \
+        --title="Extract “${name}” to…" --filename="${dest}/" 2>/dev/null) || exit 0
+    [[ -d ${dest} ]] || { echo "Not a folder: ${dest}" >&2; exit 1; }
+fi
+if [[ ! -w ${dest} ]]; then
+    echo "Cannot write to ${dest}" >&2
+    exit 1
+fi
+
+lower=${name,,}
+kind=file
+case "${lower}" in
+    *.tar.xz|*.tar.bz2|*.tar.zst|*.tar.lzma) kind=tar; stem=${name%.*}; stem=${stem%.*} ;;
+    *.txz|*.tbz2|*.tbz|*.tzst)               kind=tar; stem=${name%.*} ;;
+    *.xz|*.lzma)  tool=xz;    stem=${name%.*} ;;
+    *.bz2)        tool=bzip2; stem=${name%.*} ;;
+    *.zst)        tool=zstd;  stem=${name%.*} ;;
+    *) echo "Not an archive this can extract: ${name}" >&2; exit 1 ;;
+esac
+[[ -n ${stem} ]] || stem=extracted
+
+# First free name in the destination: "x", "x (2)", "x (3)", ...
+free_name() {
+    local base=$1 candidate=$1 n=2
+    while [[ -e ${dest}/${candidate} || -L ${dest}/${candidate} ]]; do
+        candidate="${base} (${n})"
+        n=$((n + 1))
+    done
+    printf '%s\n' "${candidate}"
+}
+
+# Move $1 to the first free name based on $2; prints where it went. mv -n
+# never replaces, so a name taken in the meantime just tries the next one.
+publish() {
+    local from=$1 base=$2 target
+    while :; do
+        target="${dest}/$(free_name "${base}")"
+        mv -nT -- "${from}" "${target}"
+        [[ -e ${from} || -L ${from} ]] || break
+    done
+    printf '%s\n' "${target}"
+}
+
+work=$(mktemp -d -- "${dest}/.extract-XXXXXX")
+cleanup() { rm -rf -- "${work}"; }
+trap cleanup EXIT
+trap 'exit 130' INT TERM
+
+if [[ ${kind} == tar ]]; then
+    # tar picks the decompressor from the file's contents. It drops a
+    # leading "/" and refuses members that climb out with "..".
+    tar -xf "${archive}" -C "${work}" --no-same-owner
+    shopt -s nullglob dotglob
+    entries=("${work}"/*)
+    shopt -u nullglob dotglob
+    if (( ${#entries[@]} == 0 )); then
+        echo "${name} is empty" >&2
+        exit 1
+    elif (( ${#entries[@]} == 1 )); then
+        out=$(publish "${entries[0]}" "${entries[0]##*/}")
+    else
+        # mktemp made the folder private; give it normal folder permissions.
+        chmod "$(printf '%o' $(( 0777 & ~$(umask) )))" "${work}"
+        out=$(publish "${work}" "${stem}")
+    fi
+else
+    command -v "${tool}" >/dev/null || { echo "${tool} is not installed" >&2; exit 1; }
+    "${tool}" -dc -- "${archive}" > "${work}/${stem}"
+    out=$(publish "${work}/${stem}" "${stem}")
+fi
+
+echo "Extracted to ${out}"
+# Tell Strata's Jobs panel where the result is (plain names only: the
+# progress file is JSON, and an odd name is not worth a broken line).
+if [[ -n ${STRATA_ACTION_PROGRESS:-} && ${out} != *[\"\\[:cntrl:]]* ]]; then
+    printf '{"event": "output", "path": "%s"}\n' "${out}" >> "${STRATA_ACTION_PROGRESS}" || true
+fi

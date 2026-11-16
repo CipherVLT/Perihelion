@@ -1,0 +1,26 @@
+# See docs/custom-actions.md.
+# Perihelion: "Extract here" for the archives Strata does not unpack itself.
+# The work is done by /usr/libexec/perihelion-extract, which updates with the
+# system. Delete this folder (or switch it off in Settings → Actions) to
+# remove the menu entry; it is not put back.
+schema_version = 1
+id = "perihelion-extract"
+name = "Extract here"
+description = "Unpack next to the archive (.tar.xz, .tar.bz2, .tar.zst, .xz, .bz2, .zst)."
+icon = "package-open"
+enabled = true
+menu = "top"
+
+[when]
+kinds = ["file"]
+extensions = ["xz", "txz", "lzma", "bz2", "tbz2", "tbz", "zst", "tzst"]
+min_items = 1
+
+[run]
+runtime = "command"
+program = "/usr/libexec/perihelion-extract"
+args = ["{path}"]
+mode = "per-item"
+on_error = "continue"
+working_directory = "parent"
+confirm = false

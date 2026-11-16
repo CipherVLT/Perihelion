@@ -130,6 +130,14 @@ gstreamer1-plugins-base
 gvfs
 bubblewrap
 
+# Archives: Strata unpacks .zip, .7z, .rar, .tar and .tar.gz itself. tar with
+# xz, bzip2 and zstd is what its "Extract here" / "Extract to…" entries for
+# .tar.xz, .tar.bz2 and .tar.zst run (/usr/libexec/perihelion-extract; zenity,
+# below, is the folder dialog of "Extract to…").
+tar
+xz
+bzip2
+zstd
 # --- Building from source ------------------------------------------------------
 # Enough to `git clone` a project and run its ./build.sh, make, CMake or Meson
 # build: git, C and C++ compilers, the common build systems and pkg-config

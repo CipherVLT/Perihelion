@@ -90,6 +90,34 @@ fail=0
 check() { if "$@"; then echo "  ok    $*"; else echo "  FAIL  $*"; fail=1; fi; }
 check test -x /usr/libexec/strata/strata
 check grep -q 'inode/directory=io.github.lgse.Strata.desktop' /etc/xdg/mimeapps.list
+# Strata's "Extract here" / "Extract to…" for .tar.xz, .tar.bz2 and .tar.zst:
+# the wrapper copies the two actions into a new home once (and not again after
+# the user deletes one), and the program behind them unpacks real archives
+# without ever replacing anything.
+extract_ok() {
+    local h t out
+    h=$(mktemp -d) t=$(mktemp -d)
+    HOME=${h} XDG_CONFIG_HOME= XDG_STATE_HOME= strata --version >/dev/null || return 1
+    grep -qx 'program = "/usr/libexec/perihelion-extract"' "${h}/.config/strata/actions/perihelion-extract/action.toml" || return 1
+    grep -qx 'name = "Extract to…"' "${h}/.config/strata/actions/perihelion-extract-to/action.toml" || return 1
+    rm -rf "${h}/.config/strata/actions/perihelion-extract"
+    HOME=${h} XDG_CONFIG_HOME= XDG_STATE_HOME= strata --version >/dev/null || return 1
+    [[ ! -e ${h}/.config/strata/actions/perihelion-extract ]] || { echo "a deleted action came back"; return 1; }
+    mkdir -p "${t}/src/Theme/sub" && echo hi > "${t}/src/Theme/sub/a" && echo 2 > "${t}/src/b"
+    tar -C "${t}/src" -cJf "${t}/Theme.tar.xz" Theme
+    tar -C "${t}/src" --zstd -cf "${t}/two things.tar.zst" Theme b
+    tar -C "${t}/src" -cjf "${t}/x.tbz2" b
+    /usr/libexec/perihelion-extract "${t}/Theme.tar.xz" && /usr/libexec/perihelion-extract "${t}/Theme.tar.xz" || return 1
+    /usr/libexec/perihelion-extract "${t}/two things.tar.zst" && /usr/libexec/perihelion-extract "${t}/x.tbz2" || return 1
+    [[ -f ${t}/Theme/sub/a && -f "${t}/Theme (2)/sub/a" && -f "${t}/two things/b" && -f ${t}/b ]] || { ls -la "${t}"; return 1; }
+    echo junk > "${t}/bad.tar.xz"
+    if /usr/libexec/perihelion-extract "${t}/bad.tar.xz" 2>/dev/null; then echo "a broken archive reported success"; return 1; fi
+    out=$(find "${t}" -maxdepth 1 -name '.extract-*')
+    [[ -z ${out} ]] || { echo "work folder left behind: ${out}"; return 1; }
+    rm -rf "${h}" "${t}"
+}
+check extract_ok
+check rpm -q tar xz bzip2 zstd zenity
 check grep -qx 'install_weak_deps=False' /etc/dnf/dnf.conf
 check grep -q "PERIHELION_FLAVOR=${flavor}" /usr/share/perihelion/release
 check test -L /etc/systemd/system/display-manager.service
@@ -419,6 +447,8 @@ case "${flavor}" in
         check grep -qx '\~/Pictures/Wallpapers' /home/tester/.config/perihelionbar/wallpaper-dirs
         check grep -qx 'include /etc/xdg/kitty/kitty.conf' /home/tester/.config/kitty/kitty.conf
         check mango -p -c /home/tester/.config/mango/config.conf
+        # LYNX SHARE's plugin windows float; its main window stays tiled
+        check grep -qxF 'window_rule=is_floating:1,app_id:^LYNX$,title:^(?!\*? ?LYNX SHARE).+' /home/tester/.config/mango/cfg/rules.conf
         # Perihelion Settings' Mango pages: every key a row can write, with
         # its default, parses with this Mango (which rejects a key it doesn't
         # know: the made-up one must fail), so no switch can break the config.
