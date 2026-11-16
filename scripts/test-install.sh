@@ -415,6 +415,15 @@ case "${flavor}" in
             fi
         }
         check settings_keys_ok
+        # Render page: the lines its VRR and Direct scanout rows write
+        render_rules_ok() {
+            local f=/tmp/settings-render.conf
+            printf '%s\n' 'window_rule=vrr_only_fullscreen:1,app_id:.*' \
+                'monitor_rule=name:^DP-1$,width:1920,height:1080,refresh:60,x:0,y:0,vrr:1' \
+                'env=WLR_SCENE_DISABLE_DIRECT_SCANOUT,1' 'env=WLR_NO_HARDWARE_CURSORS,1' > "${f}"
+            mango -p -c "${f}"
+        }
+        check render_rules_ok
         # X11 apps (Vital and other X11-only software): Mango is built with
         # XWayland and the X server it starts is installed.
         check rpm -q xorg-x11-server-Xwayland
