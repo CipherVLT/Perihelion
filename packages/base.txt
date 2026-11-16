@@ -22,6 +22,13 @@ glibc-langpack-en
 dconf
 cracklib-dicts
 glibc-gconv-extra
+#   systemd-container: owns systemd-portabled.service. systemd-udev's
+#     %posttrans sets properties on that unit on every update; without the
+#     package dnf prints "Failed to set unit properties on
+#     systemd-portabled.service: Unit ... not found". The package only adds
+#     on-demand tools (machinectl, systemd-nspawn, portablectl) and daemons
+#     that start through D-Bus when one of them is used: nothing runs at boot.
+systemd-container
 # A terminal text editor (sudoedit needs one: nano-default-editor)
 nano
 nano-default-editor

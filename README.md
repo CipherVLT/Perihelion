@@ -31,6 +31,11 @@ on real hardware yet. Mango is the first flavor to test.
   folders opened from any app, "Show in folder" / "Open containing folder" in Firefox
   (`org.freedesktop.FileManager1`), Open/Save dialogs (the XDG FileChooser portal),
   and the Trash (`trash:///`, via gvfs)
+- **No portabled warning on updates:** `systemd-container` is installed so
+  `systemd-portabled.service` exists for systemd-udev's update scriptlet
+  (it would otherwise print "Unit systemd-portabled.service not found" on
+  every update). Nothing in it runs unless you use machinectl, nspawn or
+  portablectl
 - **Building from source:** git, gcc/g++, make, CMake, Meson/Ninja, pkg-config,
   autotools and patch, so `git clone` + `./build.sh` (or make/cmake/meson) works on a
   fresh install. A project's own `-devel` libraries come from `sudo dnf install`

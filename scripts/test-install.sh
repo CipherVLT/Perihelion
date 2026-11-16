@@ -121,6 +121,24 @@ build_ok() {
 }
 check build_ok
 check rpm -q dconf cracklib-dicts nano
+# systemd-udev's update scriptlet needs systemd-portabled.service to exist
+# (no "Unit systemd-portabled.service not found" on every dnf update), and
+# systemd-container, which brings it, must stay inert: nothing it ships is
+# enabled to start at boot.
+portabled_ok() {
+    local unit=/usr/lib/systemd/system/systemd-portabled.service u state
+    if [[ ! -f ${unit} ]]; then
+        echo "no ${unit}; it would come from: $(dnf5 -q provides "${unit}" 2>/dev/null | head -n 1)"
+        return 1
+    fi
+    echo "systemd-portabled.service is owned by $(rpm -qf --qf '%{NAME}\n' "${unit}")"
+    rpm -qf "${unit}" | grep -q '^systemd-container-' || return 1
+    for u in $(rpm -ql systemd-container | grep -E '^/usr/lib/systemd/system/[^/]+\.(service|socket|timer)$' | xargs -n 1 basename); do
+        state=$(systemctl is-enabled "${u}" 2>/dev/null || true)
+        if [[ ${state} == enabled ]]; then echo "${u} is enabled at boot"; return 1; fi
+    done
+}
+check portabled_ok
 check rpm -q fastfetch lm_sensors nethogs
 check grep -q '"format": "Perihelion Linux {arch}"' /usr/share/perihelion/fastfetch/config.jsonc
 os_name_ok() {
