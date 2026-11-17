@@ -69,6 +69,9 @@ install -Dm755 "${src}/perihelionbar/zig-out/bin/perihelion-bar" /usr/bin/perihe
 install -Dm755 "${src}/perihelionbar/zig-out/bin/perihelion-settings" /usr/bin/perihelion-settings
 install -Dm644 "${src}/perihelion-settings.desktop" /usr/share/applications/perihelion-settings.desktop
 install -Dm644 "${src}/assets/icons/perihelion-settings.svg" /usr/share/icons/hicolor/scalable/apps/perihelion-settings.svg
+# The same icon under the window's app ID, which GTK 4 and the compositors'
+# window lists look up for the open Settings window.
+install -Dm644 "${src}/assets/icons/perihelion-settings.svg" /usr/share/icons/hicolor/scalable/apps/io.github.ciphervlt.perihelion.Settings.svg
 
 # Perihelion Shell (desktop widgets, window overview); shares the bar's font code.
 (

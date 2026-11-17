@@ -228,9 +228,30 @@ wallpapers_imports_ok() { python3 -c 'import gi; gi.require_version("Gtk", "4.0"
 check wallpapers_imports_ok
 wallpapers_parses() { python3 -c 'import ast, sys; ast.parse(open(sys.argv[1]).read())' /usr/bin/perihelion-wallpapers; }
 check wallpapers_parses
-for helper in perihelion-power-menu perihelion-wallpaper-picker perihelion-keys perihelion-glass perihelion-wallpapers; do
+for helper in perihelion-power-menu perihelion-wallpaper-picker perihelion-keys perihelion-glass perihelion-wallpapers perihelion-launcher; do
     check test -x "/usr/bin/${helper}"
 done
+# Super+D opens fuzzel with the icon theme the dock, drawer, GTK and Qt use.
+# Run for real against a scratch home and a stand-in fuzzel that prints its
+# arguments: the default theme first, then a theme picked in Settings
+# (gsettings unset here, so the GTK file decides).
+check bash -n /usr/bin/perihelion-launcher
+launcher_theme_ok() {
+    local h=/tmp/ltest
+    rm -rf "${h}" && mkdir -p "${h}/bin" "${h}/.config/gtk-3.0" "${h}/.local/share/icons/Picked-dark"
+    printf '#!/bin/sh\necho "$@"\n' > "${h}/bin/fuzzel" && chmod +x "${h}/bin/fuzzel"
+    printf '[Icon Theme]\nName=Picked Dark\n' > "${h}/.local/share/icons/Picked-dark/index.theme"
+    local run=(env -i HOME="${h}" PATH="${h}/bin:/usr/bin:/bin" GSETTINGS_BACKEND=memory)
+    "${run[@]}" perihelion-launcher | grep -qx -- '--icon-theme=Numix-Circle' || { echo "default theme not used"; return 1; }
+    printf '[Settings]\ngtk-icon-theme-name=Picked Dark\n' > "${h}/.config/gtk-3.0/settings.ini"
+    "${run[@]}" perihelion-launcher --dmenu | grep -qx -- '--icon-theme=Picked-dark --dmenu' || { echo "picked theme not used"; return 1; }
+}
+check launcher_theme_ok
+case "${flavor}" in
+    mango)    check grep -rqx 'bind=SUPER,d,spawn,perihelion-launcher' /home/tester/.config/mango/ ;;
+    niri)     check grep -q 'Mod+D [^{]*{ spawn "perihelion-launcher"; }' /home/tester/.config/niri/config.kdl ;;
+    hyprland) check grep -qF 'bind(key("D"), hl.dsp.exec_cmd("perihelion-launcher"), "App launcher")' /usr/share/event-horizon/skel/hypr/hyprland.lua ;;
+esac
 check rpm -q playerctl gtk-layer-shell
 # nwg-drawer is the app drawer on Hyprland and Niri (Mango: Quickshell's, below)
 if [[ "${flavor}" != mango ]]; then
@@ -299,6 +320,9 @@ case "${flavor}" in
         check ldd /usr/bin/perihelion-settings
         check grep -qx 'Name=Perihelion Settings' /usr/share/applications/perihelion-settings.desktop
         check grep -aq 'perihelion-settings' /usr/share/icons/hicolor/icon-theme.cache
+        # The solar-gear Settings icon, also under the window's app ID
+        check grep -q '<title>Perihelion Settings</title>' /usr/share/icons/hicolor/scalable/apps/perihelion-settings.svg
+        check cmp -s /usr/share/icons/hicolor/scalable/apps/perihelion-settings.svg /usr/share/icons/hicolor/scalable/apps/io.github.ciphervlt.perihelion.Settings.svg
         check test ! -e /usr/bin/perihelionbar
         check rpm -q gtk4 libadwaita
         check grep -rqx 'bind=ALT,w,spawn,perihelion-shell overview toggle' /home/tester/.config/mango/

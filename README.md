@@ -26,7 +26,7 @@ on real hardware yet. Mango is the first flavor to test.
 ## What every flavor includes
 
 - **Login:** SDDM on a Wayland greeter, Pixie theme
-- **Terminal:** kitty. **Browser:** Firefox. **Launcher:** fuzzel
+- **Terminal:** kitty. **Browser:** Firefox. **Launcher:** fuzzel, opened by `perihelion-launcher` so its icons follow the icon theme you pick (same as the dock and app drawer)
 - **Files:** [Strata](https://github.com/lgse/strata), wired in as the file manager everywhere:
   folders opened from any app, "Show in folder" / "Open containing folder" in Firefox
   (`org.freedesktop.FileManager1`), Open/Save dialogs (the XDG FileChooser portal),
