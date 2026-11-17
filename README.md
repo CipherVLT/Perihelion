@@ -75,12 +75,12 @@ clipboard history and Super+T settings (Event Horizon).
 
 ## Look
 
-Every flavor: Numix-Circle icons, the Bibata Modern Classic cursor at 24 px,
+Every flavor: Adwaita icons, the Bibata Modern Classic cursor at 24 px,
 and DejaVu Sans Mono 11 pt in kitty, with kitty in Catppuccin Macchiato.
 Change the icons or cursor in `~/.config/gtk-3.0/settings.ini` and
 `gtk-4.0/settings.ini` (plus `gsettings set org.gnome.desktop.interface ...`),
 and the font in `~/.config/kitty/kitty.conf`.
-Qt apps follow qt6ct (Catppuccin Macchiato, Numix-Circle, DejaVu): run
+Qt apps follow qt6ct (Catppuccin Macchiato, Adwaita, DejaVu): run
 `qt6ct` to change them.
 
 **Glass.** kitty is see-through by default (Ctrl+Shift+A then M / L for

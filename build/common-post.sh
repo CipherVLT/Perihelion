@@ -179,17 +179,17 @@ else
     printf '0.0 0 0.0\n0\nUTC\n' > /etc/adjtime
 fi
 
-# --- Look: Numix-Circle icons, Bibata cursor, DejaVu Sans Mono --------------------
+# --- Look: Adwaita icons, Bibata cursor, DejaVu Sans Mono -------------------------
 # gsettings (GTK 4, portals, Event Horizon) and settings.ini (GTK 3, Event
 # Horizon's dock, Strata) both carry it; the compositors set the cursor too.
 log "common: icons, cursor, monospace font"
-for theme in /usr/share/icons/Numix-Circle /usr/share/icons/Bibata-Modern-Classic; do
-    [[ -d "${theme}" ]] || die "missing ${theme}"
+for theme in /usr/share/icons/Adwaita /usr/share/icons/Bibata-Modern-Classic; do
+    [[ -f "${theme}/index.theme" ]] || die "missing ${theme}"
 done
-for theme in /usr/share/icons/Numix /usr/share/icons/Numix-Circle; do
-    chmod -R u=rwX,go=rX "${theme}"
-    gtk-update-icon-cache -qf "${theme}" || true
-done
+# Adwaita is the default icon theme; Numix is not shipped (any copy an older
+# build staged is removed so it can't come back as a default).
+rm -rf /usr/share/icons/Numix /usr/share/icons/Numix-Circle /usr/share/icons/Numix-Light \
+    /usr/share/licenses/numix-icon-theme /usr/share/licenses/numix-icon-theme-circle
 if [[ ! -f /etc/dconf/profile/user ]]; then
     install -d /etc/dconf/profile
     printf 'user-db:user\nsystem-db:local\n' > /etc/dconf/profile/user

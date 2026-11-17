@@ -68,10 +68,18 @@ install -Dm755 "${src}/perihelionbar/zig-out/bin/perihelion-bar" /usr/bin/perihe
 # switch for each desktop widget (only its Bar pages are shown).
 install -Dm755 "${src}/perihelionbar/zig-out/bin/perihelion-settings" /usr/bin/perihelion-settings
 install -Dm644 "${src}/perihelion-settings.desktop" /usr/share/applications/perihelion-settings.desktop
-install -Dm644 "${src}/assets/icons/perihelion-settings.svg" /usr/share/icons/hicolor/scalable/apps/perihelion-settings.svg
-# The same icon under the window's app ID, which GTK 4 and the compositors'
-# window lists look up for the open Settings window.
-install -Dm644 "${src}/assets/icons/perihelion-settings.svg" /usr/share/icons/hicolor/scalable/apps/io.github.ciphervlt.perihelion.Settings.svg
+# Its icon, the solar gear: PNGs at every size (fuzzel, the dock, the app
+# drawer and GTK all read them), under the launcher's icon name and the
+# window's app ID (window lists, task bars, GTK 4's window icon). The old
+# scalable cog is removed so no theme lookup can prefer it.
+rm -f /usr/share/icons/hicolor/scalable/apps/perihelion-settings.svg \
+    /usr/share/icons/hicolor/scalable/apps/io.github.ciphervlt.perihelion.Settings.svg
+for png in "${src}"/assets/icons/perihelion-settings/*.png; do
+    size=$(basename "${png}" .png)
+    for name in perihelion-settings io.github.ciphervlt.perihelion.Settings; do
+        install -Dm644 "${png}" "/usr/share/icons/hicolor/${size}x${size}/apps/${name}.png"
+    done
+done
 
 # Perihelion Shell (desktop widgets, window overview); shares the bar's font code.
 (
@@ -101,17 +109,11 @@ install -m644 "${src}"/quickshell/appdrawer/*.qml /usr/share/perihelion/quickshe
 # Its wallpaper engine (list, Bing, Wallhaven); applying is handed on to
 # perihelion-wallpaper, Perihelion's one wallpaper owner.
 install -Dm755 "${src}/perihelionbar-wallpaper" /usr/bin/perihelionbar-wallpaper
-# The dock's trash icon: Numix's grey can when empty, its red one with files
-# (Numix ships in the image, see scripts/fetch-numix.sh); Perihelion's own
-# look-alikes when Numix isn't there.
+# The dock's trash: the icon theme's own user-trash first; these stand in
+# for a theme without one.
 for v in "" "-full"; do
-    dst=/usr/share/icons/hicolor/scalable/apps/perihelion-trash${v}.svg
-    numix=/usr/share/icons/Numix/48/places/user-trash${v}.svg
-    if [[ -f "${numix}" ]]; then
-        install -Dm644 "${numix}" "${dst}"
-    else
-        install -Dm644 "${src}/assets/icons/perihelion-trash${v}.svg" "${dst}"
-    fi
+    install -Dm644 "${src}/assets/icons/perihelion-trash${v}.svg" \
+        "/usr/share/icons/hicolor/scalable/apps/perihelion-trash${v}.svg"
 done
 printf '#!/bin/sh\n# perihelionbar calls this after a wallpaper change; Perihelion themes with Catppuccin.\nexec perihelion-theme --force "$@"\n' > /usr/bin/perihelionbar-matugen
 chmod 755 /usr/bin/perihelionbar-matugen

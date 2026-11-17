@@ -157,10 +157,9 @@ libtool
 patch
 
 # --- Fonts -----------------------------------------------------------------------
+# Look: Adwaita icons (the default theme), Bibata cursor (Terra), DejaVu Sans
+# Mono (terminal).
 adwaita-icon-theme
-# Look: Bibata cursor (Terra), DejaVu Sans Mono (terminal). Numix-Circle
-# icons come from scripts/fetch-numix.sh (Fedora dropped them).
-#, DejaVu Sans Mono (terminal)
 bibata-cursor-theme
 dejavu-sans-mono-fonts
 # Qt apps' look (icons, colors, fonts): qt6ct, picked up through

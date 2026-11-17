@@ -197,9 +197,11 @@ check greeter_ok
 check grep -qx 'backgroundColor=#24273A' /usr/share/sddm/themes/pixie/theme.conf
 check grep -q 'KERNEL=="ntsync"' /etc/udev/rules.d/60-ntsync.rules
 check rpm -q zenity cabextract unzip mpv exfatprogs ntfs-3g gvfs-mtp google-noto-sans-cjk-vf-fonts gstreamer1-plugins-good gamemode mangohud
-# Look: Numix-Circle icons, Bibata cursor 24 px, DejaVu Sans Mono 11 pt
-check test -f /usr/share/icons/Numix-Circle/index.theme
-check test -f /usr/share/icons/Numix/index.theme
+# Look: Adwaita icons (the default theme), Bibata cursor 24 px, DejaVu Sans
+# Mono 11 pt. Numix is not in the image at all.
+check test -f /usr/share/icons/Adwaita/index.theme
+no_numix_ok() { ! compgen -G '/usr/share/icons/Numix*' >/dev/null && ! grep -rqi numix /usr/share/perihelion/gtk /usr/share/perihelion/qt6ct /etc/dconf/db/local.d /home/tester/.config/gtk-3.0 /home/tester/.config/gtk-4.0 /home/tester/.config/qt6ct; }
+check no_numix_ok
 check rpm -q qt6ct dejavu-lgc-sans-fonts imv cava
 check test -f /usr/share/qt6ct/colors/Catppuccin-Macchiato.conf
 check grep -qx 'color_scheme_path=/usr/share/qt6ct/colors/Catppuccin-Macchiato.conf' /home/tester/.config/qt6ct/qt6ct.conf
@@ -207,7 +209,7 @@ check grep -qx 'image/png=imv.desktop;' /etc/xdg/mimeapps.list
 check grep -qx "gradient_color_2 = '#f5bde6'" /home/tester/.config/cava/config
 term_cava_ok() { ! timeout 5 cava -p /home/tester/.config/cava/config 2>&1 </dev/null | head -c 2000 | grep -qiE 'loading config|built without'; }
 check term_cava_ok
-check grep -qx 'icon_theme=Numix-Circle' /home/tester/.config/qt6ct/qt6ct.conf
+check grep -qx 'icon_theme=Adwaita' /home/tester/.config/qt6ct/qt6ct.conf
 check rpm -q bibata-cursor-theme dejavu-sans-mono-fonts
 check test -d /usr/share/icons/Bibata-Modern-Classic/cursors
 check grep -qx 'font_family DejaVu Sans Mono' /etc/xdg/kitty/kitty.conf
@@ -215,9 +217,10 @@ check grep -qx 'font_size 11.0' /etc/xdg/kitty/kitty.conf
 dejavu_ok() { fc-match 'DejaVu Sans Mono' | grep -q '^DejaVuSansMono\.ttf'; }
 check dejavu_ok
 check grep -qx 'gtk-cursor-theme-name=Bibata-Modern-Classic' /home/tester/.config/gtk-3.0/settings.ini
-check grep -qx 'gtk-icon-theme-name=Numix-Circle' /home/tester/.config/gtk-4.0/settings.ini
+check grep -qx 'gtk-icon-theme-name=Adwaita' /home/tester/.config/gtk-4.0/settings.ini
+check grep -qx 'gtk-icon-theme-name=Adwaita' /home/tester/.config/gtk-3.0/settings.ini
 check grep -qx 'CursorTheme=Bibata-Modern-Classic' /etc/sddm.conf.d/10-perihelion.conf
-dconf_ok() { [[ "$(dconf read /org/gnome/desktop/interface/cursor-theme 2>/dev/null)" == "'Bibata-Modern-Classic'" ]]; }
+dconf_ok() { [[ "$(dconf read /org/gnome/desktop/interface/cursor-theme 2>/dev/null)" == "'Bibata-Modern-Classic'" && "$(dconf read /org/gnome/desktop/interface/icon-theme 2>/dev/null)" == "'Adwaita'" ]]; }
 check dconf_ok
 # kitty: Catppuccin Macchiato in every flavor
 check grep -qx 'background              #24273A' /etc/xdg/kitty/kitty.conf
@@ -242,7 +245,7 @@ launcher_theme_ok() {
     printf '#!/bin/sh\necho "$@"\n' > "${h}/bin/fuzzel" && chmod +x "${h}/bin/fuzzel"
     printf '[Icon Theme]\nName=Picked Dark\n' > "${h}/.local/share/icons/Picked-dark/index.theme"
     local run=(env -i HOME="${h}" PATH="${h}/bin:/usr/bin:/bin" GSETTINGS_BACKEND=memory)
-    "${run[@]}" perihelion-launcher | grep -qx -- '--icon-theme=Numix-Circle' || { echo "default theme not used"; return 1; }
+    "${run[@]}" perihelion-launcher | grep -qx -- '--icon-theme=Adwaita' || { echo "default theme not used"; return 1; }
     printf '[Settings]\ngtk-icon-theme-name=Picked Dark\n' > "${h}/.config/gtk-3.0/settings.ini"
     "${run[@]}" perihelion-launcher --dmenu | grep -qx -- '--icon-theme=Picked-dark --dmenu' || { echo "picked theme not used"; return 1; }
 }
@@ -252,6 +255,12 @@ case "${flavor}" in
     niri)     check grep -q 'Mod+D [^{]*{ spawn "perihelion-launcher"; }' /home/tester/.config/niri/config.kdl ;;
     hyprland) check grep -qF 'bind(key("D"), hl.dsp.exec_cmd("perihelion-launcher"), "App launcher")' /usr/share/event-horizon/skel/hypr/hyprland.lua ;;
 esac
+# Event Horizon shows desktop widgets only from a saved layout: none is
+# shipped, so a fresh Hyprland or Niri desktop has no weather or calendar.
+if [[ "${flavor}" != mango ]]; then
+    no_eh_widgets_ok() { ! find /etc/skel /home/tester /usr/share/event-horizon -name desktop_widgets_layout.txt 2>/dev/null | grep -q .; }
+    check no_eh_widgets_ok
+fi
 check rpm -q playerctl gtk-layer-shell
 # nwg-drawer is the app drawer on Hyprland and Niri (Mango: Quickshell's, below)
 if [[ "${flavor}" != mango ]]; then
@@ -312,17 +321,42 @@ case "${flavor}" in
         check ldd /usr/bin/perihelion-shell
         check test -f /home/tester/.config/perihelionbar/shell.json
         check test -f /home/tester/.config/perihelionbar/matugen.json
-        # Minimal desktop: only weather and calendar on, see-through cards
-        minimal_widgets_ok() { ! grep -qxE 'weather|calendar' /home/tester/.config/perihelionbar/widgets-disabled && [[ $(grep -c . /home/tester/.config/perihelionbar/widgets-disabled) -eq 6 ]]; }
+        # Clean desktop: every widget off on a fresh install, weather and
+        # calendar included; see-through cards when switched on
+        minimal_widgets_ok() { local w; for w in weather calendar clock media system watch note1 icons; do grep -qx "${w}" /home/tester/.config/perihelionbar/widgets-disabled || { echo "widget ${w} is on"; return 1; }; done; }
         check minimal_widgets_ok
         check grep -q '"card_bg_opacity": 25' /home/tester/.config/perihelionbar/shell.json
         check test -x /usr/bin/perihelion-settings
         check ldd /usr/bin/perihelion-settings
         check grep -qx 'Name=Perihelion Settings' /usr/share/applications/perihelion-settings.desktop
         check grep -aq 'perihelion-settings' /usr/share/icons/hicolor/icon-theme.cache
-        # The solar-gear Settings icon, also under the window's app ID
-        check grep -q '<title>Perihelion Settings</title>' /usr/share/icons/hicolor/scalable/apps/perihelion-settings.svg
-        check cmp -s /usr/share/icons/hicolor/scalable/apps/perihelion-settings.svg /usr/share/icons/hicolor/scalable/apps/io.github.ciphervlt.perihelion.Settings.svg
+        # The solar-gear Settings icon: PNGs at every size under the icon
+        # name and the window's app ID, and no scalable cog left to win a
+        # lookup. Its pixels: a dark gear around a bright core (not the old
+        # blue cog), checked at 48 px.
+        settings_icon_ok() {
+            ! compgen -G '/usr/share/icons/hicolor/scalable/apps/perihelion-settings*' >/dev/null &&
+            ! compgen -G '/usr/share/icons/hicolor/scalable/apps/io.github.ciphervlt.perihelion.Settings*' >/dev/null &&
+            python3 - <<'PY'
+import gi
+gi.require_version("GdkPixbuf", "2.0")
+from gi.repository import GdkPixbuf
+for s in (16, 22, 24, 32, 48, 64, 96, 128, 256, 512):
+    for n in ("perihelion-settings", "io.github.ciphervlt.perihelion.Settings"):
+        p = GdkPixbuf.Pixbuf.new_from_file(f"/usr/share/icons/hicolor/{s}x{s}/apps/{n}.png")
+        assert (p.get_width(), p.get_height()) == (s, s), (n, s)
+p = GdkPixbuf.Pixbuf.new_from_file("/usr/share/icons/hicolor/48x48/apps/perihelion-settings.png")
+px, n, rs = p.get_pixels(), p.get_n_channels(), p.get_rowstride()
+def at(x, y):
+    o = y * rs + x * n
+    return px[o], px[o + 1], px[o + 2]
+r, g, b = at(24, 24)  # the sun at the centre: warm and bright
+assert r > 200 and g > 150 and b < r, ("centre", r, g, b)
+blue = sum(1 for y in range(48) for x in range(48) if at(x, y)[2] > 150 and at(x, y)[2] > at(x, y)[0] + 60)
+assert blue < 20, ("blue cog pixels", blue)
+PY
+        }
+        check settings_icon_ok
         check test ! -e /usr/bin/perihelionbar
         check rpm -q gtk4 libadwaita
         check grep -rqx 'bind=ALT,w,spawn,perihelion-shell overview toggle' /home/tester/.config/mango/
@@ -345,7 +379,7 @@ case "${flavor}" in
         check grep -rqx 'source_optional=~/.config/mango/colors.conf' /home/tester/.config/mango/
         rm -rf /tmp/ttest && mkdir -p /tmp/ttest && cp -a /home/tester/.config /tmp/ttest/
         theme_ok() {
-            local img=/usr/share/icons/hicolor/scalable/apps/perihelion-settings.svg
+            local img=/usr/share/icons/hicolor/512x512/apps/perihelion-settings.png
             [[ -f /usr/share/backgrounds/perihelion/default.png ]] && img=/usr/share/backgrounds/perihelion/default.png
             HOME=/tmp/ttest XDG_CONFIG_HOME=/tmp/ttest/.config XDG_CACHE_HOME=/tmp/ttest/.cache \
                 perihelion-theme --force "${img}" &&
@@ -377,7 +411,7 @@ case "${flavor}" in
         check grep -q 'perihelion-theme --force --glass' /usr/bin/perihelion-glass
         check command -v matugen
         material_ok() {
-            local img=/usr/share/icons/hicolor/scalable/apps/perihelion-settings.svg
+            local img=/usr/share/icons/hicolor/512x512/apps/perihelion-settings.png
             [[ -f /usr/share/backgrounds/perihelion/default.png ]] && img=/usr/share/backgrounds/perihelion/default.png
             HOME=/tmp/ttest XDG_CONFIG_HOME=/tmp/ttest/.config XDG_CACHE_HOME=/tmp/ttest/.cache \
                 perihelion-theme --force --style material --color '#8839ef' | grep -q 'Material You' &&
