@@ -530,6 +530,38 @@ PY
             mango -p -c "${f}"
         }
         check render_rules_ok
+        # Display page: Mango accepts every key its monitor controls write
+        # (mode with an exact refresh, scale, transform, a generated ICC
+        # profile, HDR with EDID luminance, disable, bit depth); wlr-randr
+        # lists the modes; the night light runs wlsunset with the schedule
+        # set in Settings, and Mango starts it at login.
+        display_rules_ok() {
+            local f=/tmp/settings-display.conf
+            printf '%s\n' 'monitor_rule=name:DP-1, width:2560, height:1440, refresh:239.960, x:0, y:0, scale:1.25, rr:1, icc:/home/tester/.local/share/perihelion/icc/DP-1.dcip3.icc' \
+                'monitor_rule=name:DP-2, width:2560, height:1440, refresh:143.912, x:2048, y:0, hdr:1, hdr_max_lum:1015.6, hdr_max_avg_lum:403.0, hdr_min_lum:0.0123' \
+                'monitor_rule=name:HDMI-A-1, x:0, y:1440, disable:1' 'hdr_depth = 1' > "${f}"
+            mango -p -c "${f}"
+        }
+        check display_rules_ok
+        check rpm -q wlr-randr wlsunset
+        check grep -aq 'Color management' /usr/bin/perihelion-settings
+        check grep -qx 'exec_once=perihelion-nightlight' /home/tester/.config/mango/cfg/autostart.conf
+        nightlight_ok() {
+            local d=/tmp/nl-test/perihelion out
+            mkdir -p "${d}"
+            printf 'enabled=1\nschedule=manual\nday=6200\nnight=3400\nstart=1290\nend=375\nfollow_sun=0\nlat=41.88\nlon=-87.63\n' > "${d}/nightlight.conf"
+            out=$(XDG_CONFIG_HOME=/tmp/nl-test perihelion-nightlight --print)
+            [[ ${out} == 'wlsunset -t 3400 -T 6200 -S 06:15 -s 21:30' ]] || { echo "manual: ${out}"; return 1; }
+            sed -i 's/follow_sun=0/follow_sun=1/' "${d}/nightlight.conf"
+            out=$(XDG_CONFIG_HOME=/tmp/nl-test perihelion-nightlight --print)
+            [[ ${out} == 'wlsunset -t 3400 -T 6200 -l 41.88 -L -87.63' ]] || { echo "sun: ${out}"; return 1; }
+            # wlsunset itself accepts these options (it stops at once: no compositor)
+            wlsunset -h 2>&1 | grep -q -- '-S' || { echo "this wlsunset has no -S"; return 1; }
+            # Off: nothing is started
+            XDG_CONFIG_HOME=/tmp/nl-none XDG_RUNTIME_DIR=/tmp/nl-test perihelion-nightlight start &&
+                [[ ! -e /tmp/nl-test/perihelion-nightlight.pid ]]
+        }
+        check nightlight_ok
         # X11 apps (Vital and other X11-only software): Mango is built with
         # XWayland and the X server it starts is installed.
         check rpm -q xorg-x11-server-Xwayland

@@ -16,6 +16,10 @@ librsvg2
 pulseaudio-utils
 # Perihelion Bar Config (GTK 4 + libadwaita)
 libadwaita
+# Settings → Display: wlr-randr lists every monitor's modes (and Detect
+# monitors uses it); wlsunset is the night light (perihelion-nightlight)
+wlr-randr
+wlsunset
 # perihelion-weather (Open-Meteo JSON for the weather widget)
 jq
 # The app drawer (Quickshell); python3 for its wallpaper engine's downloads

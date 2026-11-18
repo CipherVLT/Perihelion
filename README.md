@@ -35,6 +35,10 @@ on real hardware yet. Mango is the first flavor to test.
   .tar and .tar.gz itself; Perihelion adds "Extract here" and "Extract to…" for
   .tar.xz, .tar.bz2, .tar.zst (and .xz, .bz2, .zst files) as two Strata actions
   (Settings → Actions) run by `/usr/libexec/perihelion-extract`. Nothing is overwritten
+- **Display settings (Mango):** Perihelion Settings → Display sets each monitor's
+  resolution, refresh rate, scale, rotation, bit depth and colour management
+  (auto, srgb, dcip3, dp3, adobe, wide, edid, hdr, hdredid), and the night light
+  (wlsunset: schedule, temperatures, follow the sun). Changes apply at once
 - **DAW plugin windows float (Mango):** LYNX SHARE's plugin editors open as floating
   windows over the DAW instead of being tiled and squashed (`cfg/rules.conf`)
 - **No portabled warning on updates:** `systemd-container` is installed so
