@@ -157,10 +157,13 @@ For the visualizer filling the whole bar behind the modules, try
 
 ## Desktop widgets (perihelionbar-shell)
 
-Ten widgets can sit on the wallpaper: clock, weather, media (now playing),
-system, calendar, watch (analog), notes, desktop icons, fastfetch (system
-info) and processes (the busiest programs). Perihelion starts with just the
-calendar and weather, on see-through cards.
+Twelve widgets can sit on the wallpaper: clock, weather, media (now
+playing), system, calendar, watch (analog), notes, desktop icons, fastfetch
+(system info), processes (the busiest programs), network (download and
+upload speed) and user (your name and uptime), on see-through cards.
+Perihelion starts with all of them switched off
+(`/usr/share/perihelion/perihelionbar/widgets-disabled` lists every one);
+turn on the ones you want in Perihelion Settings.
 
 - **Add or remove:** open **Perihelion Settings** from the app launcher (Super+D)
   or the app drawer (Super+A). Under *Appearance → Desktop Widgets*, each
@@ -169,7 +172,9 @@ calendar and weather, on see-through cards.
   clock face (digital, flip, stacked or classic; 24-hour, seconds, date),
   the System card's style (bars or ring gauges), temperature and weather
   units, what clicking the weather does, how many programs the Processes
-  card lists, and note tabs and checklists.
+  card lists, the Network graph and how often it reads, the User card's
+  host line and uptime wording, how many reminders the Calendar lists, and
+  note tabs and checklists.
 - **Remove one quickly:** hold **Alt** and right-click it. Turn it back on in
   Perihelion Settings; it comes back where it was.
 - **Move:** hold **Ctrl** and drag a card.
@@ -217,10 +222,23 @@ What some of them need:
 - **Processes:** the busiest programs by CPU or memory; click to switch.
   It only lists them.
 - **Calendar reminders:** `~/.config/perihelionbar/reminders.txt`, one per line as
-  `2026-11-25 18:00 Dinner`.
+  `2026-11-25 18:00 Dinner` (or `2026-11-25 18:00 2 Dinner` to be notified
+  2 days early). Click a day to add or remove one. `"calendar_reminders"`
+  (0 to 6, default 0 = off) lists today's and the next reminders under the
+  month, under a *Reminders* header; click a row to open its day.
+- **Network:** download and upload speed over wired, Wi-Fi and mobile
+  connections (VPNs, bridges and containers aren't counted twice), with a
+  graph of the last 60 readings. `"network_graph"` (default `true`) shows the
+  graph; `"network_interval_seconds"` (1 to 10, default 2) sets how often it
+  reads `/proc/net/dev`.
+- **User:** your name, `user@host` and the uptime, redrawn once a minute.
+  `"user_host"` (default `true`) shows the `user@host` line;
+  `"user_uptime_short"` (default `false`) always uses `up 3h 5m` instead of
+  `up 3 hours, 5 minutes`.
 
 By hand: `~/.config/perihelionbar/widgets-disabled` lists hidden widgets (ids
-`clock weather media system calendar watch note1 icons fastfetch processes`,
+`clock weather media system calendar watch note1 icons fastfetch processes
+network user`,
 one per line), and `~/.config/perihelionbar/shell.json` holds positions in
 pixels and the card options (its keys are listed in Perihelion Shell's
 README). After editing: `pkill -f '^(/usr/bin/)?perihelion-shell( |$)'; setsid -f perihelion-shell`
