@@ -361,6 +361,10 @@ PY
         check test ! -e /usr/bin/perihelionbar
         check rpm -q gtk4 libadwaita
         check grep -rqx 'bind=ALT,w,spawn,perihelion-shell overview toggle' /home/tester/.config/mango/
+        # Super+I opens Glance, and nothing else claims Super+I.
+        check grep -rqx 'bind=SUPER,i,spawn,perihelion-shell glance toggle' /home/tester/.config/mango/
+        glance_bind_once() { [ "$(grep -rhiE '^bind[a-z]*=SUPER,i,' /home/tester/.config/mango/ | wc -l)" = 1 ]; }
+        check glance_bind_once
         check grep -rqx 'exec_once=perihelion-shell' /home/tester/.config/mango/
         check grep -rqx 'bind=SUPER,g,spawn,perihelion-glass' /home/tester/.config/mango/
         check grep -rqx 'exec_once=perihelion-bar-start' /home/tester/.config/mango/

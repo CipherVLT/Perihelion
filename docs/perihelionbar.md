@@ -199,6 +199,34 @@ logo. Windows stop above the dock.
 For the visualizer filling the whole bar behind the modules, try
 `"bg_mode": "cava"` with `"cava_style": "curve"` and `"cava_bg_strength": 45`.
 
+## Glance (Super+I)
+
+**Super+I** opens Glance over your windows: a glass panel in the middle of the
+screen, the rest dimmed, with tabs along the top (**Overview**, **Media**,
+**Weather**) and a gear that opens Perihelion Settings. **Esc**, or a click
+outside the panel, closes it; Super+I again does too.
+
+The Overview tab shows the desktop cards, drawn exactly as on the desktop:
+Clock and Weather on the left, the Calendar in the middle (its arrows step
+through months), User and Media on the right (the media buttons work), and
+System along the bottom. Clicking the Weather card opens the Weather tab,
+and clicking the Media card anywhere but its buttons opens the Media tab.
+For now those two tabs say "Coming soon". Glance uses its own copies of the
+cards, so it works with every desktop card switched off. It does need
+perihelion-shell running, which the clock card keeps on a fresh install.
+
+Glance costs nothing while it's closed. Open, the cards update on their own
+schedules and the panel is only drawn again when something on it changes.
+The weather is the answer the bar and the desktop card already share.
+
+- **Settings:** *Appearance → Glance*: *Glance dashboard (Super+I)* turns it
+  on or off, and *Opens on* picks the first page. In
+  `~/.config/perihelionbar/shell.json` these are `"glance_enabled": true` and
+  `"glance_start_tab": "overview"` (or `"media"`, `"weather"`).
+- **From a script or another key:** `perihelion-shell glance [toggle|open|close] [overview|media|weather]`.
+
+The dock and the Alt+W overview are unchanged.
+
 ## Desktop widgets (perihelionbar-shell)
 
 Eleven widgets can sit on the wallpaper: clock, weather, media (now
