@@ -64,6 +64,9 @@
         "kind": "notifications"
       },
       {
+        "kind": "control_center"
+      },
+      {
         "kind": "network"
       },
       {

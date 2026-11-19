@@ -45,7 +45,7 @@ The bar has three groups:
 |---|---|
 | left, center | `workspaces`, `mpris` (now playing), `clock`, `launchers` |
 | left (Perihelion) | `cava` as a mirrored sound wave, best right after `mpris` |
-| right | `power`, `battery`, `volume`, `notifications` (bell and notification panel), `network`, `tray`, `layout` (Mango layout picker), `cava`, `cpu`, `cpu_temp`, `ram`, `disk`, `weather`, `custom_script`, `drawer_toggle` |
+| right | `power`, `battery`, `volume`, `notifications` (bell and notification panel), `control_center` (sliders and quick switches), `network`, `tray`, `layout` (Mango layout picker), `cava`, `cpu`, `cpu_temp`, `ram`, `disk`, `weather`, `custom_script`, `drawer_toggle` |
 
 A module put in a group that doesn't draw it is silently skipped.
 
@@ -156,6 +156,23 @@ the text (mako's history has no times). Below the list:
 - **Clear all**: dismisses the pop-ups and empties the panel.
 
 A dimmed bell means mako isn't running; the panel then says so.
+
+## Control Center
+
+The sliders icon (`control_center`, on by default;
+`{ "kind": "control_center", "enabled": false }` hides it) opens a panel with:
+
+- **Volume** and **Brightness** sliders (click the speaker to mute). The
+  Brightness slider is dimmed on machines without a backlight.
+- **Wi-Fi** on/off and the network you're on ("No Wi-Fi" without Wi-Fi hardware).
+- **Bluetooth** on/off ("No adapter" without one).
+- **Power**: click for the next power profile (Saver, Balanced, Performance).
+- **Keep awake**: no idle lock while it's on. The bar holds an idle inhibitor,
+  so it ends when the bar quits or you log out; it doesn't block the lock on
+  suspend.
+- **Do not disturb**: the same switch as in the notifications panel.
+
+A dimmed switch does nothing: the hardware or the service behind it isn't there.
 
 ## Brightness OSD
 
