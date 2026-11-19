@@ -171,10 +171,10 @@ perihelion-shell running, and the Alt+W overview with it.
   widget has a switch, and the desktop updates right away.
 - **Change how they look:** *Appearance → Desktop Card Options* sets the
   clock face (digital, flip, stacked or classic; 24-hour, seconds, date),
-  the System card's style (bars or ring gauges), temperature and weather
+  the System card's style (columns, bars or ring gauges), temperature and weather
   units, what clicking the weather does, how many programs the Processes
   card lists, the Network graph and how often it reads, the User card's
-  host line and uptime wording, how many reminders the Calendar lists, and
+  heading, uptime wording and name line, how many reminders the Calendar lists, and
   note tabs and checklists.
 - **Remove one quickly:** hold **Alt** and right-click it. Turn it back on in
   Perihelion Settings; it comes back where it was.
@@ -215,27 +215,35 @@ What some of them need:
   `- [ ] ` show as checkboxes you can tick, `- ` as bullets, `# ` as
   headings. Each note is a plain file, `~/.config/perihelionbar/notes/note1.txt`
   to `note9.txt`; edits made elsewhere show up by themselves.
-- **System:** CPU, memory, GPU and temperatures, as bars or ring gauges.
-  With two GPUs, click it to switch.
+- **System:** seven columns by default: CPU, CPU temperature, memory, GPU
+  temperature, GPU busy, download and upload, each a value over a thin bar
+  and an icon. A reading the computer doesn't have (no GPU sensor in a
+  virtual machine) is dimmed with "n/a". `"system_style"` can also be
+  `"bars"` or `"rings"`. With two GPUs, click it to switch.
 - **Fastfetch** shows the same logo and sections as fastfetch in a terminal
   (`/usr/share/perihelion/fastfetch/config.jsonc`, or your own
-  `~/.config/fastfetch/config.jsonc`).
+  `~/.config/fastfetch/config.jsonc`). Shell is your login shell, Terminal
+  the terminal Super+Return opens (kitty) with the font from its config, and
+  Wmtheme the GTK theme. Rows with nothing to show are left out.
 - **Processes:** the busiest programs by CPU or memory; click to switch.
   It only lists them.
 - **Calendar reminders:** `~/.config/perihelionbar/reminders.txt`, one per line as
   `2026-11-25 18:00 Dinner` (or `2026-11-25 18:00 2 Dinner` to be notified
   2 days early). Click a day to add or remove one. `"calendar_reminders"`
   (0 to 6, default 0 = off) lists today's and the next reminders under the
-  month, under a *Reminders* header; click a row to open its day.
+  month, under a *Reminders* header; click a row to open its day. The
+  calendar marks today with a soft disc, holidays in the holiday colour and
+  reminder days with a short bar, and names the next holiday under the month.
 - **Network:** download and upload speed over wired, Wi-Fi and mobile
   connections (VPNs, bridges and containers aren't counted twice), with a
   graph of the last 60 readings. `"network_graph"` (default `true`) shows the
   graph; `"network_interval_seconds"` (1 to 10, default 2) sets how often it
   reads `/proc/net/dev`.
-- **User:** your name, `user@host` and the uptime, redrawn once a minute.
-  `"user_host"` (default `true`) shows the `user@host` line;
-  `"user_uptime_short"` (default `false`) always uses `up 3h 5m` instead of
-  `up 3 hours, 5 minutes`.
+- **User:** the distro logo (Fedora's) on a rounded tile, `user@host` as
+  the heading and the uptime, redrawn once a minute. `"user_host"` (default
+  `true`) puts the host in the heading; `"user_uptime_short"` (default
+  `false`) always uses `2h 39m` instead of `2 hours, 39 mins`;
+  `"user_show_name"` (default `false`) adds your full name.
 
 By hand: `~/.config/perihelionbar/widgets-disabled` lists hidden widgets (ids
 `clock weather media system calendar watch note1 icons fastfetch processes
