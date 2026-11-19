@@ -89,7 +89,7 @@ Qt apps follow qt6ct (Catppuccin Macchiato, Adwaita, DejaVu): run
 
 **Glass.** kitty is see-through by default (Ctrl+Shift+A then M / L for
 more or less). On Mango, GTK apps (Files, Settings, dialogs, file pickers)
-are frosted glass by default, Event Horizon style: perihelion-theme makes
+are frosted glass by default: perihelion-theme makes
 only their backgrounds see-through, tinted with the wallpaper theme, so text
 stays sharp, and Mango blurs the wallpaper behind them (4 soft passes, a
 touch darker and more saturated, cached once per wallpaper). Menus and
