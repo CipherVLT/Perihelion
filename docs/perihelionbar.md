@@ -157,13 +157,19 @@ For the visualizer filling the whole bar behind the modules, try
 
 ## Desktop widgets (perihelionbar-shell)
 
-Eight widgets can sit on the wallpaper: clock, weather, media (now playing),
-system, calendar, watch (analog), sticky note, and desktop icons. Perihelion
-starts with just the calendar and weather, on see-through cards.
+Ten widgets can sit on the wallpaper: clock, weather, media (now playing),
+system, calendar, watch (analog), notes, desktop icons, fastfetch (system
+info) and processes (the busiest programs). Perihelion starts with just the
+calendar and weather, on see-through cards.
 
 - **Add or remove:** open **Perihelion Settings** from the app launcher (Super+D)
   or the app drawer (Super+A). Under *Appearance → Desktop Widgets*, each
   widget has a switch, and the desktop updates right away.
+- **Change how they look:** *Appearance → Desktop Card Options* sets the
+  clock face (digital, flip, stacked or classic; 24-hour, seconds, date),
+  the System card's style (bars or ring gauges), temperature and weather
+  units, what clicking the weather does, how many programs the Processes
+  card lists, and note tabs and checklists.
 - **Remove one quickly:** hold **Alt** and right-click it. Turn it back on in
   Perihelion Settings; it comes back where it was.
 - **Move:** hold **Ctrl** and drag a card.
@@ -182,24 +188,43 @@ same file.
 
 What some of them need:
 
-- **Weather** comes from Open-Meteo (`perihelion-weather`; free, no key,
-  NOAA's models in the US). Set your place on the first line of
-  `~/.config/perihelionbar/weather-location`: `City, ST` (US), `City, FR` (other
-  countries) or `latitude,longitude`, for example
-  `echo "DeSoto, TX" > ~/.config/perihelionbar/weather-location`. Without it, the
-  place is guessed from your internet address (a VPN can put you elsewhere).
-  Run `perihelion-weather` to see what the widget gets; the widget refetches
-  every 20 minutes, or restart it. After sunset a clear sky shows a moon.
+- **Weather** comes from Open-Meteo (free, no key, NOAA's models in the US),
+  read by the bar and the widget themselves; they share one answer, cached
+  in `~/.cache/perihelionbar/weather.cache`, refreshed every 15 minutes. Set
+  your place on the first line of `~/.config/perihelionbar/weather-location`:
+  `City, ST` (US), `City, FR` (other countries) or `latitude,longitude`, for
+  example `echo "DeSoto, TX" > ~/.config/perihelionbar/weather-location`
+  (`"weather_city"` in `shell.json` does the same). Without it, the place is
+  guessed from your internet address (a VPN can put you elsewhere).
+  Temperatures are in °F in the US and °C elsewhere unless you pick one.
+  The card shows a 7-day forecast; clicking it opens the full forecast
+  (weather.gov in the US, Windy elsewhere). After sunset a clear sky shows
+  a moon. `perihelion-weather` still prints the current weather in a
+  terminal, but the widget no longer uses it.
 - **Desktop icons** shows the `.desktop` files in `~/Desktop`. In Steam,
   *Manage → Add desktop shortcut* puts a game there.
-- **Sticky note:** click it and type; it saves to `~/.config/perihelionbar/notes/`.
+- **Notes:** click and type; Esc or a click elsewhere saves. Up to nine
+  notes, one tab each: **+** adds one, **×** deletes the open one (click it
+  twice; the text is kept in `notes/.last-deleted.txt`). Lines starting
+  `- [ ] ` show as checkboxes you can tick, `- ` as bullets, `# ` as
+  headings. Each note is a plain file, `~/.config/perihelionbar/notes/note1.txt`
+  to `note9.txt`; edits made elsewhere show up by themselves.
+- **System:** CPU, memory, GPU and temperatures, as bars or ring gauges.
+  With two GPUs, click it to switch.
+- **Fastfetch** shows the same logo and sections as fastfetch in a terminal
+  (`/usr/share/perihelion/fastfetch/config.jsonc`, or your own
+  `~/.config/fastfetch/config.jsonc`).
+- **Processes:** the busiest programs by CPU or memory; click to switch.
+  It only lists them.
 - **Calendar reminders:** `~/.config/perihelionbar/reminders.txt`, one per line as
   `2026-11-25 18:00 Dinner`.
 
 By hand: `~/.config/perihelionbar/widgets-disabled` lists hidden widgets (ids
-`clock weather media system calendar watch note1 icons`, one per line), and
-`~/.config/perihelionbar/shell.json` holds positions in pixels. After editing:
-`pkill -x perihelionbar-shell; setsid -f perihelionbar-shell`.
+`clock weather media system calendar watch note1 icons fastfetch processes`,
+one per line), and `~/.config/perihelionbar/shell.json` holds positions in
+pixels and the card options (its keys are listed in Perihelion Shell's
+README). After editing: `pkill -f '^(/usr/bin/)?perihelion-shell( |$)'; setsid -f perihelion-shell`
+(the process name is cut to 15 characters, so `pkill -x` can't match it).
 
 Perihelion Settings's Bar pages also change the bar's colors, modules and
 launcher buttons. Perihelion hides its Mango and System pages, which would
