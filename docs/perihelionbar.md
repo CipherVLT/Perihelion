@@ -45,7 +45,7 @@ The bar has three groups:
 |---|---|
 | left, center | `workspaces`, `mpris` (now playing), `clock`, `launchers` |
 | left (Perihelion) | `cava` as a mirrored sound wave, best right after `mpris` |
-| right | `power`, `battery`, `volume`, `network`, `tray`, `layout` (Mango layout picker), `cava`, `cpu`, `cpu_temp`, `ram`, `disk`, `weather`, `custom_script`, `drawer_toggle` |
+| right | `power`, `battery`, `volume`, `notifications` (bell and notification panel), `network`, `tray`, `layout` (Mango layout picker), `cava`, `cpu`, `cpu_temp`, `ram`, `disk`, `weather`, `custom_script`, `drawer_toggle` |
 
 A module put in a group that doesn't draw it is silently skipped.
 
@@ -142,6 +142,33 @@ yellow by default). The terminal `cava` uses its own colors, in
 Perihelion Settings lists the Audio Visualizer in both the Left and Right groups,
 so each side has its own switch. Both waves keep the same distance from the
 module beside them (workspaces on the left, the clock on the right).
+
+## Notifications
+
+mako shows the pop-ups. The bell in the bar (`notifications`, on by default;
+`{ "kind": "notifications", "enabled": false }` hides it) opens a panel with
+mako's recent notifications, newest first: app, title and the first line of
+the text (mako's history has no times). Below the list:
+
+- **Do not disturb**: no pop-ups while it's on (mako's `do-not-disturb` mode);
+  the bell is crossed out. The choice is kept in
+  `~/.local/state/perihelionbar/notifications` and comes back after a restart.
+- **Clear all**: dismisses the pop-ups and empties the panel.
+
+A dimmed bell means mako isn't running; the panel then says so.
+
+## Brightness OSD
+
+The brightness keys (`brightnessctl set +5%` / `5%-` in Mango's keybinds) make the
+bar show the same panel as the volume OSD: a sun icon, the level bar and the
+percentage, for about 2 seconds. The bar notices the change in the backlight
+itself (`/sys/class/backlight/…/actual_brightness`), so it also shows for
+brightness changed any other way. Machines without a backlight (desktops,
+virtual machines) never see it. Turn it off in `config.json`:
+
+```json
+"bar": { "enabled": true, "brightness_osd": false }
+```
 
 ## The dock
 
