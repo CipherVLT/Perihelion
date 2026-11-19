@@ -161,9 +161,10 @@ Twelve widgets can sit on the wallpaper: clock, weather, media (now
 playing), system, calendar, watch (analog), notes, desktop icons, fastfetch
 (system info), processes (the busiest programs), network (download and
 upload speed) and user (your name and uptime), on see-through cards.
-Perihelion starts with all of them switched off
-(`/usr/share/perihelion/perihelionbar/widgets-disabled` lists every one);
-turn on the ones you want in Perihelion Settings.
+On a fresh install the clock card shows and every other card is off
+(`/usr/share/perihelion/perihelionbar/widgets-disabled` lists them) until
+you turn it on in Perihelion Settings. Keeping one card on keeps
+perihelion-shell running, and the Alt+W overview with it.
 
 - **Add or remove:** open **Perihelion Settings** from the app launcher (Super+D)
   or the app drawer (Super+A). Under *Appearance → Desktop Widgets*, each
