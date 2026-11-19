@@ -157,9 +157,8 @@ For the visualizer filling the whole bar behind the modules, try
 
 ## Desktop widgets (perihelionbar-shell)
 
-Twelve widgets can sit on the wallpaper: clock, weather, media (now
-playing), system, calendar, watch (analog), notes, desktop icons, fastfetch
-(system info), processes (the busiest programs), network (download and
+Eleven widgets can sit on the wallpaper: clock, weather, media (now
+playing), system, calendar, notes, desktop icons, fastfetch (system info), processes (the busiest programs), network (download and
 upload speed) and user (your name and uptime), on see-through cards.
 On a fresh install the clock card shows and every other card is off
 (`/usr/share/perihelion/perihelionbar/widgets-disabled` lists them) until
@@ -246,7 +245,7 @@ What some of them need:
   `"user_show_name"` (default `false`) adds your full name.
 
 By hand: `~/.config/perihelionbar/widgets-disabled` lists hidden widgets (ids
-`clock weather media system calendar watch note1 icons fastfetch processes
+`clock weather media system calendar note1 icons fastfetch processes
 network user`,
 one per line), and `~/.config/perihelionbar/shell.json` holds positions in
 pixels and the card options (its keys are listed in Perihelion Shell's

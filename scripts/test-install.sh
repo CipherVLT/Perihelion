@@ -324,7 +324,7 @@ case "${flavor}" in
         # Fresh install: only the clock card is on (it keeps perihelion-shell,
         # and the Alt+W overview, running); every other card is off until
         # switched on; see-through cards when switched on
-        minimal_widgets_ok() { local w; ! grep -qx clock /home/tester/.config/perihelionbar/widgets-disabled || { echo "widget clock is off"; return 1; }; for w in weather calendar media system watch note1 icons fastfetch processes network user; do grep -qx "${w}" /home/tester/.config/perihelionbar/widgets-disabled || { echo "widget ${w} is on"; return 1; }; done; }
+        minimal_widgets_ok() { local w; ! grep -qx clock /home/tester/.config/perihelionbar/widgets-disabled || { echo "widget clock is off"; return 1; }; for w in weather calendar media system note1 icons fastfetch processes network user; do grep -qx "${w}" /home/tester/.config/perihelionbar/widgets-disabled || { echo "widget ${w} is on"; return 1; }; done; }
         check minimal_widgets_ok
         check grep -q '"card_bg_opacity": 25' /home/tester/.config/perihelionbar/shell.json
         check test -x /usr/bin/perihelion-settings
