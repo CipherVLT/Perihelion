@@ -9,7 +9,7 @@
 # wallpaper). Not installed: perihelionbar's Welcome app, Quickshell app drawer and
 # Arch installer. Perihelion's changes are commits in the fork.
 #
-# Built from the commit pinned in build/refs/perihelionbar.ref with Zig 0.16.0
+# Built from the commit pinned in build/refs/perihelionbar.ref with Zig 0.17.1
 # (the release tarball from ziglang.org, verified against the Zig Software
 # Foundation's minisign key). Build-only packages are removed afterwards.
 set -euo pipefail
@@ -18,7 +18,7 @@ source "${PERIHELION_SRC}/build/lib.sh"
 
 PERIHELIONBAR_REPO=https://github.com/CipherVLT/perihelion-shell.git
 PERIHELIONBAR_REF=$(tr -d '[:space:]' < "${PERIHELION_SRC}/build/refs/perihelionbar.ref")
-ZIG_VERSION=0.16.0
+ZIG_VERSION=0.17.1
 ZIG_PUBKEY='RWSGOq2NVecA2UPNdBUZykf1CCb147pkmdtYxgb3Ti+JO/wCYvhbAb/U'
 # Every x86-64 CPU since ~2009; perihelionbar's installer otherwise tunes for the
 # build machine.
@@ -61,7 +61,7 @@ git -C "${src}" checkout -q --detach FETCH_HEAD
 # in perihelionbar/zig-pkg, so the build needs no further downloads.
 (
     cd "${src}/perihelionbar"
-    "${zig_dir}/zig" build -Doptimize=ReleaseFast "-Dcpu=${ZIG_CPU}"
+    "${zig_dir}/zig" build -Doptimize=fast "-Dcpu=${ZIG_CPU}"
 )
 install -Dm755 "${src}/perihelionbar/zig-out/bin/perihelion-bar" /usr/bin/perihelion-bar
 # Perihelion Settings (GTK): the bar's look, modules and colors, and a
@@ -84,7 +84,7 @@ done
 # Perihelion Shell (desktop widgets, window overview); shares the bar's font code.
 (
     cd "${src}/perihelionbar-shell"
-    "${zig_dir}/zig" build -Doptimize=ReleaseFast "-Dcpu=${ZIG_CPU}"
+    "${zig_dir}/zig" build -Doptimize=fast "-Dcpu=${ZIG_CPU}"
 )
 install -Dm755 "${src}/perihelionbar-shell/zig-out/bin/perihelion-shell" /usr/bin/perihelion-shell
 # Catppuccin theming: runs on every wallpaper change (perihelion-wallpaper)
