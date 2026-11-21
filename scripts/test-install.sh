@@ -430,8 +430,21 @@ PY
         check bash -n /usr/local/bin/cmatrix
         check test -x /usr/bin/cmatrix
         check command -v btop
+        # The lock screen: the entry script starts perihelion-lockscreen -f,
+        # whose libraries are all there; its PAM stack is login's; swayidle
+        # and Super+L are unchanged.
         check test -x /usr/bin/perihelion-lock
+        check grep -qx 'exec perihelion-lockscreen -f "\$@"' /usr/bin/perihelion-lock
+        check test -x /usr/bin/perihelion-lockscreen
+        lock_libs_ok() { ! ldd /usr/bin/perihelion-lockscreen | grep -qF 'not found'; }
+        check lock_libs_ok
+        check grep -qx 'auth include login' /etc/pam.d/perihelion-lock
+        check test -f /etc/pam.d/login
+        check rpm -q cairo pango pam rsms-inter-vf-fonts
         check grep -rqx 'exec_once=swayidle -w timeout 600 perihelion-lock before-sleep perihelion-lock' /home/tester/.config/mango/
+        check grep -rqx 'bind=SUPER,l,spawn,perihelion-lock' /home/tester/.config/mango/
+        lock_help_ok() { /usr/bin/perihelion-lockscreen --help 2>&1 | grep -q -- '--daemonize'; }
+        check lock_help_ok
         check rpm -q mako pavucontrol blueman swayidle
         check grep -rqx 'bind=SUPER+SHIFT,g,spawn,perihelion-blur' /home/tester/.config/mango/
         check grep -rq 'app_id:^perihelion-float\$' /home/tester/.config/mango/
