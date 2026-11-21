@@ -4,7 +4,9 @@
 # Perihelion Shell (https://github.com/CipherVLT/perihelion-shell): Perihelion
 # Bar, a native Zig/Wayland bar for MangoWM and Hyprland (credits: NOTICE). Installed: Perihelion Bar
 # (/usr/bin/perihelion-bar, also the dock), Perihelion Shell
-# (/usr/bin/perihelion-shell: desktop widgets and window overview),
+# (/usr/bin/perihelion-shell: desktop widgets and window overview), the lock
+# screen (/usr/bin/perihelion-lockscreen, started by /usr/bin/perihelion-lock,
+# with its PAM stack /etc/pam.d/perihelion-lock),
 # Perihelion Settings (/usr/bin/perihelion-settings), and perihelion-theme (Catppuccin colors matched to the
 # wallpaper). Not installed: perihelionbar's Welcome app, Quickshell app drawer and
 # Arch installer. Perihelion's changes are commits in the fork.
@@ -27,13 +29,16 @@ ZIG_CPU=x86_64_v2
 log "perihelion-shell: building ${PERIHELIONBAR_REF:0:7}"
 rpm -qa --qf '%{NAME}\n' | sort -u > /tmp/perihelionbar-before.txt
 
-# The bar links wayland-client, freetype2 and gdk-pixbuf. `zig build` also
+# The bar links wayland-client, freetype2 and gdk-pixbuf (the lock screen also
+# cairo, pango and PAM; their runtime libraries are in packages/mango.txt, so
+# removing the -devel packages afterwards keeps them). `zig build` also
 # compiles perihelionbar's GTK apps (perihelionbar-welcome, perihelionbar-config), so their
 # headers are needed for the build even though only the bar is installed.
 dnf5 install -y --setopt=install_weak_deps=False \
     git-core curl xz minisign pkgconf-pkg-config \
     wayland-devel wayland-protocols-devel freetype-devel gdk-pixbuf2-devel libxkbcommon-devel \
-    gtk4-devel libadwaita-devel glib2-devel
+    gtk4-devel libadwaita-devel glib2-devel \
+    cairo-devel pango-devel pam-devel
 
 work=$(mktemp -d)
 zig_dir="${work}/zig"
@@ -87,6 +92,12 @@ done
     "${zig_dir}/zig" build -Doptimize=fast "-Dcpu=${ZIG_CPU}"
 )
 install -Dm755 "${src}/perihelionbar-shell/zig-out/bin/perihelion-shell" /usr/bin/perihelion-shell
+# The lock screen (built with the shell): Super+L, the power menu and swayidle
+# run /usr/bin/perihelion-lock, which starts perihelion-lockscreen -f. Its PAM
+# stack is login's password check (auth include login).
+install -Dm755 "${src}/perihelionbar-shell/zig-out/bin/perihelion-lockscreen" /usr/bin/perihelion-lockscreen
+install -Dm755 "${src}/perihelion-lock" /usr/bin/perihelion-lock
+install -Dm644 "${src}/pam/perihelion-lock" /etc/pam.d/perihelion-lock
 # Catppuccin theming: runs on every wallpaper change (perihelion-wallpaper)
 # and from Perihelion Settings. perihelionbar-matugen is the name the bar itself calls.
 install -Dm755 "${src}/perihelion-theme" /usr/bin/perihelion-theme
@@ -129,9 +140,9 @@ if (( ${#build_only[@]} )); then
 fi
 rm -f /tmp/perihelionbar-before.txt /tmp/perihelionbar-after.txt
 
-for bin in /usr/bin/perihelion-bar /usr/bin/perihelion-shell /usr/bin/perihelion-settings; do
+for bin in /usr/bin/perihelion-bar /usr/bin/perihelion-shell /usr/bin/perihelion-settings /usr/bin/perihelion-lockscreen; do
     if ldd "${bin}" | grep -F 'not found'; then
         die "${bin} is missing shared libraries"
     fi
 done
-log "perihelionbar: installed perihelionbar, perihelionbar-shell and perihelionbar-config"
+log "perihelionbar: installed perihelionbar, perihelionbar-shell, perihelionbar-config and the lock screen"

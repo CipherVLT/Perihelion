@@ -10,7 +10,7 @@ command -v mango >/dev/null || die "mango binary missing"
 
 apply_system_files mango
 rm -f /.gitkeep
-chmod 0755 /usr/bin/perihelion-wallpaper /usr/bin/perihelion-screenshot /usr/bin/perihelion-bar-start /usr/bin/perihelion-blur /usr/bin/perihelion-weather /usr/local/bin/cmatrix /usr/bin/perihelion-lock
+chmod 0755 /usr/bin/perihelion-wallpaper /usr/bin/perihelion-screenshot /usr/bin/perihelion-bar-start /usr/bin/perihelion-blur /usr/bin/perihelion-weather /usr/local/bin/cmatrix
 
 # Perihelion Bar, Shell and Settings, built from source (our perihelionbar fork).
 bash "${PERIHELION_SRC}/build/install-perihelionbar.sh"

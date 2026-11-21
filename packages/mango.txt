@@ -5,9 +5,16 @@
 # Compositor (Terra) and its screen-sharing/screenshot portal
 mangowm
 xdg-desktop-portal-wlr
-# Wallpaper, lock screen
+# Wallpaper, lock screen (swaylock stays until the new lock screen is
+# confirmed in the VM; nothing runs it any more)
 swaybg
 swaylock
+# The lock screen (perihelion-lockscreen, built with perihelion-shell): cairo
+# and pango draw it, pam checks the password, Inter is its typeface
+cairo
+pango
+pam
+rsms-inter-vf-fonts
 # Top bar: perihelionbar is built from source by build/install-perihelionbar.sh; these
 # are what it uses at runtime (font, SVG tray icons, volume via pactl;
 # nmcli for the network module comes with NetworkManager in base.txt)
