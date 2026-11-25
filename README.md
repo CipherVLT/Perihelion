@@ -222,9 +222,8 @@ OpenVPN `.ovpn`, live throughput), Boot and Login.
 `perihelion-settings --page XWayland` opens on a page.
 
 The Mango flavor's bar and desktop are [Perihelion Shell](https://github.com/CipherVLT/perihelion-shell) (GPL-3.0),
-Perihelion's fork (with his blessing) of [simpbar](https://github.com/jaytheoutpatient/simpbar)
-by **jaytheoutpatient**, a native Zig/Wayland bar for Hyprland and MangoWM.
-The Catppuccin presets come from **Mirrez**'s simpbar-catppuccin-matugen
+a native Zig/Wayland desktop for MangoWM and Hyprland (its credits: NOTICE).
+The Catppuccin presets come from **Mirrez**'s Catppuccin matugen
 package; the palette is [Catppuccin](https://catppuccin.com) (MIT).
 The other palettes in Perihelion Settings (about 260, searchable) are
 [Event Horizon](https://github.com/Event-Horizon-desktop-environment)'s colour
