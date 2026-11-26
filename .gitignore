@@ -14,3 +14,7 @@ branding/wallpapers/*
 # Fetched in CI by scripts/fetch-wine.sh
 assets/wine/
 system_files/common/usr/local/bin/
+
+# Python bytecode caches
+__pycache__/
+*.pyc
