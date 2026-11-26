@@ -1,5 +1,5 @@
 # Mango flavor: the compositor plus exactly what Perihelion's Mango config
-# uses (system_files/mango/usr/share/perihelion/mango/config.conf).
+# uses (the shell's desktop/mango/, installed to /usr/share/perihelion/mango).
 # perihelion-doctor checks that every program the config launches exists.
 
 # Compositor (Terra) and its screen-sharing/screenshot portal

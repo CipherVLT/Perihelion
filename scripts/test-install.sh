@@ -365,10 +365,55 @@ PY
         check grep -rqx 'bind=SUPER,i,spawn,perihelion-shell glance toggle' /home/tester/.config/mango/
         glance_bind_once() { [ "$(grep -rhiE '^bind[a-z]*=SUPER,i,' /home/tester/.config/mango/ | wc -l)" = 1 ]; }
         check glance_bind_once
-        check grep -rqx 'exec_once=perihelion-shell' /home/tester/.config/mango/
         check grep -rqx 'bind=SUPER,g,spawn,perihelion-glass' /home/tester/.config/mango/
-        check grep -rqx 'exec_once=perihelion-bar-start' /home/tester/.config/mango/
+        # One autostart line: perihelion-session-start starts every piece once.
+        check grep -qx 'exec_once=perihelion-session-start' /home/tester/.config/mango/cfg/autostart.conf
+        one_exec_once() { [ "$(grep -rh '^exec_once=' /home/tester/.config/mango/ | wc -l)" = 1 ]; }
+        check one_exec_once
         check bash -n /usr/bin/perihelion-bar-start
+        check bash -n /usr/bin/perihelion-session
+        check bash -n /usr/bin/perihelion-session-start
+        check test -x /usr/libexec/polkit-mate-authentication-agent-1
+        session_programs_ok() {
+            local p missing=0
+            for p in dbus-update-activation-environment mako perihelion-wallpaper perihelion-bar-start perihelion-shell \
+                appdrawer swayidle perihelion-nightlight flock setsid pgrep busctl; do
+                command -v "${p}" >/dev/null || { echo "      not installed: ${p}"; missing=1; }
+            done
+            return "${missing}"
+        }
+        check session_programs_ok
+        # The login session: "Perihelion (MangoWM)", preselected; the stock one stays.
+        check grep -qx 'Exec=/usr/bin/perihelion-session' /usr/share/wayland-sessions/perihelion.desktop
+        check grep -qx 'Name=Perihelion (MangoWM)' /usr/share/wayland-sessions/perihelion.desktop
+        check test -f /usr/share/wayland-sessions/mango.desktop
+        check grep -qx 'Session=/usr/share/wayland-sessions/perihelion.desktop' /var/lib/sddm/state.conf
+        sddm_owns_state() { [ "$(stat -c %U /var/lib/sddm/state.conf)" = sddm ]; }
+        check sddm_owns_state
+        # A user created after the install, first login through the session
+        # (a stand-in mango: the real one needs a display). /etc/skel gives a
+        # new account the config; with it gone, the session writes it.
+        useradd -m newcomer
+        skel_has_defaults() { local f; for f in /usr/share/perihelion/mango/config.conf /usr/share/perihelion/mango/cfg/*.conf; do cmp -s "${f}" "/home/newcomer/.config/mango/${f#/usr/share/perihelion/mango/}" || { echo "      differs: ${f}"; return 1; }; done; }
+        check skel_has_defaults
+        mkdir -p /tmp/stub-mango
+        # shellcheck disable=SC2016  # expands when the stub runs
+        printf '#!/bin/sh\necho "$*" >> "$HOME/mango-ran"\n' > /tmp/stub-mango/mango
+        chmod 755 /tmp/stub-mango/mango
+        rm -rf /home/newcomer/.config/mango
+        first_login() { runuser -u newcomer -- env -i HOME=/home/newcomer USER=newcomer PATH=/tmp/stub-mango:/usr/bin:/bin perihelion-session; }
+        check first_login
+        check test -s /home/newcomer/mango-ran
+        check diff -r /usr/share/perihelion/mango /home/newcomer/.config/mango
+        check mango -p -c /home/newcomer/.config/mango/config.conf
+        mango_hash() { find /home/newcomer/.config/mango -type f -print0 | sort -z | xargs -0 sha256sum; }
+        before=$(mango_hash)
+        check first_login
+        second_login_same() { [ "$(mango_hash)" = "${before}" ]; }
+        check second_login_same
+        owned_by_newcomer() { [ -z "$(find /home/newcomer/.config/mango ! -user newcomer)" ]; }
+        check owned_by_newcomer
+        userdel -r newcomer 2>/dev/null || true
         check bash -n /usr/bin/perihelion-weather
         # Live weather (Open-Meteo); reported, not fatal, so an outage can't block a build
         mkdir -p /tmp/wtest/.config/perihelionbar && echo "DeSoto, TX" > /tmp/wtest/.config/perihelionbar/weather-location

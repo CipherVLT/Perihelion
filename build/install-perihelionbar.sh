@@ -128,6 +128,17 @@ for v in "" "-full"; do
 done
 printf '#!/bin/sh\n# perihelionbar calls this after a wallpaper change; Perihelion themes with Catppuccin.\nexec perihelion-theme --force "$@"\n' > /usr/bin/perihelionbar-matugen
 chmod 755 /usr/bin/perihelionbar-matugen
+# How the session starts: the same files as install.sh puts on Arch, from
+# the shell's desktop/ (no copies of our own). The login session seeds
+# ~/.config/mango from /usr/share/perihelion/mango when it is missing; the
+# one autostart line runs perihelion-session-start.
+install -Dm755 "${src}/perihelion-bar-start" /usr/bin/perihelion-bar-start
+install -Dm755 "${src}/desktop/bin/perihelion-session" /usr/bin/perihelion-session
+install -Dm755 "${src}/desktop/bin/perihelion-session-start" /usr/bin/perihelion-session-start
+install -Dm644 "${src}/desktop/wayland-sessions/perihelion.desktop" /usr/share/wayland-sessions/perihelion.desktop
+install -d /usr/share/perihelion/mango/cfg
+install -m644 "${src}/desktop/mango/config.conf" /usr/share/perihelion/mango/config.conf
+install -m644 "${src}"/desktop/mango/cfg/*.conf /usr/share/perihelion/mango/cfg/
 install -d /usr/share/perihelion
 printf '%s\n' "${PERIHELIONBAR_REF}" > /usr/share/perihelion/perihelionbar.ref
 # Images older Perihelion Bar versions shipped and that are no longer part of

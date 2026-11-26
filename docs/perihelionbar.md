@@ -187,11 +187,27 @@ virtual machines) never see it. Turn it off in `config.json`:
 "bar": { "enabled": true, "brightness_osd": false }
 ```
 
+## How the session starts
+
+The login screen preselects **Perihelion (MangoWM)**
+(`/usr/share/wayland-sessions/perihelion.desktop`). It runs `perihelion-session`, which
+copies `/usr/share/perihelion/mango/` into `~/.config/mango` when you have no
+`config.conf` there yet (a config of yours is never touched), then starts Mango. The
+stock **Mango** session is still listed.
+
+`~/.config/mango/cfg/autostart.conf` holds one line, `exec_once=perihelion-session-start`.
+It starts each piece once and skips what is already running: the dbus activation
+environment, mako, the polkit agent, the wallpaper, the bar and dock, Perihelion Shell,
+the app drawer, swayidle and the night light. Run it again to bring back anything that
+stopped. What it did: `~/.config/perihelionbar-config/logs/perihelion-session-start/trace.log`.
+The same files ship on Arch through the shell's `install.sh`.
+
 ## The dock
 
 The pinned apps live in their own dock at the bottom center, not in the bar.
 It is a second copy of the bar started in dock mode (`PERIHELIONBAR_DOCK=1 perihelionbar`,
-by `perihelion-bar-start` at login; Super+Shift+D restarts both). It
+by `perihelion-bar-start`, which `perihelion-session-start` runs at login; Super+Shift+D
+restarts both). It
 shows the `launchers` from `~/.config/perihelionbar/config.json`, the same list
 Perihelion Settings edits; the first one runs `appdrawer` and wears the distro's
 logo. Windows stop above the dock.

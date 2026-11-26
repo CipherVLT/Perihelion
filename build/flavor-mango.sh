@@ -10,7 +10,7 @@ command -v mango >/dev/null || die "mango binary missing"
 
 apply_system_files mango
 rm -f /.gitkeep
-chmod 0755 /usr/bin/perihelion-wallpaper /usr/bin/perihelion-screenshot /usr/bin/perihelion-bar-start /usr/bin/perihelion-blur /usr/bin/perihelion-weather /usr/local/bin/cmatrix
+chmod 0755 /usr/bin/perihelion-wallpaper /usr/bin/perihelion-screenshot /usr/bin/perihelion-blur /usr/bin/perihelion-weather /usr/local/bin/cmatrix
 
 # Perihelion Bar, Shell and Settings, built from source (our perihelionbar fork).
 bash "${PERIHELION_SRC}/build/install-perihelionbar.sh"
@@ -75,4 +75,13 @@ seed_user_file "${share}/btop/btop.conf" .config/btop/btop.conf
 seed_user_file "${share}/kitty/kitty.conf" .config/kitty/kitty.conf
 
 test -f /usr/share/wayland-sessions/mango.desktop
+test -f /usr/share/wayland-sessions/perihelion.desktop
+# The login screen offers "Perihelion (MangoWM)" first. SDDM preselects the
+# session it remembers in its state file; until someone logs in, that's
+# this one. Only written when SDDM has no state yet.
+if [[ ! -e /var/lib/sddm/state.conf ]]; then
+    install -d /var/lib/sddm
+    printf '[Last]\nSession=/usr/share/wayland-sessions/perihelion.desktop\n' > /var/lib/sddm/state.conf
+    if getent passwd sddm >/dev/null; then chown -R sddm:sddm /var/lib/sddm; fi
+fi
 log "mango: done"
