@@ -486,7 +486,8 @@ PY
         check grep -qx 'auth include login' /etc/pam.d/perihelion-lock
         check test -f /etc/pam.d/login
         check rpm -q cairo pango pam rsms-inter-vf-fonts
-        check grep -rqx 'exec_once=swayidle -w timeout 600 perihelion-lock before-sleep perihelion-lock' /home/tester/.config/mango/
+        # The idle lock is started by perihelion-session-start (the one autostart line).
+        check grep -q 'swayidle -w timeout 600 perihelion-lock before-sleep perihelion-lock' /usr/bin/perihelion-session-start
         check grep -rqx 'bind=SUPER,l,spawn,perihelion-lock' /home/tester/.config/mango/
         lock_help_ok() { /usr/bin/perihelion-lockscreen --help 2>&1 | grep -q -- '--daemonize'; }
         check lock_help_ok
@@ -563,7 +564,7 @@ PY
         check test -f /home/tester/.config/quickshell/appdrawer/SmoothWheel.qml
         check grep -q 'perihelion-dock-pin' /home/tester/.config/quickshell/appdrawer/Drawer.qml
         check test -f /home/tester/.config/quickshell/appdrawer/favourites.json
-        check grep -rqx 'exec_once=appdrawer start' /home/tester/.config/mango/
+        check grep -q 'appdrawer start' /usr/bin/perihelion-session-start
         check grep -rqx 'bind=SUPER,a,spawn,appdrawer' /home/tester/.config/mango/
         check grep -qx '\~/Pictures/Wallpapers' /home/tester/.config/perihelionbar/wallpaper-dirs
         check grep -qx 'include /etc/xdg/kitty/kitty.conf' /home/tester/.config/kitty/kitty.conf
@@ -608,7 +609,7 @@ PY
         check display_rules_ok
         check rpm -q wlr-randr wlsunset
         check grep -aq 'Color management' /usr/bin/perihelion-settings
-        check grep -qx 'exec_once=perihelion-nightlight' /home/tester/.config/mango/cfg/autostart.conf
+        check grep -q ' perihelion-nightlight$' /usr/bin/perihelion-session-start
         nightlight_ok() {
             local d=/tmp/nl-test/perihelion out
             mkdir -p "${d}"
