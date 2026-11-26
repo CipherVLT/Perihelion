@@ -130,6 +130,21 @@ printf '#!/bin/sh\n# perihelionbar calls this after a wallpaper change; Periheli
 chmod 755 /usr/bin/perihelionbar-matugen
 install -d /usr/share/perihelion
 printf '%s\n' "${PERIHELIONBAR_REF}" > /usr/share/perihelion/perihelionbar.ref
+# Images older Perihelion Bar versions shipped and that are no longer part of
+# it: removed from the image only when the SHA-256 is in the shell's list, so
+# nothing else of the same name is touched. (No Perihelion ISO ever shipped
+# them; this keeps it that way.)
+old_sums=$(sed -n -E 's/^([0-9a-f]{64})[[:space:]].*/\1/p' "${src}/scripts/old-images.sha256")
+[[ -n ${old_sums} ]] || { echo "old-images.sha256 missing or empty" >&2; exit 1; }
+while IFS= read -r f; do
+    [[ -f ${f} && ! -L ${f} ]] || continue
+    if grep -qxF "$(sha256sum "${f}" | cut -d' ' -f1)" <<< "${old_sums}"; then
+        echo "removing old image ${f}"
+        rm -f -- "${f}"
+    fi
+done < <(find /usr/share/icons/hicolor -path '*/apps/*' \( -name 'perihelionbar-config.*' -o -name 'perihelionbar-welcome.*' \) -type f 2>/dev/null
+         find /usr/share/pixmaps -maxdepth 1 -name 'perihelionbar*' -type f 2>/dev/null
+         find /etc/skel/.local/share/perihelionbar -type f 2>/dev/null)
 rm -rf "${work}"
 
 rpm -qa --qf '%{NAME}\n' | sort -u > /tmp/perihelionbar-after.txt
